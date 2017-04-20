@@ -27,4 +27,8 @@ public class MachineClientRepository {
         machineClient.setRole(machineRole);
         machineClient.update();
     }
+
+    public static boolean isServer() {
+        return get().getRole() == MachineRole.MASTER;
+    }
 }

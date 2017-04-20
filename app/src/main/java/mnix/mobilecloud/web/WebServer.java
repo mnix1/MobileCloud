@@ -4,16 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.ObjectConstructor;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.util.Streams;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.json.JSONObject;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -26,14 +21,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.Blob;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
+import mnix.mobilecloud.repository.server.FileServerRepository;
 
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
@@ -53,7 +47,7 @@ public class WebServer extends NanoHTTPD {
     private static final String MIME_XML = "text/xml";
     private final Context context;
 
-    NanoFileUpload uploader;
+    private NanoFileUpload uploader;
 
     public WebServer(Context context) {
         super(PORT);
@@ -76,6 +70,12 @@ public class WebServer extends NanoHTTPD {
             if (response != null) {
                 return response;
             }
+            if (MachineClientRepository.isServer()) {
+                response = checkServerController(session);
+                if (response != null) {
+                    return response;
+                }
+            }
             if (uri.equals("/")) {
                 return checkAssets(uri + "index.html");
             } else {
@@ -89,12 +89,21 @@ public class WebServer extends NanoHTTPD {
                 e.printStackTrace();
             }
         }
+        if (uri.equals("/uploadSuccess")) {
+            try {
+                session.parseBody(new HashMap<String, String>());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ResponseException e) {
+                e.printStackTrace();
+            }
+            return serveUploadSuccess(session.getParms());
+        }
         return getForbiddenResponse("Mobile Cloud");
     }
 
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
-        Map<String, List<FileItem>> files = new HashMap<String, List<FileItem>>();
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, String> params = new HashMap<String, String>();
         FileItemIterator iter = uploader.getItemIterator(session);
         while (iter.hasNext()) {
             FileItemStream item = iter.next();
@@ -105,15 +114,16 @@ public class WebServer extends NanoHTTPD {
                 continue;
             }
             SegmentClientRepository.save(params, item);
-            FileItem fileItem = uploader.getFileItemFactory().createItem(item.getFieldName(), item.getContentType(), item.isFormField(), fileName);
-            files.put(fileItem.getFieldName(), Arrays.asList(new FileItem[]{fileItem}));
-            try {
-                Streams.copy(item.openStream(), fileItem.getOutputStream(), true);
-            } catch (Exception e) {
+            if (MachineClientRepository.isServer() && !params.containsKey("qqtotalparts")) {
+                serveUploadSuccess(params);
             }
-            fileItem.setHeaders(item.getHeaders());
         }
-        return response(true);
+        return getSuccessResponse(true);
+    }
+
+    public Response serveUploadSuccess(Map<String, String> params) {
+        FileServerRepository.save(params);
+        return getSuccessResponse(true);
     }
 
     public Response checkClientController(IHTTPSession session) {
@@ -123,7 +133,7 @@ public class WebServer extends NanoHTTPD {
         } else if (uri.contains("/downloadClientSegment")) {
             SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(session.getParms().get("identifier"));
             if (segmentClient == null) {
-                return response(false);
+                return getSuccessResponse(false);
             }
             ByteArrayInputStream inputStream = new ByteArrayInputStream(segmentClient.getData());
             Response response = new Response(Status.OK, getMimeTypeForFile(uri), inputStream, inputStream.available());
@@ -133,10 +143,21 @@ public class WebServer extends NanoHTTPD {
         return null;
     }
 
-    private Response response(boolean success) {
-        Map<String, Boolean> response = new HashMap<String, Boolean>();
-        response.put("success", success);
-        return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(response));
+    public Response checkServerController(IHTTPSession session) {
+        String uri = session.getUri();
+        if (uri.equals("/fetchServerFiles")) {
+            return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(FileServerRepository.list()));
+        } else if (uri.contains("/downloadServerFile")) {
+            SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(session.getParms().get("identifier"));
+            if (segmentClient == null) {
+                return getSuccessResponse(false);
+            }
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(segmentClient.getData());
+            Response response = new Response(Status.OK, getMimeTypeForFile(uri), inputStream, inputStream.available());
+            response.addHeader("Content-disposition", "attachment; filename=" + segmentClient.getIdentifier());
+            return response;
+        }
+        return null;
     }
 
     public Response checkAssets(String uri) {
@@ -172,5 +193,11 @@ public class WebServer extends NanoHTTPD {
 
     public static Response getForbiddenResponse(String s) {
         return newFixedLengthResponse(Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: " + s);
+    }
+
+    private Response getSuccessResponse(boolean success) {
+        Map<String, Boolean> response = new HashMap<String, Boolean>();
+        response.put("success", success);
+        return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(response));
     }
 }

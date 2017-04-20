@@ -14,14 +14,15 @@ import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.dto.SegmentClientDTO;
 
 public class SegmentClientRepository {
-    public static void save(Map<String, Object> params,
+    public static void save(Map<String, String> params,
                             FileItemStream item) {
         SegmentClient segment = new SegmentClient();
-        segment.setIdentifier((String) params.get("qquuid") + 0);
-        segment.setFileIdentifier((String) params.get("qquuid"));
-        Integer size = Integer.parseInt((String) params.get("qqtotalfilesize"));
-        segment.setByteFrom(0L);
-        segment.setByteTo(size.longValue());
+        segment.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
+        segment.setFileIdentifier(params.get("qquuid"));
+        Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
+        Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
+        segment.setByteFrom(fromByte.longValue());
+        segment.setByteTo((long) fromByte + size);
         byte[] data = new byte[size];
         try {
             item.openStream().read(data);
