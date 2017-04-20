@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MobileCloud</string>
+    <string name="ap_enable">Ap Enable</string>
+    <string name="wifi_enable">Wifi Enable</string>
+</resources>
