@@ -12,21 +12,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.orm.SugarRecord;
-
 import java.util.LinkedList;
 
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableMaybeObserver;
-import mnix.mobilecloud.domain.client.MachineClient;
-import mnix.mobilecloud.file.FileUtils;
+import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.network.NetworkManager;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
-import mnix.mobilecloud.web.WebServer;
-import mnix.mobilecloud.web.WebSocket;
+import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.web.client.ClientWebServer;
+import mnix.mobilecloud.web.server.ServerWebServer;
+import mnix.mobilecloud.web.server.WebSocket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -100,33 +95,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void initMaster() {
         MachineClientRepository.updateRole(MachineRole.MASTER);
-        new WebServer(getApplicationContext());
+        MachineServer machineServer = new MachineServer(MachineClientRepository.get());
+        MachineServerRepository.update(machineServer);
+        new ServerWebServer(getApplicationContext());
+        new ClientWebServer(getApplicationContext());
         new WebSocket();
     }
 
     private void initSlave() {
         MachineClientRepository.updateRole(MachineRole.SLAVE);
-        new WebServer(getApplicationContext());
+        new ClientWebServer(getApplicationContext());
+
     }
 
-    public void addLog(String log) {
-        logs.add(0, log + "\n");
-        if (logs.size() > 10) {
-            logs.removeLast();
-        }
-        final TextView et = (TextView) findViewById(R.id.logs);
-        Observable.fromIterable(logs).reduce(new BiFunction<String, String, String>() {
-            @Override
-            public String apply(@NonNull String a, @NonNull String b) throws Exception {
-                return a + b;
-            }
-        }).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(@NonNull String e) throws Exception {
-                et.setText(e);
-            }
-        });
-    }
+//    public void addLog(String log) {
+//        logs.add(0, log + "\n");
+//        if (logs.size() > 10) {
+//            logs.removeLast();
+//        }
+//        final TextView et = (TextView) findViewById(R.id.logs);
+//        Observable.fromIterable(logs).reduce(new BiFunction<String, String, String>() {
+//            @Override
+//            public String apply(@NonNull String a, @NonNull String b) throws Exception {
+//                return a + b;
+//            }
+//        }).subscribe(new Consumer<String>() {
+//            @Override
+//            public void accept(@NonNull String e) throws Exception {
+//                et.setText(e);
+//            }
+//        });
+//    }
 
     public void updateWifiInfo(String log) {
         TextView tv = (TextView) findViewById(R.id.wifiInfo);

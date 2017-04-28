@@ -6,14 +6,14 @@ export default class Uploader {
       options: {
         chunking: {
           enabled: true,
-          success: {endpoint: '/uploadSuccess'},
+          success: {endpoint: '/file/uploadSuccess'},
           concurrent: {
             enabled: true
           },
           partSize: 1024*1024
         },
         request: {
-          endpoint: '/upload'
+          endpoint: '/file/upload'
         },
         retry: {
           enableAuto: true

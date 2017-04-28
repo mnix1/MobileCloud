@@ -1,4 +1,4 @@
-package mnix.mobilecloud.web;
+package mnix.mobilecloud.web.server;
 
 import org.nanohttpd.protocols.websockets.NanoWSD;
 import org.nanohttpd.samples.websockets.DebugWebSocketServer;
