@@ -12,8 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.LinkedList;
-
 import io.reactivex.observers.DisposableMaybeObserver;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.network.NetworkManager;
@@ -21,7 +19,7 @@ import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.web.client.ClientWebServer;
 import mnix.mobilecloud.web.server.ServerWebServer;
-import mnix.mobilecloud.web.server.WebSocket;
+import mnix.mobilecloud.web.socket.ServerWebSocket;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 2;
 
     private NetworkManager networkManager;
-    private LinkedList<String> logs = new LinkedList<String>();
+    private ServerWebServer serverWebServer;
+    private ClientWebServer clientWebServer;
+    private ServerWebSocket serverWebSocket;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,44 +88,43 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onComplete() {
+                Log.e("MOBILE CLOUD", "connectOrCreateAp onComplete");
                 this.dispose();
             }
         });
     }
 
     private void initMaster() {
+        dispose();
         MachineClientRepository.updateRole(MachineRole.MASTER);
         MachineServer machineServer = new MachineServer(MachineClientRepository.get());
         MachineServerRepository.update(machineServer);
-        new ServerWebServer(getApplicationContext());
-        new ClientWebServer(getApplicationContext());
-        new WebSocket();
+        serverWebSocket = new ServerWebSocket();
+        serverWebServer = new ServerWebServer(getApplicationContext(), serverWebSocket);
+        clientWebServer = new ClientWebServer(getApplicationContext());
     }
 
     private void initSlave() {
+        dispose();
         MachineClientRepository.updateRole(MachineRole.SLAVE);
-        new ClientWebServer(getApplicationContext());
-
+        clientWebServer = new ClientWebServer(getApplicationContext());
     }
 
-//    public void addLog(String log) {
-//        logs.add(0, log + "\n");
-//        if (logs.size() > 10) {
-//            logs.removeLast();
-//        }
-//        final TextView et = (TextView) findViewById(R.id.logs);
-//        Observable.fromIterable(logs).reduce(new BiFunction<String, String, String>() {
-//            @Override
-//            public String apply(@NonNull String a, @NonNull String b) throws Exception {
-//                return a + b;
-//            }
-//        }).subscribe(new Consumer<String>() {
-//            @Override
-//            public void accept(@NonNull String e) throws Exception {
-//                et.setText(e);
-//            }
-//        });
-//    }
+    private void dispose() {
+        if (serverWebServer != null) {
+            serverWebServer.stop();
+            serverWebServer = null;
+        }
+        if (clientWebServer != null) {
+            clientWebServer.stop();
+            clientWebServer = null;
+        }
+        if (serverWebSocket != null) {
+            serverWebSocket.stop();
+            serverWebSocket = null;
+        }
+
+    }
 
     public void updateWifiInfo(String log) {
         TextView tv = (TextView) findViewById(R.id.wifiInfo);
@@ -138,5 +137,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void wifiEnable(View view) {
         networkManager.enableWifi();
+    }
+
+    public void init(View view) {
+        init();
     }
 }

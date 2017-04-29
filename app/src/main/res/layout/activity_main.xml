@@ -26,10 +26,10 @@
         android:onClick="wifiEnable"
         android:text="@string/wifi_enable" />
 
-    <TextView
-        android:id="@+id/logs"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="16sp" />
-
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:onClick="init"
+        android:text="@string/init" />
 </LinearLayout>

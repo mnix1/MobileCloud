@@ -61,6 +61,10 @@ public class FileServerController {
 
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Map<String, String> params = new HashMap<String, String>();
+//        int available = session.getInputStream().available();
+//        byte[] bytes = new byte[available];
+//        session.getInputStream().read(bytes);
+//        String msg = new String(bytes);
         FileItemIterator iter = serverWebServer.uploader.getItemIterator(session);
         while (iter.hasNext()) {
             FileItemStream item = iter.next();

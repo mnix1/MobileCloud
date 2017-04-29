@@ -48,6 +48,10 @@ public class NetworkManager {
         wifiControl.enableAp();
     }
 
+    public WifiControl getWifiControl() {
+        return wifiControl;
+    }
+
     public void enableWifi() {
         wifiControl.enableWifi();
     }
@@ -97,6 +101,8 @@ public class NetworkManager {
                         wifiStateChange.dispose();
                         wifiNetworkChange.dispose();
                         wifiControl.connectWifi();
+                        subject.onNext(MachineRole.SLAVE);
+                        subject.onComplete();
                     }
                 }, new Consumer<Throwable>() {
                     @Override

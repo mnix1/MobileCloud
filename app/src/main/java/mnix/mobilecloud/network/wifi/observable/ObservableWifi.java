@@ -59,9 +59,11 @@ public class ObservableWifi {
                 List<ScanResult> scanResults = wifiManager.getScanResults();
                 if (scanResults == null) {
                     subject.onError(new EmptyResultScan());
-                } else {
+                } else if (scanResults.size() > 0) {
                     subject.onNext(scanResults);
                     subject.onComplete();
+                } else {
+                    Log.e("MOBILE CLOUD", "EMPTY SCAN RESULT (enable localization)");
                 }
             }
         };

@@ -2,17 +2,30 @@
 
 package mnix.mobilecloud.web.client;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
+import mnix.mobilecloud.repository.server.MachineServerRepository;
 
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.NanoHTTPD.getMimeTypeForFile;
@@ -30,6 +43,13 @@ public class SegmentClientController {
         if (!uri.contains("/segment/")) {
             return null;
         }
+        if (NanoFileUpload.isMultipartContent(session) && uri.startsWith("/segment/upload")) {
+            try {
+                return serveUpload(session);
+            } catch (IOException | FileUploadException e) {
+                e.printStackTrace();
+            }
+        }
         if (uri.equals("/segment/list")) {
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(SegmentClientRepository.list()));
         } else if (uri.startsWith("/segment/download")) {
@@ -44,4 +64,26 @@ public class SegmentClientController {
         }
         return null;
     }
+
+    public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
+        Log.e("MOBILE CLOUD", "serveUpload");
+        Map<String, String> params = new HashMap<String, String>();
+//        int available = session.getInputStream().available();
+//        byte[] bytes = new byte[available];
+//        session.getInputStream().read(bytes);
+//        String msg = new String(bytes);
+        FileItemIterator iter = clientWebServer.uploader.getItemIterator(session);
+        while (iter.hasNext()) {
+            FileItemStream item = iter.next();
+            final String fileName = item.getName();
+            if (fileName == null) {
+                String line = new BufferedReader(new InputStreamReader(item.openStream())).readLine();
+                params.put(item.getFieldName(), line);
+                continue;
+            }
+            SegmentClientRepository.save(params, item);
+        }
+        return getSuccessResponse(true);
+    }
+
 }

@@ -17259,7 +17259,7 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function findUri() {
-    return 'ws://' + location.hostname + ':9090/';
+    return 'ws://' + location.hostname + ':9080/';
 }
 
 var MobileCloudWebSocket = function () {
@@ -17551,14 +17551,14 @@ var Uploader = function Uploader() {
     options: {
       chunking: {
         enabled: true,
-        success: { endpoint: '/uploadSuccess' },
+        success: { endpoint: '/file/uploadSuccess' },
         concurrent: {
           enabled: true
         },
         partSize: 1024 * 1024
       },
       request: {
-        endpoint: '/upload'
+        endpoint: '/file/upload'
       },
       retry: {
         enableAuto: true

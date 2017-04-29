@@ -8,7 +8,9 @@ import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
@@ -32,6 +34,13 @@ public class MachineServerController {
             return null;
         }
         if (uri.startsWith("/machine/update")) {
+            try {
+                session.parseBody(new HashMap<String, String>());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NanoHTTPD.ResponseException e) {
+                e.printStackTrace();
+            }
             MachineServer machineServer = getMachineServer(session);
             MachineServerRepository.update(machineServer);
             return getSuccessResponse(true);

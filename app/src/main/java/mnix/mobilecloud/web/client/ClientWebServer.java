@@ -1,6 +1,7 @@
 package mnix.mobilecloud.web.client;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.response.Response;
@@ -16,12 +17,17 @@ public class ClientWebServer extends WebServer {
 
     @Override
     public Response serve(IHTTPSession session) {
+        String uri = session.getUri();
+        Log.e("MobileCloud", "ClientWebServer uri: " + uri);
         Response response = null;
+        response = new MachineClientController().serve(session);
+        if (response != null) {
+            return response;
+        }
         response = new SegmentClientController(this).serve(session);
         if (response != null) {
             return response;
         }
-        String uri = session.getUri();
         if (uri.equals("/")) {
             return checkAssets(uri + "index.html");
         } else {

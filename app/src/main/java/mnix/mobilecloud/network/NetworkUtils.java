@@ -48,37 +48,37 @@ public class NetworkUtils {
         return null;
     }
 
-    public InetAddress getGatewayAddress(WifiManager wifiManager) {
-        List<String> arpTableRows = new ArrayList<>();
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader("/proc/net/arp"));
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (!line.equals("IP address       HW type     Flags       HW address            Mask     Device")) {
-                    arpTableRows.add(line.substring(0, line.indexOf(" ")));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (!arpTableRows.isEmpty()) {
-            try {
-                return InetAddress.getByName(arpTableRows.get(0));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        }
+    public static InetAddress getGatewayAddress(WifiManager wifiManager) {
+//        List<String> arpTableRows = new ArrayList<>();
+//        BufferedReader br = null;
+//        try {
+//            br = new BufferedReader(new FileReader("/proc/net/arp"));
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                if (!line.equals("IP address       HW type     Flags       HW address            Mask     Device")) {
+//                    arpTableRows.add(line.substring(0, line.indexOf(" ")));
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                br.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        if (!arpTableRows.isEmpty()) {
+//            try {
+//                return InetAddress.getByName(arpTableRows.get(0));
+//            } catch (UnknownHostException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return inetAddressFromInt(wifiManager.getDhcpInfo().gateway);
     }
 
-    public InetAddress inetAddressFromInt(int address) {
+    public static InetAddress inetAddressFromInt(int address) {
         try {
             return Inet4Address.getByAddress(new byte[]{
                     (byte) address, (byte) (address >>> 8), (byte) (address >>> 16), (byte) (address >>> 24)});

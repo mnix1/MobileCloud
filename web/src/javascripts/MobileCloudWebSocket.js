@@ -1,5 +1,5 @@
 function findUri() {
-    return 'ws://' + location.hostname + ':9090/';
+    return 'ws://' + location.hostname + ':9080/';
 }
 class MobileCloudWebSocket {
     constructor() {

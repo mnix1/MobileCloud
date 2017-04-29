@@ -6,12 +6,16 @@ import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.response.Response;
 
 import mnix.mobilecloud.web.WebServer;
+import mnix.mobilecloud.web.socket.ServerWebSocket;
 
 public class ServerWebServer extends WebServer {
     public static final int PORT = 8080;
 
-    public ServerWebServer(Context context) {
+    private final ServerWebSocket serverWebSocket;
+
+    public ServerWebServer(Context context, ServerWebSocket serverWebSocket) {
         super(PORT, context);
+        this.serverWebSocket = serverWebSocket;
     }
 
     @Override
@@ -31,5 +35,9 @@ public class ServerWebServer extends WebServer {
         } else {
             return checkAssets(uri);
         }
+    }
+
+    public ServerWebSocket getServerWebSocket() {
+        return serverWebSocket;
     }
 }
