@@ -17,6 +17,7 @@ import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
@@ -43,6 +44,7 @@ public class MachineServerController {
             }
             MachineServer machineServer = getMachineServer(session);
             MachineServerRepository.update(machineServer);
+            serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATE, null);
             return getSuccessResponse(true);
         }
         if (uri.startsWith("/machine/list")) {

@@ -23,6 +23,7 @@ import mnix.mobilecloud.network.wifi.WifiNetwork;
 import mnix.mobilecloud.network.wifi.WifiState;
 import mnix.mobilecloud.network.wifi.accesspoint.WifiApControl;
 import mnix.mobilecloud.network.wifi.observable.ObservableWifi;
+import mnix.mobilecloud.util.Util;
 
 public class NetworkManager {
     public static final String SSID = "MobileCloud";
@@ -64,7 +65,6 @@ public class NetworkManager {
                     public void accept(@NonNull WifiState wifiState) throws Exception {
                         if (wifiState != WifiState.WIFI_ENABLED && wifiState != WifiState.WIFI_ENABLING
                                 && wifiState != WifiState.WIFI_AP_DISABLING && wifiState != WifiState.WIFI_AP_ENABLED && wifiState != WifiState.WIFI_AP_ENABLING) {
-                            Log.e("MOBILE CLOUD", "wifiStateChange enableWifi " + wifiState);
                             NetworkManager.this.enableWifi();
                         }
                     }
@@ -76,16 +76,13 @@ public class NetworkManager {
                     public void accept(@NonNull WifiNetwork wifiNetwork) throws Exception {
                         NetworkInfo networkInfo = wifiNetwork.networkInfo;
                         String ssid = networkInfo.getExtraInfo();
-                        Log.e("MOBILE CLOUD", "wifiNetworkChange " + ssid);
                         if (ssid.contains(SSID)) {
                             if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) {
-                                Log.e("MOBILE CLOUD", "wifiNetworkChange onNext");
                                 subject.onNext(MachineRole.SLAVE);
                                 subject.onComplete();
                             }
                         } else {
                             if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED) || networkInfo.getState().equals(NetworkInfo.State.CONNECTING)) {
-                                Log.e("MOBILE CLOUD", "wifiNetworkChange disconnectWifi");
                                 wifiControl.disconnectWifi();
                             }
                         }
@@ -96,8 +93,7 @@ public class NetworkManager {
                 .subscribe(new Consumer<ScanResult>() {
                     @Override
                     public void accept(@NonNull ScanResult scanResult) throws Exception {
-                        String log = "Scan Results: MobileCloud available";
-                        Log.e("MOBILE CLOUD", log);
+                        Util.log("Scan Results: MobileCloud available");
                         wifiStateChange.dispose();
                         wifiNetworkChange.dispose();
                         wifiControl.connectWifi();
@@ -113,8 +109,7 @@ public class NetworkManager {
                             wifiControl.connectWifi();
                             return;
                         }
-                        String log = "Scan Results: MobileCloud not available";
-                        Log.e("MOBILE CLOUD", log);
+                        Util.log("Scan Results: MobileCloud not available");
                         NetworkManager.this.enableAp();
                         subject.onNext(MachineRole.MASTER);
                         subject.onComplete();

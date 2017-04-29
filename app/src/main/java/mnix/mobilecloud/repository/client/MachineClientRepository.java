@@ -1,12 +1,11 @@
 package mnix.mobilecloud.repository.client;
 
 
-import android.util.Log;
-
 import java.util.UUID;
 
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.client.MachineClient;
+import mnix.mobilecloud.util.Util;
 
 public class MachineClientRepository {
     public static MachineClient get() {
@@ -14,11 +13,11 @@ public class MachineClientRepository {
     }
 
     public static void setUniqueIdentifier() {
-        Log.e("MOBILE CLOUD", "setUniqueIdentifier");
+        Util.log(MachineClientRepository.class, "setUniqueIdentifier");
         MachineClient machineClient = get();
         String identifier = machineClient != null ? machineClient.getIdentifier() : null;
         if (identifier == null) {
-            Log.e("MOBILE CLOUD", "identifier: " + identifier);
+            Util.log(MachineClientRepository.class, "setUniqueIdentifier", "identifier: " + identifier);
             identifier = UUID.randomUUID().toString();
             machineClient = new MachineClient();
             machineClient.setIdentifier(identifier);
@@ -27,10 +26,10 @@ public class MachineClientRepository {
     }
 
     public static void updateRole(MachineRole machineRole) {
-        Log.e("MOBILE CLOUD", "updateRole");
+        Util.log(MachineClientRepository.class, "updateRole", machineRole.toString());
         MachineClient machineClient = get();
         machineClient.setRole(machineRole);
-        machineClient.update();
+        machineClient.save();
     }
 
     public static boolean isServer() {

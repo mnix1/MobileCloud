@@ -18,8 +18,10 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
+import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
@@ -38,6 +40,8 @@ public class FileServerController {
         }
         if (NanoFileUpload.isMultipartContent(session) && uri.startsWith("/file/upload")) {
             try {
+                serverWebServer.sendWebSocketMessage(Action.FILE_UPLOAD_START);
+                serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOAD_START);
                 return serveUpload(session);
             } catch (IOException | FileUploadException e) {
                 e.printStackTrace();
@@ -61,10 +65,6 @@ public class FileServerController {
 
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Map<String, String> params = new HashMap<String, String>();
-//        int available = session.getInputStream().available();
-//        byte[] bytes = new byte[available];
-//        session.getInputStream().read(bytes);
-//        String msg = new String(bytes);
         FileItemIterator iter = serverWebServer.uploader.getItemIterator(session);
         while (iter.hasNext()) {
             FileItemStream item = iter.next();
@@ -74,16 +74,22 @@ public class FileServerController {
                 params.put(item.getFieldName(), line);
                 continue;
             }
-            SegmentClientRepository.save(params, item);
+            processSegment(new SegmentClient(params, item));
             if (!params.containsKey("qqtotalparts")) {
                 serveUploadSuccess(params);
             }
         }
+        serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOAD_END);
         return getSuccessResponse(true);
     }
 
     public Response serveUploadSuccess(Map<String, String> params) {
         FileServerRepository.save(params);
+        serverWebServer.sendWebSocketMessage(Action.FILE_UPLOAD_END);
         return getSuccessResponse(true);
+    }
+
+    public void processSegment(SegmentClient segmentClient) {
+
     }
 }

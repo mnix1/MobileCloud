@@ -13,10 +13,16 @@ import android.view.View;
 import android.widget.TextView;
 
 import io.reactivex.observers.DisposableMaybeObserver;
+import mnix.mobilecloud.communication.client.ClientMachineCommunication;
+import mnix.mobilecloud.domain.client.MachineClient;
+import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
+import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.network.NetworkManager;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.client.ClientWebServer;
 import mnix.mobilecloud.web.server.ServerWebServer;
 import mnix.mobilecloud.web.socket.ServerWebSocket;
@@ -35,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MachineClientRepository.setUniqueIdentifier();
         init();
     }
 
@@ -69,11 +74,12 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPermissions()) {
             return;
         }
+        MachineClientRepository.setUniqueIdentifier();
         networkManager = new NetworkManager(this);
         networkManager.connectOrCreateAp().subscribe(new DisposableMaybeObserver<MachineRole>() {
             @Override
             public void onSuccess(MachineRole machineRole) {
-                Log.e("MOBILE CLOUD", "init " + machineRole);
+                Util.log(this.getClass(), "init onSuccess", machineRole.toString());
                 if (machineRole == MachineRole.MASTER) {
                     initMaster();
                 } else if (machineRole == MachineRole.SLAVE) {
@@ -88,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onComplete() {
-                Log.e("MOBILE CLOUD", "connectOrCreateAp onComplete");
+                Util.log(this.getClass(), "init onComplete");
                 this.dispose();
             }
         });
@@ -108,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         dispose();
         MachineClientRepository.updateRole(MachineRole.SLAVE);
         clientWebServer = new ClientWebServer(getApplicationContext());
+        ClientMachineCommunication machineCommunication = new ClientMachineCommunication(getApplicationContext());
+        machineCommunication.updateMachine();
     }
 
     private void dispose() {
@@ -141,5 +149,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void init(View view) {
         init();
+    }
+
+    public void clear(View view) {
+        MachineServer.deleteAll(MachineServer.class);
+        SegmentServer.deleteAll(SegmentServer.class);
+        FileServer.deleteAll(FileServer.class);
+        SegmentClient.deleteAll(SegmentClient.class);
     }
 }

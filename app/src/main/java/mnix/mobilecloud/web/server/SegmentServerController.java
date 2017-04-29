@@ -31,7 +31,7 @@ public class SegmentServerController {
         if (!uri.contains("/segment/")) {
             return null;
         }
-        if (uri.startsWith("/segment/update")) {
+        if (uri.startsWith("/segment/upload")) {
             return getSuccessResponse(true);
         }
         if (uri.startsWith("/segment/list")) {

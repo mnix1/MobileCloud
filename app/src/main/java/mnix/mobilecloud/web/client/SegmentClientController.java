@@ -26,6 +26,7 @@ import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.util.Util;
 
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.NanoHTTPD.getMimeTypeForFile;
@@ -66,12 +67,8 @@ public class SegmentClientController {
     }
 
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
-        Log.e("MOBILE CLOUD", "serveUpload");
+        Util.log(this.getClass(), "serveUpload");
         Map<String, String> params = new HashMap<String, String>();
-//        int available = session.getInputStream().available();
-//        byte[] bytes = new byte[available];
-//        session.getInputStream().read(bytes);
-//        String msg = new String(bytes);
         FileItemIterator iter = clientWebServer.uploader.getItemIterator(session);
         while (iter.hasNext()) {
             FileItemStream item = iter.next();

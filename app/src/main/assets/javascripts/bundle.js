@@ -17281,8 +17281,10 @@ var MobileCloudWebSocket = function () {
             clearInterval(_this.pingInterval);
         };
         this.webSocket.onmessage = function (evt) {
+            if (evt.data.indexOf('PING') != -1) {
+                return;
+            }
             console.log('onmessage', evt);
-            if (evt.data.indexOf('MACHINE_CONNECTED') != -1) {} else if (evt.data.indexOf('MACHINE_DISCONNECTED') != -1) {} else if (evt.data.indexOf('SEGMENT_STATUS') != -1) {}
         };
         this.webSocket.onerror = function (evt) {
             console.log('onerror', evt);

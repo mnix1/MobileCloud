@@ -53,4 +53,14 @@ public class MachineServer extends SugarRecord {
     public void setLastContact(Date lastContact) {
         this.lastContact = lastContact;
     }
+
+    @Override
+    public String toString() {
+        return "MachineServer{" +
+                "identifier='" + identifier + '\'' +
+                ", role=" + role +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", lastContact=" + lastContact +
+                '}';
+    }
 }

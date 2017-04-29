@@ -1,37 +1,39 @@
 package mnix.mobilecloud.repository.server;
 
 
-import android.util.Log;
-
 import java.util.List;
 
 import mnix.mobilecloud.domain.server.MachineServer;
+import mnix.mobilecloud.util.Util;
 
 public class MachineServerRepository {
     public static void update(MachineServer machineServer) {
-        Log.e("MobileCloud","MachineServerRepository update");
+        Util.log(MachineServerRepository.class, "update", machineServer.toString());
         MachineServer currentMachineServer = findByIdentifier(machineServer.getIdentifier());
         if (currentMachineServer == null) {
-            Log.e("MobileCloud","MachineServerRepository update save");
+            Util.log(MachineServerRepository.class, "update", "save");
             machineServer.save();
         } else {
-            Log.e("MobileCloud","MachineServerRepository update update");
+            Util.log(MachineServerRepository.class, "update", "update");
             currentMachineServer.setRole(machineServer.getRole());
             currentMachineServer.setIpAddress(machineServer.getIpAddress());
             currentMachineServer.setLastContact(machineServer.getLastContact());
-            currentMachineServer.update();
+            currentMachineServer.save();
         }
     }
 
     public static MachineServer findByIdentifier(String identifier) {
+        Util.log(MachineServerRepository.class, "findByIdentifier", identifier);
         List<MachineServer> machineServers = MachineServer.find(MachineServer.class, "identifier = ?", identifier);
         if (machineServers.size() > 1) {
-            Log.e("MobileCloud","MachineServerRepository findByIdentifier not unique");
+            Util.log(MachineServerRepository.class, "findByIdentifier", "not unique");
             throw new IndexOutOfBoundsException("Invalid identifier (not unique)");
         } else if (machineServers.size() == 0) {
             return null;
         }
-        return machineServers.get(0);
+        MachineServer machineServer = machineServers.get(0);
+        Util.log(MachineServerRepository.class, "findByIdentifier", machineServer.toString());
+        return machineServer;
     }
 
     public static List<MachineServer> list() {

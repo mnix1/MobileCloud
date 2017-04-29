@@ -16,6 +16,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.util.Util;
+
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
 public class WebServer extends NanoHTTPD {
@@ -44,7 +47,7 @@ public class WebServer extends NanoHTTPD {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.e("MOBILE CLOUD", "initWebServer");
+        Util.log(this.getClass(), "initWebServer");
     }
 
     public Response checkAssets(String uri) {

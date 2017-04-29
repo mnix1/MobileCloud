@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.network.NetworkUtils;
+import mnix.mobilecloud.util.Util;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -33,7 +34,7 @@ public class ServerSegmentCommunication {
     }
 
     public void uploadSegment() {
-        Log.e("MOBILE CLOUD", "uploadSegment");
+        Util.log(this.getClass(), "uploadSegment");
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         InetAddress inetAddress = NetworkUtils.getGatewayAddress(wifiManager);
         SocketAddress socketAddress = new InetSocketAddress(inetAddress, 8090);
@@ -77,7 +78,7 @@ public class ServerSegmentCommunication {
                 .forEach(new Action1<Object>() {
                     @Override
                     public void call(Object i) {
-                        Log.e("MOBILE CLOUD", (String) i);
+                        Util.log(this.getClass(), "uploadSegment", "response");
                     }
                 });
     }

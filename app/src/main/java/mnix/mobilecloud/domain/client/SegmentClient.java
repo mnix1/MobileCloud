@@ -2,6 +2,11 @@ package mnix.mobilecloud.domain.client;
 
 import com.orm.SugarRecord;
 
+import org.apache.commons.fileupload.FileItemStream;
+
+import java.io.IOException;
+import java.util.Map;
+
 public class SegmentClient extends SugarRecord {
     private String identifier;
     private String fileIdentifier;
@@ -11,6 +16,25 @@ public class SegmentClient extends SugarRecord {
 
     public SegmentClient() {
     }
+
+    public SegmentClient(Map<String, String> params,
+                         FileItemStream item) {
+        this.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
+        this.setFileIdentifier(params.get("qquuid"));
+        Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
+        Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
+        this.setByteFrom(fromByte.longValue());
+        this.setByteTo((long) fromByte + size);
+        byte[] data = new byte[size];
+        try {
+            item.openStream().read(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.setData(data);
+    }
+
+
 
     public String getIdentifier() {
         return identifier;

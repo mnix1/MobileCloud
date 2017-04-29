@@ -3,4 +3,5 @@
     <string name="ap_enable">Ap Enable</string>
     <string name="wifi_enable">Wifi Enable</string>
     <string name="init">Init</string>
+    <string name="clear">Clear</string>
 </resources>

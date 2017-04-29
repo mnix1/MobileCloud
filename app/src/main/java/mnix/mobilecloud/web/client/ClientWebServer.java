@@ -6,6 +6,7 @@ import android.util.Log;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.response.Response;
 
+import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.WebServer;
 
 public class ClientWebServer extends WebServer {
@@ -18,7 +19,7 @@ public class ClientWebServer extends WebServer {
     @Override
     public Response serve(IHTTPSession session) {
         String uri = session.getUri();
-        Log.e("MobileCloud", "ClientWebServer uri: " + uri);
+        Util.log(this.getClass(), "serve", "uri: " + uri);
         Response response = null;
         response = new MachineClientController().serve(session);
         if (response != null) {

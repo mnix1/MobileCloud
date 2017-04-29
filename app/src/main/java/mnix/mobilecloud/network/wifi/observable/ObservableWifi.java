@@ -63,7 +63,6 @@ public class ObservableWifi {
                     subject.onNext(scanResults);
                     subject.onComplete();
                 } else {
-                    Log.e("MOBILE CLOUD", "EMPTY SCAN RESULT (enable localization)");
                 }
             }
         };
@@ -82,7 +81,6 @@ public class ObservableWifi {
                 subject.onNext(WifiState.fromState(wifiState));
             }
         };
-        Log.e("MOBILE CLOUD", "observeWifiStateChange registerReceiver");
         return subject.doOnSubscribe(new Register(context, receiver, filter)).doOnDispose(new Unregister(context, receiver));
     }
 
@@ -112,7 +110,6 @@ public class ObservableWifi {
 
         @Override
         public void accept(@NonNull Object o) throws Exception {
-            Log.e("MOBILE CLOUD", "Register");
             context.registerReceiver(receiver, filter);
         }
     }
@@ -128,7 +125,6 @@ public class ObservableWifi {
 
         @Override
         public void run() throws Exception {
-            Log.e("MOBILE CLOUD", "Unregister");
             context.unregisterReceiver(receiver);
         }
     }

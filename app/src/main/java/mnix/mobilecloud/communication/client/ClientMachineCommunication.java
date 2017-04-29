@@ -3,7 +3,6 @@ package mnix.mobilecloud.communication.client;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -20,6 +19,7 @@ import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.network.NetworkUtils;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
+import mnix.mobilecloud.util.Util;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -27,12 +27,12 @@ import rx.functions.Func1;
 public class ClientMachineCommunication {
     private final Context context;
 
-    ClientMachineCommunication(Context context) {
+    public ClientMachineCommunication(Context context) {
         this.context = context;
     }
 
     public void updateMachine() {
-        Log.e("MOBILE CLOUD", "ClientMachineCommunication updateMachine");
+        Util.log(this.getClass(), "updateMachine");
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         InetAddress inetAddress = NetworkUtils.getGatewayAddress(wifiManager);
         SocketAddress socketAddress = new InetSocketAddress(inetAddress, 8080);
@@ -58,11 +58,11 @@ public class ClientMachineCommunication {
                                 });
                     }
                 })
-                .toBlocking()
+//                .toBlocking()
                 .forEach(new Action1<Object>() {
                     @Override
                     public void call(Object i) {
-                        Log.e("MOBILE CLOUD", (String) i);
+                        Util.log(this.getClass(), "updateMachine", "response");
                     }
                 });
     }

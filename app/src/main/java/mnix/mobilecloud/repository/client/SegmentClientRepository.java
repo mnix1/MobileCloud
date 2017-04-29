@@ -16,20 +16,7 @@ import mnix.mobilecloud.dto.SegmentClientDTO;
 public class SegmentClientRepository {
     public static void save(Map<String, String> params,
                             FileItemStream item) {
-        SegmentClient segmentClient = new SegmentClient();
-        segmentClient.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
-        segmentClient.setFileIdentifier(params.get("qquuid"));
-        Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
-        Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
-        segmentClient.setByteFrom(fromByte.longValue());
-        segmentClient.setByteTo((long) fromByte + size);
-        byte[] data = new byte[size];
-        try {
-            item.openStream().read(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        segmentClient.setData(data);
+        SegmentClient segmentClient = new SegmentClient(params, item);
         segmentClient.save();
     }
 
