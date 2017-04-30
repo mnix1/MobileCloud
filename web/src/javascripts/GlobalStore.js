@@ -1,18 +1,11 @@
 import {observable, computed, action} from "mobx";
 import MobileCloudWebSocket from './MobileCloudWebSocket';
+import FileTableStore from './file/FileTableStore';
+
 class GlobalStore {
     constructor() {
-        const webSocket = new MobileCloudWebSocket();
-    }
-
-    @observable current = Date.now();
-
-    @computed get elapsedTime() {
-        return (this.current - this.start) + "seconds";
-    }
-
-    @action tick() {
-        this.current = Date.now()
+        const webSocket = new MobileCloudWebSocket(this);
+        this.file = new FileTableStore();
     }
 }
 

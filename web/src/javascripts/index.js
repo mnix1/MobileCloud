@@ -5,7 +5,7 @@ import {
     Route,
     Link
 } from 'react-router-dom';
-import FileManagementTab from './FileManagementTab';
+import FileManagementTab from './file/FileManagementTab';
 import MachineManagementTab from './MachineManagementTab';
 import GlobalStore from './GlobalStore';
 const store = new GlobalStore();
