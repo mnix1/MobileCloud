@@ -4,6 +4,7 @@ package mnix.mobilecloud.repository.server;
 import java.util.List;
 import java.util.Map;
 
+import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
 
 public class FileServerRepository {
@@ -20,5 +21,15 @@ public class FileServerRepository {
 
     public static List<FileServer> list() {
         return FileServer.listAll(FileServer.class);
+    }
+
+    public static FileServer findByIdentifier(String identifier) {
+        List<FileServer> fileServers = FileServer.find(FileServer.class, "identifier = ?", identifier);
+        if (fileServers.size() > 1) {
+            throw new IndexOutOfBoundsException("Invalid identifier (not unique)");
+        } else if (fileServers.size() == 0) {
+            return null;
+        }
+        return fileServers.get(0);
     }
 }

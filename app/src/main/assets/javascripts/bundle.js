@@ -43695,8 +43695,8 @@ var MobileCloudWebSocket = function () {
                 return;
             }
             console.log('onmessage', evt);
-            if (msg.indexOf('FILE_UPLOAD_END')) {
-                store.file.update();
+            if (msg.indexOf('FILE_UPLOAD_END') != -1 || msg.indexOf('FILE_DELETED') != -1) {
+                return store.file.update();
             }
         };
         this.webSocket.onerror = function (evt) {
@@ -83735,7 +83735,7 @@ var DownloadButton = function (_Component) {
     (0, _createClass3.default)(DownloadButton, [{
         key: 'handleClick',
         value: function handleClick() {
-            location.href = '/file/download$?identifier=' + this.props.identifier;
+            location.href = '/file/download?identifier=' + this.props.identifier;
         }
     }, {
         key: 'render',

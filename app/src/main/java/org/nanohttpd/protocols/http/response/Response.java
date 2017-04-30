@@ -33,6 +33,8 @@ package org.nanohttpd.protocols.http.response;
  * #L%
  */
 
+import android.util.Log;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
@@ -333,6 +335,7 @@ public class Response implements Closeable {
         while (pending > 0 || sendEverything) {
             long bytesToRead = sendEverything ? BUFFER_SIZE : Math.min(pending, BUFFER_SIZE);
             int read = this.data.read(buff, 0, (int) bytesToRead);
+            Log.e("MOBILE CLOUD", "read: " + read);
             if (read <= 0) {
                 break;
             }

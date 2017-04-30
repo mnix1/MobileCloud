@@ -45,7 +45,7 @@ public class MachineServerController {
             MachineServer machineServer = getMachineServer(session);
             MachineServerRepository.update(machineServer);
             serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATE, null);
-            return getSuccessResponse(true);
+            return getSuccessResponse();
         }
         if (uri.startsWith("/machine/list")) {
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(MachineServerRepository.list()));

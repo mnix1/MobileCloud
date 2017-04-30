@@ -1,7 +1,5 @@
 package mnix.mobilecloud.domain.client;
 
-import com.orm.SugarRecord;
-
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -9,26 +7,46 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-public class SegmentClient extends SugarRecord {
-    private String identifier;
-    private String fileIdentifier;
-    private Long byteFrom;
-    private Long byteTo;
+import mnix.mobilecloud.domain.server.SegmentServer;
+
+public class SegmentClient extends SegmentServer {
     private byte[] data;
 
     public SegmentClient() {
     }
 
+    public SegmentClient(SegmentServer segmentServer,
+                         FileItemStream item) {
+        this.identifier = segmentServer.getIdentifier();
+        this.fileIdentifier = segmentServer.getFileIdentifier();
+        this.machineIdentifier = segmentServer.getMachineIdentifier();
+        this.byteFrom = segmentServer.getByteFrom();
+        this.byteTo = segmentServer.getByteTo();
+        setData(item);
+    }
+
     public SegmentClient(Map<String, String> params,
                          FileItemStream item) {
-        this.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
-        this.setFileIdentifier(params.get("qquuid"));
+        this.setIdentifier(params.get("qquuid"));
+        this.setFileIdentifier(getIdentifier().split("_")[0]);
         Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
         Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
         this.setByteFrom(fromByte.longValue());
         this.setByteTo((long) fromByte + size);
-//
-        ByteArrayOutputStream dataStream = new ByteArrayOutputStream(size);
+        setData(item);
+    }
+
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public void setData(FileItemStream item) {
+        ByteArrayOutputStream dataStream = new ByteArrayOutputStream((int) (this.byteTo - this.byteFrom + 1));
         try {
             Streams.copy(item.openStream(), dataStream, true);
 //            item.openStream().read(data);
@@ -37,46 +55,5 @@ public class SegmentClient extends SugarRecord {
         }
         byte[] data = dataStream.toByteArray();
         this.setData(data);
-    }
-
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getFileIdentifier() {
-        return fileIdentifier;
-    }
-
-    public void setFileIdentifier(String fileIdentifier) {
-        this.fileIdentifier = fileIdentifier;
-    }
-
-    public Long getByteFrom() {
-        return byteFrom;
-    }
-
-    public void setByteFrom(Long byteFrom) {
-        this.byteFrom = byteFrom;
-    }
-
-    public Long getByteTo() {
-        return byteTo;
-    }
-
-    public void setByteTo(Long byteTo) {
-        this.byteTo = byteTo;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
     }
 }

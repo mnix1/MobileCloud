@@ -7,7 +7,7 @@ import java.util.Map;
 import mnix.mobilecloud.domain.server.SegmentServer;
 
 public class SegmentServerRepository {
-    public static void save(Map<String, String> params){
+    public static void save(Map<String, String> params) {
         SegmentServer segmentServer = new SegmentServer();
         segmentServer.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
         segmentServer.setFileIdentifier(params.get("qquuid"));
@@ -26,6 +26,10 @@ public class SegmentServerRepository {
             return null;
         }
         return segmentServers.get(0);
+    }
+
+    public static List<SegmentServer> findByFileIdentifier(String identifier) {
+        return SegmentServer.find(SegmentServer.class, "file_identifier = ?", identifier);
     }
 
     public static List<SegmentServer> list() {

@@ -8,12 +8,6 @@ import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
-import java.util.Date;
-import java.util.Map;
-
-import mnix.mobilecloud.MachineRole;
-import mnix.mobilecloud.domain.server.MachineServer;
-import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
 
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
@@ -32,7 +26,7 @@ public class SegmentServerController {
             return null;
         }
         if (uri.startsWith("/segment/upload")) {
-            return getSuccessResponse(true);
+            return getSuccessResponse();
         }
         if (uri.startsWith("/segment/list")) {
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(SegmentServerRepository.list()));

@@ -92,4 +92,12 @@ public class WebServer extends NanoHTTPD {
         response.put("success", success);
         return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(response));
     }
+
+    public static Response getSuccessResponse() {
+        return getSuccessResponse(true);
+    }
+
+    public static Response getFailedResponse() {
+        return newFixedLengthResponse(Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "");
+    }
 }

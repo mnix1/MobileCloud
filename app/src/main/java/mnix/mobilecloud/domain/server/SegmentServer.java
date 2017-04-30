@@ -2,14 +2,25 @@ package mnix.mobilecloud.domain.server;
 
 import com.orm.SugarRecord;
 
+import java.util.Map;
+
 public class SegmentServer extends SugarRecord {
-    private String identifier;
-    private String fileIdentifier;
-    private String machineIdentifier;
-    private Long byteFrom;
-    private Long byteTo;
+    protected String identifier;
+    protected String fileIdentifier;
+    protected String machineIdentifier;
+    protected Long byteFrom;
+    protected Long byteTo;
 
     public SegmentServer() {
+    }
+
+    public SegmentServer(Map<String, String> params){
+        this.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
+        this.setFileIdentifier(params.get("qquuid"));
+        Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
+        Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
+        this.setByteFrom(fromByte.longValue());
+        this.setByteTo((long) fromByte + size);
     }
 
     public String getIdentifier() {
@@ -51,4 +62,16 @@ public class SegmentServer extends SugarRecord {
     public void setByteTo(Long byteTo) {
         this.byteTo = byteTo;
     }
+
+    @Override
+    public String toString() {
+        return "SegmentServer{" +
+                "identifier='" + identifier + '\'' +
+                ", fileIdentifier='" + fileIdentifier + '\'' +
+                ", machineIdentifier='" + machineIdentifier + '\'' +
+                ", byteFrom=" + byteFrom +
+                ", byteTo=" + byteTo +
+                '}';
+    }
+
 }
