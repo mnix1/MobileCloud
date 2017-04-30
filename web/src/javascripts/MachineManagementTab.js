@@ -10,7 +10,7 @@ class MachineManagementTab extends Component {
         console.log(this.props);
         return (
             <div>
-                MachineManagementTab
+                MachineManagementTab2
             </div>
         );
     }

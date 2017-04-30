@@ -69,6 +69,8 @@ public class WebServer extends NanoHTTPD {
                 mime = MIME_TTF;
             } else if (uri.endsWith(".woff")) {
                 mime = MIME_WOFF;
+            } else if (uri.endsWith(".woff2")) {
+                mime = MIME_WOFF;
             }
             if (mime != null) {
                 InputStream buffer = context.getAssets().open(uri.substring(1));

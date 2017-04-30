@@ -13,7 +13,7 @@ console.log(store);
 render((
     <Router>
         <div>
-            <ul>
+            <ul className="navigationMenu">
                 <li><Link to="/">File Management</Link></li>
                 <li><Link to="/machine">Machine Management</Link></li>
             </ul>

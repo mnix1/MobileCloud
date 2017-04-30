@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import Gallery from 'react-fine-uploader/gallery'
-import 'react-fine-uploader/gallery/gallery.css'
+import Gallery from 'react-fine-uploader/gallery';
+import 'react-fine-uploader/gallery/gallery.css';
 const statusTextOverride = {
   deleting: 'Usuwanie...',
   paused: 'Wstrzymano',
