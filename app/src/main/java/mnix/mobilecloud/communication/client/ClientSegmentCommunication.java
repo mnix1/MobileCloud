@@ -1,30 +1,24 @@
-package mnix.mobilecloud.communication.server;
+package mnix.mobilecloud.communication.client;
 
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
-import java.util.Random;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
-import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.network.NetworkUtils;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -32,33 +26,32 @@ import rx.functions.Func1;
 import static mnix.mobilecloud.communication.CommunicationUtils.createContentDisposition;
 import static mnix.mobilecloud.communication.CommunicationUtils.createContentDispositionContentType;
 
-public class ServerSegmentCommunication {
+public class ClientSegmentCommunication {
     private final Context context;
 
-    public ServerSegmentCommunication(Context context) {
+    public ClientSegmentCommunication(Context context) {
         this.context = context;
     }
 
-    public void uploadSegment(SegmentClient segmentClient, MachineServer machineServer) {
-        Util.log(this.getClass(), "uploadSegment", "machineServer: " + machineServer);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
-        String boundary = "------" + segmentClient.getIdentifier();
+    public void uploadSegment() {
+        Util.log(this.getClass(), "uploadSegment");
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        InetAddress inetAddress = NetworkUtils.getGatewayAddress(wifiManager);
+        SocketAddress socketAddress = new InetSocketAddress(inetAddress, 8090);
+        String boundary = "------WebKitFormBoundarysofJ3z07Xp5sALd2";
         String boundaryWithLine = boundary + "\r\n";
         String qquuid = UUID.randomUUID().toString();
-        String qqfilename = segmentClient.getFileIdentifier();
-        byte[] data = segmentClient.getData();
-        Integer qqtotalfilesize = data.length;
+        String qqfilename = "iron.txt";
+        String data = "21312456";
+        Integer qqtotalfilesize = data.length();
         String contentDispositionQquuid = createContentDisposition(boundaryWithLine, "qquuid", qquuid);
         String contentDispositionQqfilename = createContentDisposition(boundaryWithLine, "qqfilename", qqfilename);
         String contentDispositionQqtotalfilesize = createContentDisposition(boundaryWithLine, "qqtotalfilesize", "" + qqtotalfilesize);
         String contentDispositionQqfile = createContentDispositionContentType(boundaryWithLine, "qqfile", qqfilename, "text/plain");
         String footer = "\r\n" + boundary + "--\r\n";
-        String payload = contentDispositionQquuid + contentDispositionQqfilename + contentDispositionQqtotalfilesize + contentDispositionQqfile;
+        String payload = contentDispositionQquuid + contentDispositionQqfilename + contentDispositionQqtotalfilesize + contentDispositionQqfile + data + footer;
         ByteBuf bbuf = Unpooled.copiedBuffer(payload, Charset.defaultCharset());
-        bbuf.writeBytes(data);
-        bbuf.writeCharSequence(footer, Charset.defaultCharset());
         HttpClient.newClient(socketAddress)
-//                .channelOption(ChannelOption.SO_SNDBUF, 1024 * 1024)
 //                .enableWireLogging("hello-client", LogLevel.ERROR)
                 .createPost("/segment/upload")
 //                .addHeader(HttpHeaderNames.CONTENT_LENGTH, payload.length())
@@ -68,7 +61,7 @@ public class ServerSegmentCommunication {
 //                .addHeader(HttpHeaderNames.ACCEPT, HttpHeaderValues.APPLICATION_JSON)
 //                .addHeader(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP_DEFLATE)
                 .addHeader(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA + "; " + HttpHeaderValues.BOUNDARY + "=" + boundary.substring(2))
-                .writeContentAndFlushOnEach(Observable.just(bbuf))
+                .writeContent(Observable.just(bbuf))
                 .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<?>>() {
                     @Override
                     public Observable<?> call(HttpClientResponse<ByteBuf> resp) {
@@ -85,7 +78,7 @@ public class ServerSegmentCommunication {
                 .forEach(new Action1<Object>() {
                     @Override
                     public void call(Object i) {
-                        Util.log(this.getClass(), "uploadSegment", "response: " + i);
+                        Util.log(this.getClass(), "uploadSegment", "response");
                     }
                 });
     }

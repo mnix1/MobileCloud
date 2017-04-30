@@ -16933,7 +16933,7 @@ module.exports = g;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _getPrototypeOf = __webpack_require__(56);
@@ -16971,35 +16971,54 @@ var _Uploader2 = _interopRequireDefault(_Uploader);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var FileManagementTab = function (_Component) {
-  (0, _inherits3.default)(FileManagementTab, _Component);
+    (0, _inherits3.default)(FileManagementTab, _Component);
 
-  function FileManagementTab() {
-    (0, _classCallCheck3.default)(this, FileManagementTab);
+    function FileManagementTab() {
+        (0, _classCallCheck3.default)(this, FileManagementTab);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (FileManagementTab.__proto__ || (0, _getPrototypeOf2.default)(FileManagementTab)).call(this));
+        var _this = (0, _possibleConstructorReturn3.default)(this, (FileManagementTab.__proto__ || (0, _getPrototypeOf2.default)(FileManagementTab)).call(this));
 
-    _this.uploader = new _Uploader2.default();
-    return _this;
-  }
-
-  (0, _createClass3.default)(FileManagementTab, [{
-    key: 'handleUploaded',
-    value: function handleUploaded() {}
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'search' },
-        _react2.default.createElement(
-          'div',
-          { className: 'uploadRecordingRow' },
-          _react2.default.createElement(_UploadPanel2.default, { uploader: this.uploader, onUploaded: this.handleUploaded.bind(this) })
-        )
-      );
+        _this.uploader = new _Uploader2.default();
+        _this.uploader2 = new _Uploader2.default({
+            options: {
+                chunking: {
+                    enabled: true,
+                    success: { endpoint: '/segment/uploadSuccess' },
+                    concurrent: {
+                        enabled: true
+                    },
+                    partSize: 1024 * 1024
+                },
+                request: {
+                    endpoint: '/segment/upload'
+                },
+                retry: {
+                    enableAuto: true
+                }
+            }
+        });
+        return _this;
     }
-  }]);
-  return FileManagementTab;
+
+    (0, _createClass3.default)(FileManagementTab, [{
+        key: 'handleUploaded',
+        value: function handleUploaded() {}
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'search' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'uploadRecordingRow' },
+                    _react2.default.createElement(_UploadPanel2.default, { uploader: this.uploader, onUploaded: this.handleUploaded.bind(this) }),
+                    _react2.default.createElement(_UploadPanel2.default, { uploader: this.uploader2, onUploaded: this.handleUploaded.bind(this) })
+                )
+            );
+        }
+    }]);
+    return FileManagementTab;
 }(_react.Component);
 
 exports.default = FileManagementTab;
@@ -17546,10 +17565,10 @@ var _fineUploaderWrappers2 = _interopRequireDefault(_fineUploaderWrappers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Uploader = function Uploader() {
+var Uploader = function Uploader(options) {
   (0, _classCallCheck3.default)(this, Uploader);
 
-  return new _fineUploaderWrappers2.default({
+  return new _fineUploaderWrappers2.default(options || {
     options: {
       chunking: {
         enabled: true,

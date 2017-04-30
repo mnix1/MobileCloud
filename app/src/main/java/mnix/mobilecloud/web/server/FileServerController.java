@@ -18,9 +18,13 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import mnix.mobilecloud.MachineRole;
+import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
+import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
@@ -90,6 +94,8 @@ public class FileServerController {
     }
 
     public void processSegment(SegmentClient segmentClient) {
-
+        MachineServer machineServer = MachineServerRepository.findByRole(MachineRole.SLAVE).get(0);
+        ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+        segmentCommunication.uploadSegment(segmentClient, machineServer);
     }
 }

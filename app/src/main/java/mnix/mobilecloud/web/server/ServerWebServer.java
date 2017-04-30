@@ -14,9 +14,11 @@ public class ServerWebServer extends WebServer {
     public static final int PORT = 8080;
 
     private final ServerWebSocket serverWebSocket;
+    private final Context context;
 
     public ServerWebServer(Context context, ServerWebSocket serverWebSocket) {
         super(PORT, context);
+        this.context = context;
         this.serverWebSocket = serverWebSocket;
     }
 
@@ -46,5 +48,9 @@ public class ServerWebServer extends WebServer {
 
     public void sendWebSocketMessage(Action action) {
         sendWebSocketMessage(action, null);
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

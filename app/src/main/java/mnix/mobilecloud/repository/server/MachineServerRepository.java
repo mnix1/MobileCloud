@@ -3,6 +3,7 @@ package mnix.mobilecloud.repository.server;
 
 import java.util.List;
 
+import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.util.Util;
 
@@ -34,6 +35,10 @@ public class MachineServerRepository {
         MachineServer machineServer = machineServers.get(0);
         Util.log(MachineServerRepository.class, "findByIdentifier", machineServer.toString());
         return machineServer;
+    }
+
+    public static List<MachineServer> findByRole(MachineRole role) {
+        return MachineServer.find(MachineServer.class, "role = ?", role.toString());
     }
 
     public static List<MachineServer> list() {

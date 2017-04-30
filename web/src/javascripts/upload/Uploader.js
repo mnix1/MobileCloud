@@ -1,8 +1,8 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
 
 export default class Uploader {
-  constructor() {
-    return new FineUploaderTraditional({
+  constructor(options) {
+    return new FineUploaderTraditional(options || {
       options: {
         chunking: {
           enabled: true,

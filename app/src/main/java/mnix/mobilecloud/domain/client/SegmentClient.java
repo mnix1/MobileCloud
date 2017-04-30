@@ -3,6 +3,8 @@ package mnix.mobilecloud.domain.client;
 import com.orm.SugarRecord;
 
 import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,15 +27,17 @@ public class SegmentClient extends SugarRecord {
         Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
         this.setByteFrom(fromByte.longValue());
         this.setByteTo((long) fromByte + size);
-        byte[] data = new byte[size];
+//
+        ByteArrayOutputStream dataStream = new ByteArrayOutputStream(size);
         try {
-            item.openStream().read(data);
+            Streams.copy(item.openStream(), dataStream, true);
+//            item.openStream().read(data);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        byte[] data = dataStream.toByteArray();
         this.setData(data);
     }
-
 
 
     public String getIdentifier() {
