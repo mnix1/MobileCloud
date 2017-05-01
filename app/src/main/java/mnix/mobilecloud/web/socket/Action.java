@@ -3,7 +3,8 @@ package mnix.mobilecloud.web.socket;
 
 public enum Action {
     MACHINE_NEW,
-    MACHINE_UPDATE,
+    MACHINE_UPDATED,
+    MACHINE_DELETED,
     SEGMENT_UPLOAD_START,
     SEGMENT_UPLOAD_END,
     SEGMENT_DELETED,

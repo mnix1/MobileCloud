@@ -125,9 +125,7 @@ public class FileServerController {
         }
         List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
         ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
-        StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, fileServer, segmentServers);
-//        segmentCommunication.downloadSegment(segmentServers.get(0), MachineServerRepository.findByIdentifier(segmentServers.get(0).getMachineIdentifier()), response);
-        //ByteArrayInputStream inputStream = new ByteArrayInputStream(segmentClient.getData());
+        StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, fileServer.getSize(), segmentServers);
         response.addHeader("Content-disposition", "attachment; filename=" + fileServer.getName());
         return response;
     }

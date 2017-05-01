@@ -15,10 +15,10 @@ import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.server.MachineServer;
-import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.web.socket.Action;
 
+import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
@@ -44,11 +44,21 @@ public class MachineServerController {
             }
             MachineServer machineServer = getMachineServer(session);
             MachineServerRepository.update(machineServer);
-            serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATE, null);
+            serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATED, null);
             return getSuccessResponse();
         }
         if (uri.startsWith("/machine/list")) {
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(MachineServerRepository.list()));
+        }
+        if (uri.startsWith("/machine/delete")) {
+            String machineIdentifier = session.getParms().get("identifier");
+            MachineServer machineServer = MachineServerRepository.findByIdentifier(machineIdentifier);
+            if (machineServer != null) {
+                machineServer.delete();
+                serverWebServer.sendWebSocketMessage(Action.MACHINE_DELETED);
+                return getSuccessResponse();
+            }
+            return getFailedResponse();
         }
         return null;
     }

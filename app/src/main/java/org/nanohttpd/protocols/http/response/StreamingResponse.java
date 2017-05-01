@@ -15,14 +15,12 @@ import mnix.mobilecloud.util.Util;
 
 public class StreamingResponse extends Response {
     private List<SegmentServer> segmentServers;
-    private FileServer fileServer;
     private ServerSegmentCommunication segmentCommunication;
 
-    public StreamingResponse(IStatus status, String mimeType, ServerSegmentCommunication segmentCommunication, FileServer fileServer, List<SegmentServer> segmentServers) {
+    public StreamingResponse(IStatus status, String mimeType, ServerSegmentCommunication segmentCommunication, long size, List<SegmentServer> segmentServers) {
         super(status, mimeType, null, 0);
-        this.contentLength = fileServer.getSize();
+        this.contentLength = size;
         this.segmentCommunication = segmentCommunication;
-        this.fileServer = fileServer;
         this.segmentServers = segmentServers;
     }
 

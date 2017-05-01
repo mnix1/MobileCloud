@@ -35,8 +35,12 @@ public class ServerWebServer extends WebServer {
         if (response != null) {
             return response;
         }
-        if (uri.equals("/")) {
-            return checkAssets(uri + "index.html");
+        response = new SegmentServerController(this).serve(session);
+        if (response != null) {
+            return response;
+        }
+        if (uri.equals("/") || uri.equals("/machine") || uri.equals("/segment")) {
+            return checkAssets("/index.html");
         } else {
             return checkAssets(uri);
         }

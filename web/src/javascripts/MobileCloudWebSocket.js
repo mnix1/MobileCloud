@@ -24,6 +24,12 @@ class MobileCloudWebSocket {
             if (msg.indexOf('FILE_UPLOAD_END') != -1 || msg.indexOf('FILE_DELETED') != -1) {
                 return store.file.update();
             }
+            if (msg.indexOf('MACHINE_NEW') != -1 || msg.indexOf('MACHINE_UPDATED') != -1 || msg.indexOf('MACHINE_DELETED') != -1) {
+                return store.machine.update();
+            }
+            if (msg.indexOf('SEGMENT_UPLOAD_END') != -1 || msg.indexOf('SEGMENT_DELETED') != -1) {
+                return store.segment.update();
+            }
         };
         this.webSocket.onerror = function (evt) {
             console.log('onerror', evt);
