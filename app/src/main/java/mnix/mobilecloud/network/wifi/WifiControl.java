@@ -6,6 +6,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
 import java.net.Inet4Address;
+import java.util.List;
 
 import mnix.mobilecloud.network.NetworkManager;
 import mnix.mobilecloud.network.NetworkUtils;
@@ -55,6 +56,12 @@ public class WifiControl {
     }
 
     public void connectWifi() {
+        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        for( WifiConfiguration i : list ) {
+            wifiManager.disableNetwork(i.networkId);
+            wifiManager.removeNetwork(i.networkId);
+            wifiManager.saveConfiguration();
+        }
         WifiConfiguration config = new WifiConfiguration();
         config.SSID = "\"" + NetworkManager.SSID + "\"";
         config.status = WifiConfiguration.Status.DISABLED;

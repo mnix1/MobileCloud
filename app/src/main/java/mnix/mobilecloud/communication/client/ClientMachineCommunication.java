@@ -41,7 +41,7 @@ public class ClientMachineCommunication {
         String params = machineClient.toParams();
         ByteBuf bbuf = Unpooled.copiedBuffer(params, Charset.defaultCharset());
         HttpClient.newClient(socketAddress)
-                .enableWireLogging("hello-client", LogLevel.ERROR)
+//                .enableWireLogging("hello-client", LogLevel.ERROR)
                 .createPost("/machine/update")
                 .addHeader(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
