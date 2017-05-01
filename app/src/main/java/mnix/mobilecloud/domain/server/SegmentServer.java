@@ -63,6 +63,10 @@ public class SegmentServer extends SugarRecord {
         this.byteTo = byteTo;
     }
 
+    public Long getSize(){
+        return byteTo-byteFrom;
+    }
+
     @Override
     public String toString() {
         return "SegmentServer{" +

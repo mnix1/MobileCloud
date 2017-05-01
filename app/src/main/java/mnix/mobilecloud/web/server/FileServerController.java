@@ -9,12 +9,12 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
+import org.nanohttpd.protocols.http.response.StreamingResponse;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,6 @@ import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
-import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
@@ -125,21 +124,11 @@ public class FileServerController {
             return getFailedResponse();
         }
         List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
-
-//            SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(session.getParms().get("identifier"));
-//            if (segmentClient == null) {
-//                return getSuccessResponse(false);
-//            }
         ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
-        InputStream inputStream = segmentCommunication.downloadSegment(segmentServers.get(0), MachineServerRepository.findByIdentifier(segmentServers.get(0).getMachineIdentifier()));
+        StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, fileServer, segmentServers);
+//        segmentCommunication.downloadSegment(segmentServers.get(0), MachineServerRepository.findByIdentifier(segmentServers.get(0).getMachineIdentifier()), response);
         //ByteArrayInputStream inputStream = new ByteArrayInputStream(segmentClient.getData());
-        Response response = new Response(Status.OK, getMimeTypeForFile(uri), inputStream, fileServer.getSize());
         response.addHeader("Content-disposition", "attachment; filename=" + fileServer.getName());
-        try {
-            Util.log(this.getClass(), "processFileDownload", "available: " + inputStream.available());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return response;
     }
 

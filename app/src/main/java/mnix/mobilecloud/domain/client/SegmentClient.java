@@ -46,7 +46,7 @@ public class SegmentClient extends SegmentServer {
     }
 
     public void setData(FileItemStream item) {
-        ByteArrayOutputStream dataStream = new ByteArrayOutputStream((int) (this.byteTo - this.byteFrom + 1));
+        ByteArrayOutputStream dataStream = new ByteArrayOutputStream(getSize().intValue());
         try {
             Streams.copy(item.openStream(), dataStream, true);
 //            item.openStream().read(data);

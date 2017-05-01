@@ -2,21 +2,20 @@ package mnix.mobilecloud.communication.server;
 
 
 import android.content.Context;
-import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import org.nanohttpd.protocols.http.response.StreamingResponse;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
-import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
-import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.SegmentClient;
@@ -74,58 +73,29 @@ public class ServerSegmentCommunication {
     }
 
 
-    public InputStream downloadSegment(SegmentServer segmentServer, MachineServer machineServer) {
+    public void downloadSegment(final SegmentServer segmentServer, MachineServer machineServer, final StreamingResponse.StreamingResponseWrapper wrapper) {
         Util.log(this.getClass(), "downloadSegment", "segmentServer: " + segmentServer + ", machineServer: " + machineServer);
         SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
-        int size = (int) (segmentServer.getByteTo() - segmentServer.getByteFrom() + 1);
-        final ByteBuf output = Unpooled.buffer(size);
         HttpClient.newClient(socketAddress)
                 .createGet("/segment/download?identifier=" + segmentServer.getIdentifier())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
                 .toBlocking()
                 .forEach(new Action1<HttpClientResponse<ByteBuf>>() {
                     @Override
-                    public void call(HttpClientResponse<ByteBuf> response) {
-                        response.getContent().forEach(new Action1<ByteBuf>() {
+                    public void call(HttpClientResponse<ByteBuf> httpResponse) {
+                        httpResponse.getContent().forEach(new Action1<ByteBuf>() {
                             @Override
                             public void call(ByteBuf byteBuf) {
-                                output.writeBytes(byteBuf);
-                                Util.log(this.getClass(), "call", "readableBytes: " + output.readableBytes());
+                                try {
+                                    wrapper.sent(byteBuf.readableBytes());
+                                    byteBuf.readBytes(wrapper.getOutputStream(), byteBuf.readableBytes());
+                                } catch (IOException e) {
+                                    Util.log(this.getClass(), "call", "ERROR");
+                                }
                             }
                         });
                     }
                 });
-        return new ByteArrayInputStream(output.array());
-
-
-//                .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<?>>() {
-//                    @Override
-//                    public Observable<?> call(HttpClientResponse<ByteBuf> resp) {
-//                        return resp.getContent()
-//                                .map(new Func1<ByteBuf, Object>() {
-//                                    @Override
-//                                    public Object call(ByteBuf bb) {
-//                                        return bb.toString(Charset.defaultCharset());
-//                                    }
-//                                });
-//                    }
-//                })
-//                .toBlocking()
-//                .forEach(new Action1<Object>() {
-//                    @Override
-//                    public void call(Object i) {
-//                        Util.log(this.getClass(), "downloadSegment", "response: " + i);
-//                    }
-//                });
-//         .map(new Func1<HttpClientResponse<ByteBuf>, InputStream>() {
-//            @Override
-//            public InputStream call(HttpClientResponse<ByteBuf> response) {
-//                ByteBuf byteBuf = response.getContent().toBlocking().first();
-//                return new ByteArrayInputStream(byteBuf.array());
-//            }
-//        })
-//                .toBlocking()
-//                .first();
     }
 
     public Boolean deleteSegment(SegmentServer segmentServer, MachineServer machineServer) {

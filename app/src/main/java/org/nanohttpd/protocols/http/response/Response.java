@@ -80,9 +80,9 @@ public class Response implements Closeable {
     /**
      * Data of the response, may be null.
      */
-    private InputStream data;
+    protected InputStream data;
 
-    private long contentLength;
+    protected long contentLength;
 
     /**
      * Headers for the HTTP response. Use addHeader() to add lines. the
@@ -328,14 +328,13 @@ public class Response implements Closeable {
      * @throws IOException
      *             if something goes wrong while sending the data.
      */
-    private void sendBody(OutputStream outputStream, long pending) throws IOException {
+    protected void sendBody(OutputStream outputStream, long pending) throws IOException {
         long BUFFER_SIZE = 16 * 1024;
         byte[] buff = new byte[(int) BUFFER_SIZE];
         boolean sendEverything = pending == -1;
         while (pending > 0 || sendEverything) {
             long bytesToRead = sendEverything ? BUFFER_SIZE : Math.min(pending, BUFFER_SIZE);
             int read = this.data.read(buff, 0, (int) bytesToRead);
-            Log.e("MOBILE CLOUD", "read: " + read);
             if (read <= 0) {
                 break;
             }

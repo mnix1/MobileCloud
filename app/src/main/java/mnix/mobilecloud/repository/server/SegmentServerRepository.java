@@ -29,7 +29,7 @@ public class SegmentServerRepository {
     }
 
     public static List<SegmentServer> findByFileIdentifier(String identifier) {
-        return SegmentServer.find(SegmentServer.class, "file_identifier = ?", identifier);
+        return SegmentServer.find(SegmentServer.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from", null);
     }
 
     public static List<SegmentServer> list() {
