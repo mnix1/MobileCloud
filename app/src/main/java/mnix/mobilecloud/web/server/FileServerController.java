@@ -143,6 +143,7 @@ public class FileServerController {
             if (!localSuccess) {
                 success = false;
             } else {
+                segmentServer.delete();
                 serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
             }
         }

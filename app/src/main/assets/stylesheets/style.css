@@ -38,16 +38,17 @@ ul {
     width: 150px;
     height: 40px;
     margin: 0 10px;
-    display: flex;
     text-align: center;
-    flex-direction: column;
-    justify-content: center;
     cursor: pointer;
 }
 
 .navigationMenu li a {
     color: white;
     text-decoration: none;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
 }
 .fileTable {
 margin-top: 10px;

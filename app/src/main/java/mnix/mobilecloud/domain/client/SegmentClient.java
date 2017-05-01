@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.util.Util;
 
 public class SegmentClient extends SegmentServer {
     private byte[] data;

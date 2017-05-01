@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.util.Util;
 
 public class SegmentServerRepository {
     public static void save(Map<String, String> params) {
         SegmentServer segmentServer = new SegmentServer();
-        segmentServer.setIdentifier(params.get("qquuid") + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
-        segmentServer.setFileIdentifier(params.get("qquuid"));
+        String qquuid = Util.cutUuid(params.get("qquuid"));
+        segmentServer.setIdentifier(qquuid + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
+        segmentServer.setFileIdentifier(qquuid);
         Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
         Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));
         segmentServer.setByteFrom(fromByte.longValue());

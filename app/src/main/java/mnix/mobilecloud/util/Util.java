@@ -14,4 +14,8 @@ public class Util {
     public static void log(Class clazz, String method, String log) {
         Log.e("MoblieCloud/" + clazz.getSimpleName(), method + ": " + log);
     }
+
+    public static String cutUuid(String uuid) {
+        return uuid.substring(0, 8);
+    }
 }

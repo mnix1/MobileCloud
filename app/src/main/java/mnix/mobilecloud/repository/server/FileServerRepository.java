@@ -6,11 +6,12 @@ import java.util.Map;
 
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
+import mnix.mobilecloud.util.Util;
 
 public class FileServerRepository {
     public static void save(Map<String, String> params) {
         FileServer fileServer = new FileServer();
-        fileServer.setIdentifier(params.get("qquuid"));
+        fileServer.setIdentifier(Util.cutUuid(params.get("qquuid")));
         fileServer.setName(params.get("qqfilename"));
         Integer size = Integer.parseInt(params.get("qqtotalfilesize"));
         fileServer.setSize(size.longValue());
