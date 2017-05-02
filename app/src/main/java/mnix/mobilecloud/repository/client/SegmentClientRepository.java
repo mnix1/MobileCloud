@@ -1,9 +1,10 @@
 package mnix.mobilecloud.repository.client;
 
 
+import android.text.TextUtils;
+
 import org.apache.commons.fileupload.FileItemStream;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.dto.SegmentClientDTO;
+import mnix.mobilecloud.util.BinarySearcher;
 
 public class SegmentClientRepository {
     public static void save(Map<String, String> params,
@@ -38,4 +40,28 @@ public class SegmentClientRepository {
         }
         return segmentClients.get(0);
     }
+
+    public static List<SegmentClient> findByIdentifiers(List<String> identifiers) {
+        return SegmentClient.find(SegmentClient.class, "identifier IN (?)", TextUtils.join(",", identifiers));
+    }
+
+    public static List<Integer> index(String identifier, byte[] countData) {
+        SegmentClient segmentClient = findByIdentifier(identifier);
+        BinarySearcher bs = new BinarySearcher();
+        return bs.searchBytes(segmentClient.getData(), countData);
+    }
+
+    public static int count(List<String> identifiers, byte[] countData) {
+        List<SegmentClient> segmentClients = findByIdentifiers(identifiers);
+        int result = 0;
+        BinarySearcher bs = new BinarySearcher();
+        for (SegmentClient segmentClient : segmentClients) {
+            byte[] data = segmentClient.getData();
+            List<Integer> indexes = bs.searchBytes(data, countData);
+            result += indexes.size();
+        }
+        return result;
+    }
+
+
 }

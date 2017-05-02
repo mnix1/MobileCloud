@@ -29,6 +29,10 @@ public class ClientWebServer extends WebServer {
         if (response != null) {
             return response;
         }
+        response = new ModuleClientController(this).serve(session);
+        if (response != null) {
+            return response;
+        }
         if (uri.equals("/")) {
             return checkAssets(uri + "index.html");
         } else {
