@@ -70,6 +70,9 @@ public class MachineServerController {
         machineServer.setRole(MachineRole.valueOf(params.get("role")));
         machineServer.setIpAddress(session.getRemoteIpAddress());
         machineServer.setLastContact(new Date());
+        machineServer.setName(params.get("name"));
+        machineServer.setDevice(params.get("device"));
+        machineServer.setSystem(params.get("system"));
         return machineServer;
     }
 }

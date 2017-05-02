@@ -1,16 +1,11 @@
 package mnix.mobilecloud.domain.server;
 
-import com.orm.SugarRecord;
-
 import java.util.Date;
-import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.client.MachineClient;
 
-public class MachineServer extends SugarRecord {
-    private String identifier;
-    private MachineRole role;
+public class MachineServer extends MachineClient {
     private String ipAddress;
     private Date lastContact;
 
@@ -20,22 +15,9 @@ public class MachineServer extends SugarRecord {
     public MachineServer(MachineClient machineClient) {
         this.identifier = machineClient.getIdentifier();
         this.role = machineClient.getRole();
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public MachineRole getRole() {
-        return role;
-    }
-
-    public void setRole(MachineRole role) {
-        this.role = role;
+        this.device = machineClient.getDevice();
+        this.system = machineClient.getSystem();
+        this.name = machineClient.getName();
     }
 
     public String getIpAddress() {
@@ -65,6 +47,9 @@ public class MachineServer extends SugarRecord {
                 ", role=" + role +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", lastContact=" + lastContact +
+                ", name=" + name +
+                ", device=" + device +
+                ", system=" + system +
                 '}';
     }
 }
