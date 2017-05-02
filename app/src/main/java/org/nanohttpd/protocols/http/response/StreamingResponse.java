@@ -7,9 +7,14 @@ import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.List;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
+import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
+import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.util.Util;
 
@@ -50,13 +55,23 @@ public class StreamingResponse extends Response {
         StreamingResponseWrapper wrapper = new StreamingResponseWrapper(outputStream);
         int segmentsWritten = 0;
         for (SegmentServer segmentServer : segmentServers) {
-            segmentCommunication.downloadSegment(segmentServer, MachineServerRepository.findByIdentifier(segmentServers.get(0).getMachineIdentifier()), wrapper);
-            while (wrapper.getWritten() < segmentServer.getSize() + segmentsWritten) {
-                Util.log(this.getClass(), "sendBody", "getWritten: " + wrapper.getWritten() + " segmentServer.getSize(): " + segmentServer.getSize());
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
+            if (machineServer.isMaster()) {
+                SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(segmentServer.getIdentifier());
+                ByteBuf byteBuf = Unpooled.copiedBuffer(segmentClient.getData());
+//                Util.log(this.getClass(), "sendBody", "byteBuf: " + byteBuf.readableBytes());
+                wrapper.sent(byteBuf.readableBytes());
+                byteBuf.readBytes(wrapper.getOutputStream(), byteBuf.readableBytes());
+            } else {
+                segmentCommunication.downloadSegment(segmentServer, machineServer, wrapper);
+                while (wrapper.getWritten() < segmentServer.getSize() + segmentsWritten) {
+//                    Util.log(this.getClass(), "sendBody", "getWritten: " + wrapper.getWritten() +
+//                            " segmentServer.getSize(): " + segmentServer.getSize());
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             segmentsWritten += segmentServer.getSize();

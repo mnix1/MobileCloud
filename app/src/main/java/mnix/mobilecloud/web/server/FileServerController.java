@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
+import mnix.mobilecloud.algorithm.Algorithm;
 import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
@@ -90,7 +92,8 @@ public class FileServerController {
                 params.put(item.getFieldName(), line);
                 continue;
             }
-            MachineServer machineServer = MachineServerRepository.findByRole(MachineRole.SLAVE).get(0);
+            String algorithm = session.getParms().get("algorithm");
+            MachineServer machineServer = Algorithm.findUploadPolicy(algorithm).getMachine();
             SegmentServer segmentServer = new SegmentServer(params);
             segmentServer.setMachineIdentifier(machineServer.getIdentifier());
             SegmentClient segmentClient = new SegmentClient(segmentServer, item);
@@ -108,6 +111,10 @@ public class FileServerController {
     }
 
     private Boolean processUploadSegment(SegmentClient segmentClient, MachineServer machineServer) {
+        if (machineServer.isMaster()) {
+            segmentClient.save();
+            return true;
+        }
         ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
         return segmentCommunication.uploadSegment(segmentClient, machineServer);
     }
@@ -139,7 +146,13 @@ public class FileServerController {
         List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
         Boolean success = true;
         for (SegmentServer segmentServer : segmentServers) {
-            Boolean localSuccess = segmentCommunication.deleteSegment(segmentServer, MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier()));
+            MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
+            Boolean localSuccess;
+            if (machineServer.isMaster()) {
+                localSuccess = SegmentClientRepository.findByIdentifier(segmentServer.getIdentifier()).delete();
+            } else {
+                localSuccess = segmentCommunication.deleteSegment(segmentServer, machineServer);
+            }
             if (!localSuccess) {
                 success = false;
             } else {

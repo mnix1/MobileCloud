@@ -87,6 +87,7 @@ public class ServerSegmentCommunication {
                             @Override
                             public void call(ByteBuf byteBuf) {
                                 try {
+//                                    Util.log(this.getClass(), "downloadSegment", "byteBuf.readableBytes(): " + byteBuf.readableBytes());
                                     wrapper.sent(byteBuf.readableBytes());
                                     byteBuf.readBytes(wrapper.getOutputStream(), byteBuf.readableBytes());
                                 } catch (IOException e) {

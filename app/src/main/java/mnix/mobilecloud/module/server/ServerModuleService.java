@@ -53,6 +53,31 @@ public class ServerModuleService {
         }).toBlocking().first();
         return result;
     }
+//    public static int count(final List<SegmentServer> segmentServers, byte[] countData, ServerModuleCommunication moduleCommunication) throws ModuleError {
+//        String byteParam = byteParam(countData);
+//        int result = 0;
+//        Observable<Integer> observableResult = Observable.just(0);
+//        for (SegmentServer segmentServer : segmentServers) {
+//            MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
+//            List<String> segmentIdentifiers = new ArrayList<>();
+//            segmentIdentifiers.add(segmentServer.getIdentifier());
+//            if (machineServer.isMaster()) {
+//                result += ClientModuleService.count(segmentIdentifiers, countData);
+//                continue;
+//            }
+//            String identifierParam = TextUtils.join("&identifier=", segmentIdentifiers);
+//            Observable<Integer> localObservable = moduleCommunication.count(machineServer, "?identifier=" + identifierParam + "&byte=" + byteParam);
+//            observableResult = observableResult.mergeWith(localObservable);
+//        }
+//        result = observableResult.reduce(result, new Func2<Integer, Integer, Integer>() {
+//            @Override
+//            public Integer call(Integer all, Integer val) {
+//                Util.log(this.getClass(), "count", "all: " + all + ", val: " + val);
+//                return all + val;
+//            }
+//        }).toBlocking().first();
+//        return result;
+//    }
 
     private static String byteParam(byte[] data) {
         List<String> stringBytes = new ArrayList<>(data.length);
