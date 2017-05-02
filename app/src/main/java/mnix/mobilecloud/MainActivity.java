@@ -41,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
-//        initMaster();
+//        init();
+        networkManager = new NetworkManager(this);
+        MachineClientRepository.setUniqueIdentifier();
+        initMaster();
     }
 
 
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-
             }
 
             @Override
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clear(View view) {
+        Util.log(this.getClass(), "clear");
         MachineServer.deleteAll(MachineServer.class);
         SegmentServer.deleteAll(SegmentServer.class);
         FileServer.deleteAll(FileServer.class);

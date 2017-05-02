@@ -7,6 +7,7 @@ import org.nanohttpd.protocols.http.response.Response;
 
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.WebServer;
+import mnix.mobilecloud.web.client.ModuleClientController;
 import mnix.mobilecloud.web.socket.Action;
 import mnix.mobilecloud.web.socket.ServerWebSocket;
 
@@ -36,6 +37,10 @@ public class ServerWebServer extends WebServer {
             return response;
         }
         response = new SegmentServerController(this).serve(session);
+        if (response != null) {
+            return response;
+        }
+        response = new ModuleServerController(this).serve(session);
         if (response != null) {
             return response;
         }

@@ -54,6 +54,10 @@ public class MachineServer extends SugarRecord {
         this.lastContact = lastContact;
     }
 
+    public Boolean isMaster() {
+        return role == MachineRole.MASTER;
+    }
+
     @Override
     public String toString() {
         return "MachineServer{" +

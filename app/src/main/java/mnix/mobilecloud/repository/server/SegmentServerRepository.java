@@ -1,9 +1,12 @@
 package mnix.mobilecloud.repository.server;
 
 
+import android.text.TextUtils;
+
 import java.util.List;
 import java.util.Map;
 
+import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.util.Util;
 
@@ -32,6 +35,10 @@ public class SegmentServerRepository {
 
     public static List<SegmentServer> findByFileIdentifier(String identifier) {
         return SegmentServer.find(SegmentServer.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from", null);
+    }
+
+    public static List<SegmentServer> findByIdentifiers(List<String> identifiers) {
+        return SegmentServer.find(SegmentServer.class, "identifier IN ('"+TextUtils.join("','", identifiers)+"')");
     }
 
     public static List<SegmentServer> list() {

@@ -13,8 +13,10 @@ import java.util.Map;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
+import mnix.mobilecloud.module.client.ClientModuleService;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 
+import static mnix.mobilecloud.module.ModuleUtil.getDataArg;
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 
 public class ModuleClientController {
@@ -43,32 +45,13 @@ public class ModuleClientController {
 
     public Response processCount(List<String> segmentIdentifiers, Map<String, String> params) {
         byte[] countData = getDataArg(params);
-        return Response.newFixedLengthResponse(SegmentClientRepository.count(segmentIdentifiers, countData) + "");
+        return Response.newFixedLengthResponse(ClientModuleService.count(segmentIdentifiers, countData) + "");
     }
 
     public Response processIndex(Map<String, String> params) {
         byte[] countData = getDataArg(params);
-        return Response.newFixedLengthResponse(SegmentClientRepository.index(params.get("identifier"), countData) + "");
+        return Response.newFixedLengthResponse(ClientModuleService.index(params.get("identifier"), countData) + "");
     }
 
-    private byte[] getDataArg(Map<String, String> params) {
-        byte[] data = new byte[0];
-        if (params.containsKey("byte")) {
-            String bytesString = params.get("byte");
-            String[] splitBytesString = bytesString.split(",");
-            data = new byte[splitBytesString.length];
-            for (int i = 0; i < splitBytesString.length; i++) {
-                data[i] = Byte.valueOf(splitBytesString[i]);
-            }
-        } else if (params.containsKey("string")) {
-            String string = params.get("string");
-            String encoding = params.containsKey("encoding") ? params.get("encoding") : "UTF-8";
-            try {
-                data = string.getBytes(encoding);
-            } catch (UnsupportedEncodingException e) {
-                data = new byte[0];
-            }
-        }
-        return data;
-    }
+
 }
