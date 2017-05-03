@@ -10,22 +10,24 @@ public class MachineClientRepository {
         return MachineClient.first(MachineClient.class);
     }
 
-    public static void setUniqueIdentifier() {
-        Util.log(MachineClientRepository.class, "setUniqueIdentifier");
+    public static void update() {
+        Util.log(MachineClientRepository.class, "update");
         MachineClient machineClient = get();
         String identifier = machineClient != null ? machineClient.getIdentifier() : null;
         if (identifier == null) {
 //            identifier = UUID.randomUUID().toString();
 //            identifier = Util.cutUuid(identifier);
             identifier = Util.getId();
-            Util.log(MachineClientRepository.class, "setUniqueIdentifier", "identifier: " + identifier);
+            Util.log(MachineClientRepository.class, "update", "identifier: " + identifier);
             machineClient = new MachineClient();
             machineClient.setIdentifier(identifier);
             machineClient.setDevice(Util.getDeviceName());
             machineClient.setSystem(Util.getSystem());
             machineClient.setName(Util.getName());
-            machineClient.save();
         }
+        machineClient.setSpeed(Util.calculateSpeed());
+        machineClient.setSpace(Util.getSpace());
+        machineClient.save();
     }
 
     public static void updateRole(MachineRole machineRole) {

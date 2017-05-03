@@ -1,7 +1,6 @@
 package mnix.mobilecloud;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 //        init();
         networkManager = new NetworkManager(this);
-        MachineClientRepository.setUniqueIdentifier();
+        MachineClientRepository.update();
         initMaster();
     }
 
@@ -78,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPermissions()) {
             return;
         }
-        MachineClientRepository.setUniqueIdentifier();
+        MachineClientRepository.update();
         networkManager = new NetworkManager(this);
         networkManager.connectOrCreateAp().subscribe(new DisposableMaybeObserver<MachineRole>() {
             @Override
             public void onSuccess(MachineRole machineRole) {
-                Util.log(this.getClass(), "init onSuccess", machineRole.toString());
+                Util.log(this.getClass(), "update onSuccess", machineRole.toString());
                 if (machineRole == MachineRole.MASTER) {
                     initMaster();
                 } else if (machineRole == MachineRole.SLAVE) {
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onComplete() {
-                Util.log(this.getClass(), "init onComplete");
+                Util.log(this.getClass(), "update onComplete");
                 this.dispose();
             }
         });

@@ -43911,7 +43911,7 @@ var MobileCloudWebSocket = function () {
             if (msg.indexOf('FILE_UPLOAD_END') != -1 || msg.indexOf('FILE_DELETED') != -1) {
                 return store.file.update();
             }
-            if (msg.indexOf('MACHINE_NEW') != -1 || msg.indexOf('MACHINE_UPDATED') != -1 || msg.indexOf('MACHINE_DELETED') != -1) {
+            if (msg.indexOf('MACHINE_NEW') != -1 || msg.indexOf('MACHINE_UPDATED') != -1 || msg.indexOf('MACHINE_DELETED') != -1 || msg.indexOf('MACHINE_CONNECTED') != -1 || msg.indexOf('MACHINE_DISCONNECTED') != -1) {
                 return store.machine.update();
             }
             if (msg.indexOf('SEGMENT_UPLOAD_END') != -1 || msg.indexOf('SEGMENT_DELETED') != -1) {
@@ -44410,8 +44410,42 @@ var _reactRouter = __webpack_require__(13);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DisconnectButton = function (_Component) {
-    (0, _inherits3.default)(DisconnectButton, _Component);
+var ConnectButton = function (_Component) {
+    (0, _inherits3.default)(ConnectButton, _Component);
+
+    function ConnectButton() {
+        (0, _classCallCheck3.default)(this, ConnectButton);
+        return (0, _possibleConstructorReturn3.default)(this, (ConnectButton.__proto__ || (0, _getPrototypeOf2.default)(ConnectButton)).apply(this, arguments));
+    }
+
+    (0, _createClass3.default)(ConnectButton, [{
+        key: "handleClick",
+        value: function handleClick() {
+            $.ajax({
+                url: "/machine/connect",
+                data: { identifier: this.props.identifier },
+                success: function success(data) {
+                    // this.props.onComplete();
+                }
+            });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "i",
+                {
+                    className: "fa fa-plug " + (this.props.className ? this.props.className : ''),
+                    onClick: this.handleClick.bind(this) },
+                this.props.children
+            );
+        }
+    }]);
+    return ConnectButton;
+}(_react.Component);
+
+var DisconnectButton = function (_Component2) {
+    (0, _inherits3.default)(DisconnectButton, _Component2);
 
     function DisconnectButton() {
         (0, _classCallCheck3.default)(this, DisconnectButton);
@@ -44444,8 +44478,42 @@ var DisconnectButton = function (_Component) {
     return DisconnectButton;
 }(_react.Component);
 
-var DeleteButton = function (_Component2) {
-    (0, _inherits3.default)(DeleteButton, _Component2);
+var RefreshButton = function (_Component3) {
+    (0, _inherits3.default)(RefreshButton, _Component3);
+
+    function RefreshButton() {
+        (0, _classCallCheck3.default)(this, RefreshButton);
+        return (0, _possibleConstructorReturn3.default)(this, (RefreshButton.__proto__ || (0, _getPrototypeOf2.default)(RefreshButton)).apply(this, arguments));
+    }
+
+    (0, _createClass3.default)(RefreshButton, [{
+        key: "handleClick",
+        value: function handleClick() {
+            $.ajax({
+                url: "/machine/refresh",
+                data: { identifier: this.props.identifier },
+                success: function success(data) {
+                    // this.props.onComplete();
+                }
+            });
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "i",
+                {
+                    className: "fa fa-refresh " + (this.props.className ? this.props.className : ''),
+                    onClick: this.handleClick.bind(this) },
+                this.props.children
+            );
+        }
+    }]);
+    return RefreshButton;
+}(_react.Component);
+
+var DeleteButton = function (_Component4) {
+    (0, _inherits3.default)(DeleteButton, _Component4);
 
     function DeleteButton() {
         (0, _classCallCheck3.default)(this, DeleteButton);
@@ -44483,11 +44551,22 @@ function ActionFormatter(config) {
         return _react2.default.createElement(
             "div",
             { className: "action" },
-            _react2.default.createElement(
+            row.active ? _react2.default.createElement(
                 DisconnectButton,
                 { identifier: row.identifier },
                 "Disconnect"
+            ) : _react2.default.createElement(
+                ConnectButton,
+                { identifier: row.identifier },
+                "Connect"
             ),
+            _react2.default.createElement("br", null),
+            _react2.default.createElement(
+                RefreshButton,
+                { identifier: row.identifier },
+                "Refresh"
+            ),
+            _react2.default.createElement("br", null),
             _react2.default.createElement(
                 DeleteButton,
                 { identifier: row.identifier },
@@ -44618,6 +44697,16 @@ var MachineTable = (0, _mobxReact.observer)(_class = function (_Component) {
                             _reactBootstrapTable.TableHeaderColumn,
                             { dataField: "lastContact", dataSort: true, dataAlign: "right" },
                             "Last Contact"
+                        ),
+                        _react2.default.createElement(
+                            _reactBootstrapTable.TableHeaderColumn,
+                            { dataField: "speed", dataSort: true, dataAlign: "right" },
+                            "Speed"
+                        ),
+                        _react2.default.createElement(
+                            _reactBootstrapTable.TableHeaderColumn,
+                            { dataField: "space", dataSort: true, dataAlign: "right" },
+                            "Space"
                         ),
                         _react2.default.createElement(
                             _reactBootstrapTable.TableHeaderColumn,

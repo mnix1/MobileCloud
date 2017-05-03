@@ -11,7 +11,7 @@ public class DefaultBlockPlacementPolicy extends UploadPolicy {
 
     @Override
     public MachineServer getMachine() {
-        List<MachineServer> machineServers = MachineServerRepository.list();
+        List<MachineServer> machineServers = MachineServerRepository.findByActive(true);
         return machineServers.get(random.nextInt(machineServers.size()));
     }
 }

@@ -19,6 +19,11 @@ public class MachineServerRepository {
             currentMachineServer.setRole(machineServer.getRole());
             currentMachineServer.setIpAddress(machineServer.getIpAddress());
             currentMachineServer.setLastContact(machineServer.getLastContact());
+            currentMachineServer.setName(machineServer.getName());
+            currentMachineServer.setDevice(machineServer.getDevice());
+            currentMachineServer.setSystem(machineServer.getSystem());
+            currentMachineServer.setSpace(machineServer.getSpeed());
+            currentMachineServer.setSpace(machineServer.getSpace());
             currentMachineServer.save();
         }
     }
@@ -39,6 +44,10 @@ public class MachineServerRepository {
 
     public static List<MachineServer> findByRole(MachineRole role) {
         return MachineServer.find(MachineServer.class, "role = ?", role.toString());
+    }
+
+    public static List<MachineServer> findByActive(Boolean active) {
+        return MachineServer.find(MachineServer.class, "active = " + (active ? 1 : 0));
     }
 
     public static List<MachineServer> list() {

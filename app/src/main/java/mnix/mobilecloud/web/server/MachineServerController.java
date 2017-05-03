@@ -14,7 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
+import mnix.mobilecloud.communication.server.ServerMachineCommunication;
+import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.domain.server.MachineServer;
+import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.web.socket.Action;
 
@@ -60,7 +63,54 @@ public class MachineServerController {
             }
             return getFailedResponse();
         }
+        if (uri.startsWith("/machine/connect")) {
+            return setActive(session, true);
+        }
+        if (uri.startsWith("/machine/disconnect")) {
+            return setActive(session, false);
+        }
+        if (uri.startsWith("/machine/refresh")) {
+            return processRefresh(session);
+        }
         return null;
+    }
+
+    private Response setActive(IHTTPSession session, boolean active) {
+        String machineIdentifier = session.getParms().get("identifier");
+        MachineServer machineServer = MachineServerRepository.findByIdentifier(machineIdentifier);
+        if (machineServer != null) {
+            machineServer.setActive(active);
+            machineServer.save();
+            if (active) {
+                serverWebServer.sendWebSocketMessage(Action.MACHINE_CONNECTED);
+            } else {
+                serverWebServer.sendWebSocketMessage(Action.MACHINE_DISCONNECTED);
+            }
+            return getSuccessResponse();
+        }
+        return getFailedResponse();
+    }
+
+    private Response processRefresh(IHTTPSession session) {
+        String machineIdentifier = session.getParms().get("identifier");
+        MachineServer machineServer = MachineServerRepository.findByIdentifier(machineIdentifier);
+        if (machineServer != null) {
+            MachineClient machineClient;
+            if (machineServer.isMaster()) {
+                MachineClientRepository.update();
+                machineClient = MachineClientRepository.get();
+            } else {
+                ServerMachineCommunication machineCommunication = new ServerMachineCommunication(serverWebServer.getContext());
+                machineClient = machineCommunication.getMachine(machineServer);
+                machineServer.setLastContact(new Date());
+            }
+            machineServer.setSpeed(machineClient.getSpeed());
+            machineServer.setSpace(machineClient.getSpace());
+            machineServer.save();
+            serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATED);
+            return getSuccessResponse();
+        }
+        return getFailedResponse();
     }
 
     private MachineServer getMachineServer(IHTTPSession session) {
@@ -73,6 +123,8 @@ public class MachineServerController {
         machineServer.setName(params.get("name"));
         machineServer.setDevice(params.get("device"));
         machineServer.setSystem(params.get("system"));
+        machineServer.setSpeed(Long.parseLong(params.get("speed")));
+        machineServer.setSpace(Long.parseLong(params.get("space")));
         return machineServer;
     }
 }

@@ -19,6 +19,7 @@ public class MachineClientController {
             return null;
         }
         if (uri.startsWith("/machine/get")) {
+            MachineClientRepository.update();
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(MachineClientRepository.get()));
         }
         return null;
