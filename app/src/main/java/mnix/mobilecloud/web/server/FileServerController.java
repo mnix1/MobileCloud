@@ -93,7 +93,7 @@ public class FileServerController {
                 continue;
             }
             String algorithm = session.getParms().get("algorithm");
-            MachineServer machineServer = Algorithm.findUploadPolicy(algorithm).getMachine();
+            MachineServer machineServer = Algorithm.findUploadPolicy(algorithm).getMachine(params);
             SegmentServer segmentServer = new SegmentServer(params);
             segmentServer.setMachineIdentifier(machineServer.getIdentifier());
             SegmentClient segmentClient = new SegmentClient(segmentServer, item);

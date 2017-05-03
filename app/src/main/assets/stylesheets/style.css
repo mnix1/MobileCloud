@@ -20,7 +20,12 @@ body {
     display: flex;
     justify-content: space-around;
 }
-
+hr {
+    margin: 10px 0px !important;
+}
+.optionPanel {
+    margin-bottom: 10px;
+}
 .uploadPanel {
     min-width: 600px;
 }

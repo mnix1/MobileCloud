@@ -1,8 +1,8 @@
 import FineUploaderTraditional from 'fine-uploader-wrappers';
 
 export default class Uploader {
-    constructor(options) {
-        return new FineUploaderTraditional(options ||
+    constructor(store) {
+        return new FineUploaderTraditional(
             {
                 options: {
                     chunking: {
@@ -11,7 +11,7 @@ export default class Uploader {
                         concurrent: {
                             enabled: true
                         },
-                        partSize: 1024 * 1024
+                        partSize: store.segmentSize || 1024 * 1024
                     },
                     request: {
                         endpoint: '/file/upload'

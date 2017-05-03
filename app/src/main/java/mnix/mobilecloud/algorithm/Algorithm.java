@@ -1,17 +1,23 @@
 package mnix.mobilecloud.algorithm;
 
-import mnix.mobilecloud.algorithm.upload.DefaultBlockPlacementPolicy;
+import mnix.mobilecloud.algorithm.upload.HdfsBalancedFile;
+import mnix.mobilecloud.algorithm.upload.HdfsDefault;
 import mnix.mobilecloud.algorithm.upload.UploadPolicy;
 
 public enum Algorithm {
-    DEFAULT_BLOCK_PLACEMENT_POLICY;
+    HDFS_DEFAULT,
+    HDFS_BALANCED_FILE,
+    HDFS_BALANCED_GLOBAL;
 
 
     public static UploadPolicy findUploadPolicy(String algorithmString) {
-        Algorithm algorithm = algorithmString == null ? Algorithm.DEFAULT_BLOCK_PLACEMENT_POLICY : Algorithm.valueOf(algorithmString);
-        if (algorithm == Algorithm.DEFAULT_BLOCK_PLACEMENT_POLICY) {
-            return new DefaultBlockPlacementPolicy();
+        Algorithm algorithm = algorithmString == null ? Algorithm.HDFS_DEFAULT : Algorithm.valueOf(algorithmString);
+        if (algorithm == Algorithm.HDFS_DEFAULT) {
+            return new HdfsDefault();
         }
-        return new DefaultBlockPlacementPolicy();
+        if (algorithm == Algorithm.HDFS_BALANCED_FILE) {
+            return new HdfsBalancedFile();
+        }
+        return new HdfsDefault();
     }
 }
