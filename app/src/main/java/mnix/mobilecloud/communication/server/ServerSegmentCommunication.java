@@ -100,7 +100,7 @@ public class ServerSegmentCommunication {
     }
 
     public Boolean deleteSegment(SegmentServer segmentServer, MachineServer machineServer) {
-        Util.log(this.getClass(), "downloadSegment", "segmentServer: " + segmentServer + ", machineServer: " + machineServer);
+        Util.log(this.getClass(), "deleteSegment", "segmentServer: " + segmentServer + ", machineServer: " + machineServer);
         SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
         return HttpClient.newClient(socketAddress)
                 .createGet("/segment/delete?identifier=" + segmentServer.getIdentifier())

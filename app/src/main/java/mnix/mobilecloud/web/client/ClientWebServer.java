@@ -21,6 +21,10 @@ public class ClientWebServer extends WebServer {
         String uri = session.getUri();
         Util.log(this.getClass(), "serve", "uri: " + uri);
         Response response = null;
+        response = new FileClientController().serve(session);
+        if (response != null) {
+            return response;
+        }
         response = new MachineClientController().serve(session);
         if (response != null) {
             return response;

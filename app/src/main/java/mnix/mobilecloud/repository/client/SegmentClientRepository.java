@@ -12,6 +12,7 @@ import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.dto.SegmentClientDTO;
 
 public class SegmentClientRepository {
@@ -38,6 +39,10 @@ public class SegmentClientRepository {
             return null;
         }
         return segmentClients.get(0);
+    }
+
+    public static List<SegmentClient> findByFileIdentifier(String identifier) {
+        return SegmentClient.find(SegmentClient.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from", null);
     }
 
     public static List<SegmentClient> findByIdentifiers(List<String> identifiers) {

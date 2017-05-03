@@ -16,12 +16,14 @@ import org.nanohttpd.protocols.http.response.Status;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.algorithm.Algorithm;
+import mnix.mobilecloud.communication.server.ServerFileCommunication;
 import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
@@ -53,7 +55,7 @@ public class FileServerController {
         if (NanoFileUpload.isMultipartContent(session) && uri.startsWith("/file/upload")) {
             try {
                 serverWebServer.sendWebSocketMessage(Action.FILE_UPLOAD_START);
-                serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOAD_START);
+//                serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOAD_START);
                 return serveUpload(session);
             } catch (IOException | FileUploadException e) {
                 e.printStackTrace();
@@ -142,29 +144,29 @@ public class FileServerController {
         if (fileServer == null) {
             return getFailedResponse();
         }
-        ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+        ServerFileCommunication fileCommunication = new ServerFileCommunication(serverWebServer.getContext());
         List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
-        Boolean success = true;
+        List<String> deletedFromMachine = new ArrayList<>();
         for (SegmentServer segmentServer : segmentServers) {
-            MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
-            Boolean localSuccess;
-            if (machineServer.isMaster()) {
-                localSuccess = SegmentClientRepository.findByIdentifier(segmentServer.getIdentifier()).delete();
-            } else {
-                localSuccess = segmentCommunication.deleteSegment(segmentServer, machineServer);
-            }
-            if (!localSuccess) {
-                success = false;
-            } else {
+            if (deletedFromMachine.contains(segmentServer.getMachineIdentifier())) {
                 segmentServer.delete();
-                serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+            } else {
+                MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
+                if (machineServer.isMaster()) {
+                    for (SegmentClient segmentClient : SegmentClientRepository.findByFileIdentifier(fileServer.getIdentifier())) {
+                        segmentClient.delete();
+                    }
+                } else {
+                    fileCommunication.deleteFileSegments(fileServer, machineServer);
+                }
+                segmentServer.delete();
+                deletedFromMachine.add(segmentServer.getMachineIdentifier());
+//                    serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
             }
         }
-        if (success) {
-            fileServer.delete();
-            serverWebServer.sendWebSocketMessage(Action.FILE_DELETED);
-            return getSuccessResponse();
-        }
-        return getFailedResponse();
+        fileServer.delete();
+        serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+        serverWebServer.sendWebSocketMessage(Action.FILE_DELETED);
+        return getSuccessResponse();
     }
 }

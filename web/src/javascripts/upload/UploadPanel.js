@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import Gallery from 'react-fine-uploader/gallery';
 import 'react-fine-uploader/gallery/gallery.css';
-import Uploader from './Uploader';
 import {observer} from "mobx-react";
 @observer
 class UploadPanel extends Component {
@@ -18,13 +17,12 @@ class UploadPanel extends Component {
 
 
     render() {
-        if (this.uploader) {
-            this.uploader.off('complete', this.handleComplete);
+        if (this.props.store.uploader) {
+            this.props.store.uploader.off('complete', this.handleComplete);
         }
-        this.uploader = new Uploader(this.props.store);
-        this.uploader.on('complete', this.handleComplete);
+        this.props.store.uploader.on('complete', this.handleComplete);
         return <div className="uploadPanel">
-            <Gallery uploader={ this.uploader }
+            <Gallery uploader={ this.props.store.uploader }
                      ref={e => this.gallery = e}
                      fileInput-multiple={false}
                      dropzone-multiple={false}
