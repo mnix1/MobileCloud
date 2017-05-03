@@ -4,7 +4,6 @@ package mnix.mobilecloud.repository.server;
 import java.util.List;
 import java.util.Map;
 
-import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.util.Util;
 
@@ -16,7 +15,7 @@ public class FileServerRepository {
         Integer size = Integer.parseInt(params.get("qqtotalfilesize"));
         fileServer.setSize(size.longValue());
         Integer parts = Integer.parseInt(params.containsKey("qqtotalparts") ? params.get("qqtotalparts") : "1");
-        fileServer.setParts(parts);
+        fileServer.setSegments(parts);
         fileServer.save();
     }
 

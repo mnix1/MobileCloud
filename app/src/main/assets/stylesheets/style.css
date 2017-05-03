@@ -12,10 +12,28 @@ body {
     margin: 0;
 }
 
-.uploadRecordingRow {
-    max-width: 600px;
+.tableHeader input {
+    max-width: 100px;
 }
 
+.uploadRecordingRow {
+    display: flex;
+    justify-content: space-around;
+}
+
+.uploadPanel {
+    min-width: 600px;
+}
+.countPanelInputs {
+    display: inline-block;
+}
+.countButton {
+    margin: 2px;
+}
+.countResult {
+    text-align: center;
+    background: #ddd;
+}
 .react-bs-table-container {
     background: #eee;
 }

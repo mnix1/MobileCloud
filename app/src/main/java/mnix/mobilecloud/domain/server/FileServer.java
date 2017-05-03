@@ -6,7 +6,7 @@ public class FileServer extends SugarRecord {
     private String identifier;
     private String name;
     private Long size;
-    private Integer parts;
+    private Integer segments;
 
     public FileServer() {
     }
@@ -35,11 +35,11 @@ public class FileServer extends SugarRecord {
         this.size = size;
     }
 
-    public Integer getParts() {
-        return parts;
+    public Integer getSegments() {
+        return segments;
     }
 
-    public void setParts(Integer parts) {
-        this.parts = parts;
+    public void setSegments(Integer segments) {
+        this.segments = segments;
     }
 }
