@@ -29,6 +29,7 @@ import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.option.Option;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
@@ -94,9 +95,8 @@ public class FileServerController {
                 params.put(item.getFieldName(), line);
                 continue;
             }
-            String algorithm = session.getParms().get("algorithm");
-            MachineServer machineServer = Algorithm.findUploadPolicy(algorithm).getMachine(params);
             SegmentServer segmentServer = new SegmentServer(params);
+            MachineServer machineServer = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
             segmentServer.setMachineIdentifier(machineServer.getIdentifier());
             SegmentClient segmentClient = new SegmentClient(segmentServer, item);
             Boolean success = processUploadSegment(segmentClient, machineServer);

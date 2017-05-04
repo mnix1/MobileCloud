@@ -37,8 +37,16 @@ public class SegmentServerRepository {
         return SegmentServer.find(SegmentServer.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from", null);
     }
 
+    public static List<SegmentServer> findByMachineIdentifier(String identifier) {
+        return SegmentServer.find(SegmentServer.class, "machine_identifier = ?", identifier);
+    }
+
+    public static List<SegmentServer> findByMachineIdentifierAndFileIdentifier(String machineIdentifier, String fileIdentifier) {
+        return SegmentServer.find(SegmentServer.class, "machine_identifier = ? AND file_identifier = ?", machineIdentifier, fileIdentifier);
+    }
+
     public static List<SegmentServer> findByIdentifiers(List<String> identifiers) {
-        return SegmentServer.find(SegmentServer.class, "identifier IN ('"+TextUtils.join("','", identifiers)+"')");
+        return SegmentServer.find(SegmentServer.class, "identifier IN ('" + TextUtils.join("','", identifiers) + "')");
     }
 
     public static List<SegmentServer> list() {

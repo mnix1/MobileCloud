@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import org.apache.commons.fileupload.FileItemStream;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +25,12 @@ public class SegmentClientRepository {
     }
 
     public static List<SegmentClientDTO> list() {
-        return Observable.fromIterable(SegmentClient.listAll(SegmentClient.class)).map(new Function<SegmentClient, SegmentClientDTO>() {
-            @Override
-            public SegmentClientDTO apply(@NonNull SegmentClient segmentClient) throws Exception {
-                return new SegmentClientDTO(segmentClient);
-            }
-        }).toList().blockingGet();
+        List<SegmentClientDTO> dtos = new ArrayList<>();
+        Iterator<SegmentClient> segmentClientIterator = SegmentClient.findAsIterator(SegmentClient.class, "1=1");
+        while (segmentClientIterator.hasNext()) {
+            dtos.add(new SegmentClientDTO(segmentClientIterator.next()));
+        }
+        return dtos;
     }
 
     public static SegmentClient findByIdentifier(String identifier) {
