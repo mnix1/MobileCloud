@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mnix.mobilecloud.communication.client.ClientSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
@@ -76,6 +77,9 @@ public class SegmentClientController {
             segmentClient.delete();
             return getSuccessResponse();
         }
+        if (uri.startsWith("/segment/copy")) {
+            return processCopy(session);
+        }
         return null;
     }
 
@@ -96,4 +100,12 @@ public class SegmentClientController {
         return getSuccessResponse();
     }
 
+    private Response processCopy(IHTTPSession session) {
+        Map<String, String> params = session.getParms();
+        String segmentIdentifier = params.get("identifier");
+        String newSegmentIdentifier = params.containsKey("newIdentifier") ? params.get("newIdentifier") : segmentIdentifier;
+        String destinationAddress = params.get("address");
+        ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(clientWebServer.getContext());
+        return segmentCommunication.uploadSegment(SegmentClientRepository.findByIdentifier(segmentIdentifier), newSegmentIdentifier, destinationAddress) ? getSuccessResponse() : getFailedResponse();
+    }
 }

@@ -34,7 +34,7 @@ public class WebServer extends NanoHTTPD {
     protected static final String MIME_TTF = "application/font-sfnt";
     protected static final String MIME_WOFF = "application/font-woff";
     protected static final String MIME_XML = "text/xml";
-    protected final Context context;
+    protected Context context;
 
     public final NanoFileUpload uploader;
 
@@ -99,5 +99,9 @@ public class WebServer extends NanoHTTPD {
 
     public static Response getFailedResponse() {
         return newFixedLengthResponse(Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "");
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

@@ -16,9 +16,11 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
+import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.network.NetworkUtils;
 import mnix.mobilecloud.util.Util;
+import mnix.mobilecloud.web.client.ClientWebServer;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -33,54 +35,39 @@ public class ClientSegmentCommunication {
         this.context = context;
     }
 
-    public void uploadSegment() {
-        Util.log(this.getClass(), "uploadSegment");
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        InetAddress inetAddress = NetworkUtils.getGatewayAddress(wifiManager);
-        SocketAddress socketAddress = new InetSocketAddress(inetAddress, 8090);
-        String boundary = "------WebKitFormBoundarysofJ3z07Xp5sALd2";
+    public Boolean uploadSegment(SegmentClient segmentClient, String newSegmentIdentifier, String ipAddress) {
+        Util.log(this.getClass(), "uploadSegment", "newSegmentIdentifier: " + newSegmentIdentifier + ", ipAddress: " + ipAddress);
+        SocketAddress socketAddress = new InetSocketAddress(ipAddress, ClientWebServer.PORT);
+        String boundary = "------" + newSegmentIdentifier;
         String boundaryWithLine = boundary + "\r\n";
-        String qquuid = UUID.randomUUID().toString();
-        String qqfilename = "iron.txt";
-        String data = "21312456";
-        Integer qqtotalfilesize = data.length();
+        String qquuid = newSegmentIdentifier;
+        String qqfilename = segmentClient.getFileIdentifier();
+        byte[] data = segmentClient.getData();
+        Integer qqtotalfilesize = data.length;
         String contentDispositionQquuid = createContentDisposition(boundaryWithLine, "qquuid", qquuid);
         String contentDispositionQqfilename = createContentDisposition(boundaryWithLine, "qqfilename", qqfilename);
         String contentDispositionQqtotalfilesize = createContentDisposition(boundaryWithLine, "qqtotalfilesize", "" + qqtotalfilesize);
         String contentDispositionQqfile = createContentDispositionContentType(boundaryWithLine, "qqfile", qqfilename, "text/plain");
         String footer = "\r\n" + boundary + "--\r\n";
-        String payload = contentDispositionQquuid + contentDispositionQqfilename + contentDispositionQqtotalfilesize + contentDispositionQqfile + data + footer;
+        String payload = contentDispositionQquuid + contentDispositionQqfilename + contentDispositionQqtotalfilesize + contentDispositionQqfile;
         ByteBuf bbuf = Unpooled.copiedBuffer(payload, Charset.defaultCharset());
-        HttpClient.newClient(socketAddress)
+        bbuf.writeBytes(data);
+        bbuf.writeCharSequence(footer, Charset.defaultCharset());
+        return HttpClient.newClient(socketAddress)
 //                .enableWireLogging("hello-client", LogLevel.ERROR)
                 .createPost("/segment/upload")
-//                .addHeader(HttpHeaderNames.CONTENT_LENGTH, payload.length())
-//                .addHeader("X-Requested-With", "XMLHttpRequest")
                 .addHeader(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
-//                .addHeader(HttpHeaderNames.ACCEPT, HttpHeaderValues.APPLICATION_JSON)
-//                .addHeader(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP_DEFLATE)
                 .addHeader(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA + "; " + HttpHeaderValues.BOUNDARY + "=" + boundary.substring(2))
-                .writeContent(Observable.just(bbuf))
-                .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<?>>() {
+                .writeContentAndFlushOnEach(Observable.just(bbuf))
+                .map(new Func1<HttpClientResponse<ByteBuf>, Boolean>() {
                     @Override
-                    public Observable<?> call(HttpClientResponse<ByteBuf> resp) {
-                        return resp.getContent()
-                                .map(new Func1<ByteBuf, Object>() {
-                                    @Override
-                                    public Object call(ByteBuf bb) {
-                                        return bb.toString(Charset.defaultCharset());
-                                    }
-                                });
+                    public Boolean call(HttpClientResponse<ByteBuf> response) {
+                        return response.getStatus().code() == 200;
                     }
                 })
-//                .toBlocking()
-                .forEach(new Action1<Object>() {
-                    @Override
-                    public void call(Object i) {
-                        Util.log(this.getClass(), "uploadSegment", "response");
-                    }
-                });
+                .toBlocking()
+                .first();
     }
 
 }
