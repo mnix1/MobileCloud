@@ -18,7 +18,7 @@ public class SegmentServer extends SugarRecord {
 
     public SegmentServer(Map<String, String> params) {
         String qquuid = Util.cutUuid(params.get("qquuid"));
-        this.setIdentifier(qquuid + "_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
+        this.setIdentifier(qquuid + "_0_" + (params.containsKey("qqpartindex") ? params.get("qqpartindex") : 0));
         this.setFileIdentifier(qquuid);
         Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
         Integer fromByte = Integer.parseInt((params.containsKey("qqpartbyteoffset") ? params.get("qqpartbyteoffset") : "0"));

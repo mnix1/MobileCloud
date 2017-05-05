@@ -86,17 +86,7 @@ public class SegmentClientController {
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Util.log(this.getClass(), "serveUpload");
         Map<String, String> params = new HashMap<String, String>();
-        FileItemIterator iter = clientWebServer.uploader.getItemIterator(session);
-        while (iter.hasNext()) {
-            FileItemStream item = iter.next();
-            final String fileName = item.getName();
-            if (fileName == null) {
-                String line = new BufferedReader(new InputStreamReader(item.openStream())).readLine();
-                params.put(item.getFieldName(), line);
-                continue;
-            }
-            SegmentClientRepository.save(params, item);
-        }
+        SegmentClientRepository.save(params, clientWebServer.serverMultipart(session, params));
         return getSuccessResponse();
     }
 

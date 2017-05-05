@@ -84,28 +84,19 @@ public class FileServerController {
 
     private Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Map<String, String> params = new HashMap<String, String>();
-        FileItemIterator iter = serverWebServer.uploader.getItemIterator(session);
-        while (iter.hasNext()) {
-            FileItemStream item = iter.next();
-            final String fileName = item.getName();
-            if (fileName == null) {
-                String line = new BufferedReader(new InputStreamReader(item.openStream())).readLine();
-                params.put(item.getFieldName(), line);
-                continue;
-            }
-            SegmentServer segmentServer = new SegmentServer(params);
-            MachineServer machineServer = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
-            segmentServer.setMachineIdentifier(machineServer.getIdentifier());
-            SegmentClient segmentClient = new SegmentClient(segmentServer, item);
-            Boolean success = processUploadSegment(segmentClient, machineServer);
-            if (!success) {
-                return getFailedResponse();
-            }
-            segmentServer.save();
-            serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
-            if (!params.containsKey("qqtotalparts")) {
-                serveUploadSuccess(params);
-            }
+        FileItemStream item = serverWebServer.serverMultipart(session, params);
+        SegmentServer segmentServer = new SegmentServer(params);
+        MachineServer machineServer = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
+        segmentServer.setMachineIdentifier(machineServer.getIdentifier());
+        SegmentClient segmentClient = new SegmentClient(segmentServer, item);
+        Boolean success = processUploadSegment(segmentClient, machineServer);
+        if (!success) {
+            return getFailedResponse();
+        }
+        segmentServer.save();
+        serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+        if (!params.containsKey("qqtotalparts")) {
+            serveUploadSuccess(params);
         }
         return getSuccessResponse();
     }
@@ -159,7 +150,6 @@ public class FileServerController {
                 }
                 segmentServer.delete();
                 deletedFromMachine.add(segmentServer.getMachineIdentifier());
-//                    serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
             }
         }
         fileServer.delete();

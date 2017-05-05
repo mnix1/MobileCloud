@@ -5,17 +5,24 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.nanohttpd.fileupload.NanoFileUpload;
+import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.util.Util;
 
@@ -103,5 +110,19 @@ public class WebServer extends NanoHTTPD {
 
     public Context getContext() {
         return context;
+    }
+
+    public FileItemStream serverMultipart(IHTTPSession session, Map<String, String> params) throws IOException, FileUploadException {
+        FileItemIterator iter = uploader.getItemIterator(session);
+        FileItemStream item = null;
+        while (iter.hasNext()) {
+            item = iter.next();
+            String fileName = item.getName();
+            if (fileName == null) {
+                String line = new BufferedReader(new InputStreamReader(item.openStream())).readLine();
+                params.put(item.getFieldName(), line);
+            }
+        }
+        return item;
     }
 }
