@@ -49,6 +49,25 @@ public class SegmentServerRepository {
         return SegmentServer.find(SegmentServer.class, "identifier IN ('" + TextUtils.join("','", identifiers) + "')");
     }
 
+    public static long getUsedSpace(String machineIdentifier) {
+        List<SegmentServer> segmentServers = findByMachineIdentifier(machineIdentifier);
+        long usedSpace = 0;
+        for (SegmentServer segmentServer : segmentServers) {
+            usedSpace += segmentServer.getSize();
+        }
+        return usedSpace;
+    }
+
+
+    public static long getUsedSpace(String machineIdentifier, String fileIdentifier) {
+        List<SegmentServer> segmentServers = findByMachineIdentifierAndFileIdentifier(machineIdentifier, fileIdentifier);
+        long usedSpace = 0;
+        for (SegmentServer segmentServer : segmentServers) {
+            usedSpace += segmentServer.getSize();
+        }
+        return usedSpace;
+    }
+
     public static List<SegmentServer> list() {
         return SegmentServer.listAll(SegmentServer.class);
     }

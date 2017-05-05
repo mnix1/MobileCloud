@@ -10,6 +10,7 @@ public class Option {
     private Long segmentSize = 1024L * 1024;
     private Algorithm uploadAlgorithm = Algorithm.HDFS_DEFAULT;
     private Double speedFactor = 3d;
+    private Double balancedPreference = 0.5;
 
     private Option() {
     }
@@ -25,6 +26,7 @@ public class Option {
         instance.setSegmentSize(Long.parseLong(params.get("segmentSize")));
         instance.setUploadAlgorithm(Algorithm.valueOf(params.get("uploadAlgorithm")));
         instance.setSpeedFactor(Double.parseDouble(params.get("speedFactor")));
+        instance.setBalancedPreference(Double.parseDouble(params.get("balancedPreference")));
     }
 
     public Long getSegmentSize() {
@@ -49,5 +51,13 @@ public class Option {
 
     public void setSpeedFactor(Double speedFactor) {
         this.speedFactor = speedFactor;
+    }
+
+    public Double getBalancedPreference() {
+        return balancedPreference;
+    }
+
+    public void setBalancedPreference(Double balancedPreference) {
+        this.balancedPreference = balancedPreference;
     }
 }

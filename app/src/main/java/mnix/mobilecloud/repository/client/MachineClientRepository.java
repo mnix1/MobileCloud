@@ -17,9 +17,9 @@ public class MachineClientRepository {
         MachineClient machineClient = get();
         String identifier = machineClient != null ? machineClient.getIdentifier() : null;
         if (identifier == null) {
-            identifier = UUID.randomUUID().toString();
-            identifier = Util.cutUuid(identifier);
-//            identifier = Util.getId();
+//            identifier = UUID.randomUUID().toString();
+//            identifier = Util.cutUuid(identifier);
+            identifier = Util.cutUuid(Util.getId() + UUID.randomUUID());
             Util.log(MachineClientRepository.class, "update", "identifier: " + identifier);
             machineClient = new MachineClient();
             machineClient.setIdentifier(identifier);
