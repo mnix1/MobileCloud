@@ -21,14 +21,14 @@ class MobileCloudWebSocket {
                 return;
             }
             console.log('onmessage', evt);
-            if (msg.indexOf('FILE_UPLOAD_END') != -1 || msg.indexOf('FILE_DELETED') != -1) {
+            if (msg.indexOf('FILE_UPLOADED') != -1 || msg.indexOf('FILE_DELETED') != -1) {
                 return store.file.update();
             }
             if (msg.indexOf('MACHINE_NEW') != -1 || msg.indexOf('MACHINE_UPDATED') != -1 || msg.indexOf('MACHINE_DELETED') != -1
                 || msg.indexOf('MACHINE_CONNECTED') != -1 || msg.indexOf('MACHINE_DISCONNECTED') != -1) {
                 return store.machine.update();
             }
-            if (msg.indexOf('SEGMENT_UPLOAD_END') != -1 || msg.indexOf('SEGMENT_DELETED') != -1) {
+            if (msg.indexOf('SEGMENT_UPLOADED') != -1 || msg.indexOf('SEGMENT_DELETED') != -1) {
                 return store.segment.update();
             }
         };

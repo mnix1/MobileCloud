@@ -8,6 +8,7 @@ const fetchOptions = function (store) {
         success: data => {
             data = JSON.parse(data);
             store.segmentSize = data.segmentSize;
+            store.replicaSize = data.replicaSize;
             store.uploadAlgorithm = data.uploadAlgorithm;
             store.speedFactor = data.speedFactor;
             store.balancedPreference = data.balancedPreference;
@@ -48,6 +49,7 @@ class OptionStore {
     @observable gallery;
     @observable uploader;
     @observable segmentSize;
+    @observable replicaSize;
     @observable uploadAlgorithm;
     @observable speedFactor;
     @observable balancedPreference;

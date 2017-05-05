@@ -38,9 +38,6 @@ public class SegmentServerController {
         if (!uri.contains("/segment/")) {
             return null;
         }
-        if (uri.startsWith("/segment/upload")) {
-            return getSuccessResponse();
-        }
         if (uri.startsWith("/segment/list")) {
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(SegmentServerRepository.list()));
         }

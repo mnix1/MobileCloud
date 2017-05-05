@@ -15,6 +15,7 @@ class OptionModal extends Component {
         this.state = {
             isOpen: props.isOpen,
             segmentSize: props.store.segmentSize,
+            replicaSize: props.store.replicaSize,
             uploadAlgorithm: props.store.uploadAlgorithm,
             speedFactor: props.store.speedFactor,
             balancedPreference: props.store.balancedPreference,
@@ -25,6 +26,7 @@ class OptionModal extends Component {
         this.setState({
             isOpen: true,
             segmentSize: this.props.store.segmentSize,
+            replicaSize: this.props.store.replicaSize,
             uploadAlgorithm: this.props.store.uploadAlgorithm,
             speedFactor: this.props.store.speedFactor,
             balancedPreference: this.props.store.balancedPreference,
@@ -42,6 +44,7 @@ class OptionModal extends Component {
             url: '/option/set',
             data: {
                 segmentSize: this.state.segmentSize,
+                replicaSize: this.state.replicaSize,
                 uploadAlgorithm: this.state.uploadAlgorithm,
                 speedFactor: this.state.speedFactor,
                 balancedPreference: this.state.balancedPreference,
@@ -94,6 +97,12 @@ class OptionModal extends Component {
                                 id="uploadAlgorithmDropdown">
                     {this.renderSegmentSizeItems()}
                 </DropdownButton>
+            </div>
+            <div className='form-group'>
+                <label>Number of Replicas:</label>
+                <input onChange={e => {
+                    this.setState({replicaSize: e.target.value})
+                }} type="number" step="0.01" value={this.state.replicaSize}/>
             </div>
             <div className='form-group'>
                 <label>Upload algorithm:</label>

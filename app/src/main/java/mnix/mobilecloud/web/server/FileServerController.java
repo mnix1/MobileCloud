@@ -55,8 +55,6 @@ public class FileServerController {
         }
         if (NanoFileUpload.isMultipartContent(session) && uri.startsWith("/file/upload")) {
             try {
-                serverWebServer.sendWebSocketMessage(Action.FILE_UPLOAD_START);
-//                serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOAD_START);
                 return serveUpload(session);
             } catch (IOException | FileUploadException e) {
                 e.printStackTrace();
@@ -104,7 +102,7 @@ public class FileServerController {
                 return getFailedResponse();
             }
             segmentServer.save();
-            serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOAD_END);
+            serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
             if (!params.containsKey("qqtotalparts")) {
                 serveUploadSuccess(params);
             }
@@ -123,7 +121,7 @@ public class FileServerController {
 
     private Response serveUploadSuccess(Map<String, String> params) {
         FileServerRepository.save(params);
-        serverWebServer.sendWebSocketMessage(Action.FILE_UPLOAD_END);
+        serverWebServer.sendWebSocketMessage(Action.FILE_UPLOADED);
         return getSuccessResponse();
     }
 
