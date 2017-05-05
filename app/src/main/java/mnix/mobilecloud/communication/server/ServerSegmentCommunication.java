@@ -37,9 +37,9 @@ public class ServerSegmentCommunication {
         this.context = context;
     }
 
-    public Boolean uploadSegment(SegmentClient segmentClient, MachineServer machineServer) {
-        Util.log(this.getClass(), "uploadSegment", "machineServer: " + machineServer);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+    public Boolean uploadSegment(SegmentClient segmentClient, String address) {
+        Util.log(this.getClass(), "uploadSegment", "address: " + address);
+        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
         String boundary = "------" + segmentClient.getIdentifier();
         String boundaryWithLine = boundary + "\r\n";
         String qquuid = segmentClient.getIdentifier();
@@ -73,9 +73,9 @@ public class ServerSegmentCommunication {
     }
 
 
-    public void downloadSegment(final SegmentServer segmentServer, MachineServer machineServer, final StreamingResponse.StreamingResponseWrapper wrapper) {
-        Util.log(this.getClass(), "downloadSegment", "segmentServer: " + segmentServer + ", machineServer: " + machineServer);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+    public void downloadSegment(final SegmentServer segmentServer, String address, final StreamingResponse.StreamingResponseWrapper wrapper) {
+        Util.log(this.getClass(), "downloadSegment", "segmentServer: " + segmentServer + ", address: " + address);
+        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
         HttpClient.newClient(socketAddress)
                 .createGet("/segment/download?identifier=" + segmentServer.getIdentifier())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
@@ -99,9 +99,9 @@ public class ServerSegmentCommunication {
                 });
     }
 
-    public Boolean deleteSegment(SegmentServer segmentServer, MachineServer machineServer) {
-        Util.log(this.getClass(), "deleteSegment", "segmentServer: " + segmentServer + ", machineServer: " + machineServer);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+    public Boolean deleteSegment(SegmentServer segmentServer, String address) {
+        Util.log(this.getClass(), "deleteSegment", "segmentServer: " + segmentServer + ", address: " + address);
+        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
         return HttpClient.newClient(socketAddress)
                 .createGet("/segment/delete?identifier=" + segmentServer.getIdentifier())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)

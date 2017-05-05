@@ -41,7 +41,7 @@ public class ServerModuleService {
                 continue;
             }
             String identifierParam = TextUtils.join("&identifier=", segmentIdentifiers);
-            Observable<Integer> localObservable = moduleCommunication.count(machineServer, "?identifier=" + identifierParam + "&byte=" + byteParam);
+            Observable<Integer> localObservable = moduleCommunication.count(machineServer.getIpAddress(), "?identifier=" + identifierParam + "&byte=" + byteParam);
             observableResult = observableResult.mergeWith(localObservable);
         }
         result = observableResult.reduce(result, new Func2<Integer, Integer, Integer>() {

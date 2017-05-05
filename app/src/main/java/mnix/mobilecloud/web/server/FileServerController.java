@@ -93,6 +93,7 @@ public class FileServerController {
         if (!success) {
             return getFailedResponse();
         }
+
         segmentServer.save();
         serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
         if (!params.containsKey("qqtotalparts")) {
@@ -107,7 +108,7 @@ public class FileServerController {
             return true;
         }
         ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
-        return segmentCommunication.uploadSegment(segmentClient, machineServer);
+        return segmentCommunication.uploadSegment(segmentClient, machineServer.getIpAddress());
     }
 
     private Response serveUploadSuccess(Map<String, String> params) {
@@ -146,7 +147,7 @@ public class FileServerController {
                         segmentClient.delete();
                     }
                 } else {
-                    fileCommunication.deleteFileSegments(fileServer, machineServer);
+                    fileCommunication.deleteFileSegments(fileServer, machineServer.getIpAddress());
                 }
                 segmentServer.delete();
                 deletedFromMachine.add(segmentServer.getMachineIdentifier());

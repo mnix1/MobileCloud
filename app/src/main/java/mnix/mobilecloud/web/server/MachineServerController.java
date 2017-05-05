@@ -101,7 +101,7 @@ public class MachineServerController {
                 machineClient = MachineClientRepository.get();
             } else {
                 ServerMachineCommunication machineCommunication = new ServerMachineCommunication(serverWebServer.getContext());
-                machineClient = machineCommunication.getMachine(machineServer);
+                machineClient = machineCommunication.getMachine(machineServer.getIpAddress());
                 machineServer.setLastContact(new Date());
             }
             machineServer.setSpeed(machineClient.getSpeed());

@@ -63,7 +63,7 @@ public class StreamingResponse extends Response {
                 wrapper.sent(byteBuf.readableBytes());
                 byteBuf.readBytes(wrapper.getOutputStream(), byteBuf.readableBytes());
             } else {
-                segmentCommunication.downloadSegment(segmentServer, machineServer, wrapper);
+                segmentCommunication.downloadSegment(segmentServer, machineServer.getIpAddress(), wrapper);
                 while (wrapper.getWritten() < segmentServer.getSize() + segmentsWritten) {
 //                    Util.log(this.getClass(), "sendBody", "getWritten: " + wrapper.getWritten() +
 //                            " segmentServer.getSize(): " + segmentServer.getSize());

@@ -26,46 +26,9 @@ public class ServerModuleCommunication {
         this.context = context;
     }
 
-//    public int count(MachineServer machineServer, String params) throws ModuleError {
-//        Util.log(this.getClass(), "count", "machineServer: " + machineServer + ", params: " + params);
-//        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
-//        Integer result = HttpClient.newClient(socketAddress)
-//                .createGet("/module/count" + params)
-//                .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
-////                .map(new Func1<HttpClientResponse<ByteBuf>, Integer>() {
-////                    @Override
-////                    public Integer call(HttpClientResponse<ByteBuf> response) {
-////                        return response.getStatus().code() == 200 ? Integer.getInteger(response.getContent().map())) : -1;
-////                    }
-////                })
-//                .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<Integer>>() {
-//                    @Override
-//                    public Observable<Integer> call(HttpClientResponse<ByteBuf> resp) {
-//                        return resp.getStatus().code() == 200
-//                                ? resp.getContent()
-//                                .map(new Func1<ByteBuf, Integer>() {
-//                                    @Override
-//                                    public Integer call(ByteBuf bb) {
-//                                        String res = bb.toString(Charset.defaultCharset());
-//                                        Util.log(this.getClass(), "count", "response: " + res);
-//                                        return Integer.getInteger(res);
-//                                    }
-//                                })
-//                                : Observable.just(-1);
-//                    }
-//                })
-//                .toBlocking()
-//                .first();
-//        if (result == -1) {
-//            throw new ModuleError();
-//        }
-//        return result;
-//    }
-
-
-    public Observable<Integer> count(MachineServer machineServer, String params) {
-        Util.log(this.getClass(), "count", "machineServer: " + machineServer + ", params: " + params);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+    public Observable<Integer> count(String address, String params) {
+        Util.log(this.getClass(), "count", "machineServer: " + address + ", params: " + params);
+        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
         return HttpClient.newClient(socketAddress)
                 .createGet("/module/count" + params)
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)

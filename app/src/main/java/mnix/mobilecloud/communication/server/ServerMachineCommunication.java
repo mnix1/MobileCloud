@@ -35,9 +35,9 @@ public class ServerMachineCommunication {
         this.context = context;
     }
 
-    public MachineClient getMachine(MachineServer machineServer) {
-        Util.log(this.getClass(), "getMachine", "machineServer: " + machineServer);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+    public MachineClient getMachine(String address) {
+        Util.log(this.getClass(), "getMachine", "address: " + address);
+        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
         String response = HttpClient.newClient(socketAddress)
 //                .enableWireLogging("hello-client", LogLevel.ERROR)
                 .createGet("/machine/get")

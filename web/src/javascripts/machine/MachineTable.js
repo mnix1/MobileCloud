@@ -10,8 +10,11 @@ class MachineTable extends Component {
     }
 
     render() {
+        const addressFormatter = (cell, row) => {
+            const preparedAddress = 'http://' + row.ipAddress + ':8090';
+            return <a href={row.ipAddress ? preparedAddress : ''}>{row.ipAddress}</a>;
+        };
         const actionFormatter = new ActionFormatter();
-        console.log('MachineTable', this.props);
         return (
             <div className="panel panel-primary machineTable">
                 <div className="panel-heading">
@@ -26,7 +29,8 @@ class MachineTable extends Component {
                         <TableHeaderColumn dataField="device">Device</TableHeaderColumn>
                         <TableHeaderColumn dataField="system">System</TableHeaderColumn>
                         <TableHeaderColumn dataField="role" dataSort={true}>Role</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ipAddress" dataSort={true} dataAlign="right">Ip
+                        <TableHeaderColumn dataField="ipAddress" dataSort={true} dataAlign="right"
+                                           dataFormat={addressFormatter}>Ip
                             Address</TableHeaderColumn>
                         <TableHeaderColumn dataField="lastContact" dataSort={true} dataAlign="right">Last
                             Contact</TableHeaderColumn>

@@ -19,9 +19,9 @@ public class ServerFileCommunication {
         this.context = context;
     }
 
-    public void deleteFileSegments(FileServer fileServer, MachineServer machineServer) {
-        Util.log(this.getClass(), "deleteSegment", "fileServer: " + fileServer + ", machineServer: " + machineServer);
-        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+    public void deleteFileSegments(FileServer fileServer, String address) {
+        Util.log(this.getClass(), "deleteSegment", "fileServer: " + fileServer + ", address: " + address);
+        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
         HttpClient.newClient(socketAddress)
                 .createGet("/file/delete?identifier=" + fileServer.getIdentifier())
                 .subscribe();
