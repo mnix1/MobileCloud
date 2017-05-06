@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.client.ClientWebServer;
 import rx.Observable;
 import rx.functions.Func1;

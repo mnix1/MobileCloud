@@ -50,6 +50,10 @@ public class MachineServerRepository {
         return MachineServer.find(MachineServer.class, "active = " + (active ? 1 : 0));
     }
 
+    public static List<MachineServer> findByActiveAndNotIdentifier(Boolean active, String identifier) {
+        return MachineServer.find(MachineServer.class, "active = " + (active ? 1 : 0) + " AND identifier <> ?", identifier);
+    }
+
     public static List<MachineServer> list() {
         return MachineServer.listAll(MachineServer.class);
     }

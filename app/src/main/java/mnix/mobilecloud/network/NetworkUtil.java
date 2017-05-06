@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-public class NetworkUtils {
-    private static final String TAG = "NetworkUtils";
+public class NetworkUtil {
+    private static final String TAG = "NetworkUtil";
     private static final List<String> deviceNames = Arrays.asList("wlan0", "swlan0");
 
     public static Inet4Address getInet4Address() {

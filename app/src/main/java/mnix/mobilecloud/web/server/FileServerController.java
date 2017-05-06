@@ -30,6 +30,7 @@ import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.option.Option;
+import mnix.mobilecloud.replica.ReplicaService;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
@@ -93,7 +94,6 @@ public class FileServerController {
         if (!success) {
             return getFailedResponse();
         }
-
         segmentServer.save();
         serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
         if (!params.containsKey("qqtotalparts")) {
@@ -112,8 +112,13 @@ public class FileServerController {
     }
 
     private Response serveUploadSuccess(Map<String, String> params) {
-        FileServerRepository.save(params);
+        FileServer fileServer = new FileServer(params);
+        fileServer.save();
         serverWebServer.sendWebSocketMessage(Action.FILE_UPLOADED);
+        if (Option.getInstance().getReplicaSize() > 0) {
+            ReplicaService replicaService = new ReplicaService(serverWebServer.getContext());
+            replicaService.processFile(fileServer);
+        }
         return getSuccessResponse();
     }
 

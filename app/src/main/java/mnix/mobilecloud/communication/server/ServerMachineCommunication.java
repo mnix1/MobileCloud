@@ -2,30 +2,20 @@ package mnix.mobilecloud.communication.server;
 
 
 import android.content.Context;
-import android.net.wifi.WifiManager;
 
 import com.google.gson.Gson;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.MachineClient;
-import mnix.mobilecloud.domain.server.MachineServer;
-import mnix.mobilecloud.network.NetworkUtils;
-import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.client.ClientWebServer;
-import mnix.mobilecloud.web.server.ServerWebServer;
 import rx.Observable;
-import rx.functions.Action1;
 import rx.functions.Func1;
 
 public class ServerMachineCommunication {

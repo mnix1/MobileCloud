@@ -2,6 +2,8 @@
 
 package mnix.mobilecloud.web.client;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 
 import org.apache.commons.fileupload.FileUploadException;
@@ -74,7 +76,7 @@ public class SegmentClientController {
             return getSuccessResponse();
         }
         if (uri.startsWith("/segment/send")) {
-            return processSend(session);
+            return processSend(session.getParms(), clientWebServer.getContext()) ? getSuccessResponse() : getFailedResponse();
         }
         return null;
     }
@@ -99,8 +101,7 @@ public class SegmentClientController {
         return getSuccessResponse();
     }
 
-    private Response processSend(IHTTPSession session) {
-        Map<String, String> params = session.getParms();
+    public static Boolean processSend(Map<String, String> params, Context context) {
         String segmentIdentifier = params.get("identifier");
         SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(segmentIdentifier);
         if (params.containsKey("newIdentifier")) {
@@ -121,8 +122,8 @@ public class SegmentClientController {
         byte[] data = Arrays.copyOfRange(segmentClient.getData(), byteFrom.intValue(), byteTo.intValue());
         segmentClient.setData(data);
         String destinationAddress = params.get("address");
-        ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(clientWebServer.getContext());
-        return segmentCommunication.uploadSegment(segmentClient, destinationAddress)
-                ? getSuccessResponse() : getFailedResponse();
+        ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(context);
+        return segmentCommunication.uploadSegment(segmentClient, destinationAddress);
+
     }
 }

@@ -17,7 +17,7 @@ import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.communication.CommunicationUtils;
 import mnix.mobilecloud.domain.client.SegmentClient;
-import mnix.mobilecloud.network.NetworkUtils;
+import mnix.mobilecloud.network.NetworkUtil;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.server.ServerWebServer;
 import rx.Observable;
@@ -39,7 +39,7 @@ public class ClientSegmentCommunication {
     public void updateSegment(final SegmentClient segmentClient) {
         Util.log(this.getClass(), "updateSegment");
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        InetAddress inetAddress = NetworkUtils.getGatewayAddress(wifiManager);
+        InetAddress inetAddress = NetworkUtil.getGatewayAddress(wifiManager);
         SocketAddress socketAddress = new InetSocketAddress(inetAddress, ServerWebServer.PORT);
         String params = segmentClient.toParams();
         ByteBuf bbuf = Unpooled.copiedBuffer(params, Charset.defaultCharset());

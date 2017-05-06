@@ -1,7 +1,6 @@
 package mnix.mobilecloud.network.wifi;
 
 import android.content.Context;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
@@ -9,7 +8,7 @@ import java.net.Inet4Address;
 import java.util.List;
 
 import mnix.mobilecloud.network.NetworkManager;
-import mnix.mobilecloud.network.NetworkUtils;
+import mnix.mobilecloud.network.NetworkUtil;
 import mnix.mobilecloud.network.wifi.accesspoint.WifiApControl;
 
 public class WifiControl {
@@ -106,7 +105,7 @@ public class WifiControl {
             return sb.toString();
         }
         sb.append("Inet4Address: ");
-        Inet4Address addr4 = NetworkUtils.getInet4Address();
+        Inet4Address addr4 = NetworkUtil.getInet4Address();
         sb.append(addr4 == null ? "null" : addr4.toString()).append('\n');
 
         sb.append(WifiState.fromState(wifiManager.getWifiState())).append('\n');

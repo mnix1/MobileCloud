@@ -13,11 +13,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.MachineClient;
-import mnix.mobilecloud.network.NetworkUtils;
+import mnix.mobilecloud.network.NetworkUtil;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.server.ServerWebServer;
@@ -35,7 +34,7 @@ public class ClientMachineCommunication {
     public void updateMachine() {
         Util.log(this.getClass(), "updateMachine");
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        InetAddress inetAddress = NetworkUtils.getGatewayAddress(wifiManager);
+        InetAddress inetAddress = NetworkUtil.getGatewayAddress(wifiManager);
         SocketAddress socketAddress = new InetSocketAddress(inetAddress, ServerWebServer.PORT);
         MachineClient machineClient = MachineClientRepository.get();
         String params = machineClient.toParams();
