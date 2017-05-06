@@ -47,4 +47,9 @@ public class HdfsBalancedGlobal extends UploadPolicy {
         }
         return aUsedSpacePercent < bUsedSpacePercent ? -1 : 1;
     }
+
+    @Override
+    public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
+        return null;
+    }
 }

@@ -39,4 +39,9 @@ public class Hadaps extends UploadPolicy {
         return machineServers.get(0);
     }
 
+
+    @Override
+    public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
+        return null;
+    }
 }
