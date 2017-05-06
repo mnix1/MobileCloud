@@ -45,9 +45,7 @@ public class SegmentServerController {
         if (uri.startsWith("/segment/update")) {
             try {
                 session.parseBody(new HashMap<String, String>());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NanoHTTPD.ResponseException e) {
+            } catch (IOException | NanoHTTPD.ResponseException e) {
                 e.printStackTrace();
             }
             Map<String, String> params = session.getParms();
@@ -77,9 +75,15 @@ public class SegmentServerController {
     }
 
     private Response processSegmentUpdate(Map<String, String> params) {
-        String segmentIdentifier = params.get("segmentIdentifier");
-        String machineIdentifier = params.get("machineIdentifier");
-        return SegmentServerRepository.updateSegment(segmentIdentifier, machineIdentifier, serverWebServer) ? getSuccessResponse() : getFailedResponse();
+        SegmentServer segmentServer = new SegmentServer();
+        segmentServer.setIdentifier(params.get("identifier"));
+        segmentServer.setFileIdentifier(params.get("fileIdentifier"));
+        segmentServer.setMachineIdentifier(params.get("machineIdentifier"));
+        segmentServer.setByteFrom(Long.parseLong(params.get("byteFrom")));
+        segmentServer.setByteTo(Long.parseLong(params.get("byteTo")));
+        segmentServer.save();
+        serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+        return getSuccessResponse();
     }
 
     private Response processSegmentDownload(String uri, String segmentIdentifier) {

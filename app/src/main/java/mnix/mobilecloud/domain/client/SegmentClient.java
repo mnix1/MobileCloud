@@ -1,15 +1,9 @@
 package mnix.mobilecloud.domain.client;
 
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.util.Streams;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import java.io.IOException;
 import java.util.Map;
 
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
-import mnix.mobilecloud.util.Util;
 
 public class SegmentClient extends SegmentServer {
     private byte[] data;
@@ -49,6 +43,7 @@ public class SegmentClient extends SegmentServer {
     }
 
     public String toParams() {
-        return "segmentIdentifier=" + identifier + "&machineIdentifier=" + machineIdentifier;
+        return "identifier=" + identifier + "&fileIdentifier=" + fileIdentifier + "&machineIdentifier=" + machineIdentifier
+                + "&byteFrom=" + byteFrom + "&byteTo=" + byteTo;
     }
 }

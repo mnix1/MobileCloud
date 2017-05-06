@@ -11,14 +11,17 @@ import org.nanohttpd.protocols.http.response.Status;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.communication.server.ServerMachineCommunication;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.domain.server.MachineServer;
+import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.repository.server.SegmentServerRepository;
 import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
@@ -57,6 +60,13 @@ public class MachineServerController {
             String machineIdentifier = session.getParms().get("identifier");
             MachineServer machineServer = MachineServerRepository.findByIdentifier(machineIdentifier);
             if (machineServer != null) {
+                List<SegmentServer> segmentServers = SegmentServerRepository.findByMachineIdentifier(machineIdentifier);
+                for (SegmentServer segmentServer : segmentServers) {
+                    segmentServer.delete();
+                }
+                if (segmentServers.size() > 0) {
+                    serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+                }
                 machineServer.delete();
                 serverWebServer.sendWebSocketMessage(Action.MACHINE_DELETED);
                 return getSuccessResponse();

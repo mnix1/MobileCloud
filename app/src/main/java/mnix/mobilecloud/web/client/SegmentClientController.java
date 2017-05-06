@@ -13,15 +13,19 @@ import org.nanohttpd.protocols.http.response.Status;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import mnix.mobilecloud.communication.client.ClientSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
+import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
 import mnix.mobilecloud.util.Util;
+import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
@@ -69,8 +73,8 @@ public class SegmentClientController {
             segmentClient.delete();
             return getSuccessResponse();
         }
-        if (uri.startsWith("/segment/copy")) {
-            return processCopy(session);
+        if (uri.startsWith("/segment/send")) {
+            return processSend(session);
         }
         return null;
     }
@@ -81,9 +85,10 @@ public class SegmentClientController {
         SegmentClient segmentClient = new SegmentClient(params, clientWebServer.serverMultipart(session, params));
         if (session.getParms().containsKey("notifyServer")) {
             if (MachineClientRepository.isServer()) {
-                if (SegmentServerRepository.updateSegment(segmentClient.getIdentifier(), segmentClient.getMachineIdentifier(), clientWebServer)) {
-                    segmentClient.save();
-                }
+                SegmentServer segmentServer = new SegmentServer(segmentClient);
+                segmentServer.save();
+                clientWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+                segmentClient.save();
             } else {
                 ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(clientWebServer.getContext());
                 segmentCommunication.updateSegment(segmentClient);
@@ -94,12 +99,30 @@ public class SegmentClientController {
         return getSuccessResponse();
     }
 
-    private Response processCopy(IHTTPSession session) {
+    private Response processSend(IHTTPSession session) {
         Map<String, String> params = session.getParms();
         String segmentIdentifier = params.get("identifier");
-        String newSegmentIdentifier = params.containsKey("newIdentifier") ? params.get("newIdentifier") : segmentIdentifier;
+        SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(segmentIdentifier);
+        if (params.containsKey("newIdentifier")) {
+            segmentClient.setIdentifier("newIdentifier");
+        } else {
+            segmentClient.setIdentifierFromFileIdentifier(segmentClient.getFileIdentifier());
+        }
+        Long byteFrom = segmentClient.getByteFrom();
+        Long byteTo = segmentClient.getByteTo();
+        if (params.containsKey("byteFrom")) {
+            byteFrom = Long.parseLong(params.get("byteFrom"));
+            segmentClient.setByteFrom(byteFrom);
+        }
+        if (params.containsKey("byteTo")) {
+            byteTo = Long.parseLong(params.get("byteTo"));
+            segmentClient.setByteTo(byteTo);
+        }
+        byte[] data = Arrays.copyOfRange(segmentClient.getData(), byteFrom.intValue(), byteTo.intValue());
+        segmentClient.setData(data);
         String destinationAddress = params.get("address");
         ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(clientWebServer.getContext());
-        return segmentCommunication.uploadSegment(SegmentClientRepository.findByIdentifier(segmentIdentifier), newSegmentIdentifier, destinationAddress) ? getSuccessResponse() : getFailedResponse();
+        return segmentCommunication.uploadSegment(segmentClient, destinationAddress)
+                ? getSuccessResponse() : getFailedResponse();
     }
 }

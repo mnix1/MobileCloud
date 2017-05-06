@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.Date;
+import java.util.UUID;
 
 public class Util {
     public static void log(String log) {
@@ -39,6 +40,10 @@ public class Util {
 
     public static String cutUuid(String uuid) {
         return uuid.substring(0, 8);
+    }
+
+    public static String shortUuid() {
+        return cutUuid(UUID.randomUUID().toString());
     }
 
     public static String getDeviceName() {
