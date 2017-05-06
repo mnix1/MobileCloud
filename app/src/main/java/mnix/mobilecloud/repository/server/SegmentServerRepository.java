@@ -3,8 +3,12 @@ package mnix.mobilecloud.repository.server;
 
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.web.WebServer;
 import mnix.mobilecloud.web.server.ServerWebServer;
@@ -23,7 +27,21 @@ public class SegmentServerRepository {
     }
 
     public static List<SegmentServer> findByFileIdentifier(String identifier) {
-        return SegmentServer.find(SegmentServer.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from", null);
+        return SegmentServer.find(SegmentServer.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from, id", null);
+    }
+
+    public static List<SegmentServer> findActiveByFileIdentifierOrderById(String identifier) {
+        Set<String> activeMachineIdentifiers = MachineServerRepository.findByActiveIdentifierSet(true);
+        List<SegmentServer> result = new ArrayList<>();
+        List<SegmentServer> segmentServers = findByFileIdentifier(identifier);
+        Set<Long> byteFromSet = new HashSet<>();
+        for (SegmentServer segmentServer : segmentServers) {
+            if (activeMachineIdentifiers.contains(segmentServer.getMachineIdentifier()) && !byteFromSet.contains(segmentServer.getByteFrom())) {
+                result.add(segmentServer);
+                byteFromSet.add(segmentServer.getByteFrom());
+            }
+        }
+        return result;
     }
 
     public static List<SegmentServer> findByMachineIdentifier(String identifier) {

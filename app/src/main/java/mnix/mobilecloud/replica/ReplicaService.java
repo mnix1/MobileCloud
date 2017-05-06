@@ -40,7 +40,7 @@ public class ReplicaService {
                     SegmentClientController.processSend(params, context);
                 } else {
                     segmentCommunication.sendSegment(segmentServer, sourceMachine.getIpAddress(),
-                            destinationMachine.isMaster() ? NetworkUtil.getInet4Address().toString().replace("/", "") : destinationMachine.getIpAddress());
+                            destinationMachine.isMaster() ? NetworkUtil.getIpAddress() : destinationMachine.getIpAddress());
                 }
             }
         }

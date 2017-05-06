@@ -25,6 +25,7 @@ import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
 import mnix.mobilecloud.web.socket.Action;
 
+import static mnix.mobilecloud.network.NetworkUtil.getIpAddress;
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.NanoHTTPD.getMimeTypeForFile;
@@ -63,7 +64,8 @@ public class SegmentServerController {
             SegmentServer segmentServer = SegmentServerRepository.findByIdentifier(segmentIdentifier);
             if (segmentServer != null) {
                 ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
-                if (segmentCommunication.deleteSegment(segmentServer, MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier()).getIpAddress())) {
+                MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
+                if (segmentCommunication.deleteSegment(segmentServer, machineServer.isMaster() ? getIpAddress() : machineServer.getIpAddress())) {
                     segmentServer.delete();
                     serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
                     return getSuccessResponse();

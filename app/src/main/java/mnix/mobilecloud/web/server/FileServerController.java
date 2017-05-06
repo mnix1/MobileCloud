@@ -127,7 +127,7 @@ public class FileServerController {
         if (fileServer == null) {
             return getFailedResponse();
         }
-        List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
+        List<SegmentServer> segmentServers = SegmentServerRepository.findActiveByFileIdentifierOrderById(fileIdentifier);
         ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
         StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, fileServer.getSize(), segmentServers);
         response.addHeader("Content-disposition", "attachment; filename=" + fileServer.getName());

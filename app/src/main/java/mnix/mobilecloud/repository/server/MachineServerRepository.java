@@ -1,7 +1,9 @@
 package mnix.mobilecloud.repository.server;
 
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.server.MachineServer;
@@ -48,6 +50,14 @@ public class MachineServerRepository {
 
     public static List<MachineServer> findByActive(Boolean active) {
         return MachineServer.find(MachineServer.class, "active = " + (active ? 1 : 0));
+    }
+
+    public static Set<String> findByActiveIdentifierSet(Boolean active) {
+        Set<String> machineSet = new HashSet<>();
+        for (MachineServer machineServer : findByActive(active)) {
+            machineSet.add(machineServer.getIdentifier());
+        }
+        return machineSet;
     }
 
     public static List<MachineServer> findByActiveAndNotIdentifier(Boolean active, String identifier) {

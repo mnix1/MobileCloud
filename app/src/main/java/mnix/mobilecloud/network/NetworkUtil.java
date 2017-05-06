@@ -23,6 +23,10 @@ public class NetworkUtil {
         return getInetAddress(Inet4Address.class);
     }
 
+    public static String getIpAddress() {
+        return getInet4Address().toString().replace("/", "");
+    }
+
     private static <T extends InetAddress> T getInetAddress(Class<T> addressType) {
         try {
             Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();

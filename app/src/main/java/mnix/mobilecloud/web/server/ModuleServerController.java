@@ -55,7 +55,7 @@ public class ModuleServerController {
             segmentServers = SegmentServerRepository.findByIdentifiers(segmentIdentifiers);
         } else if (params.containsKey("fileIdentifier")) {
             String fileIdentifier = session.getParms().get("fileIdentifier");
-            segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
+            segmentServers = SegmentServerRepository.findActiveByFileIdentifierOrderById(fileIdentifier);
         }
         return segmentServers;
     }
