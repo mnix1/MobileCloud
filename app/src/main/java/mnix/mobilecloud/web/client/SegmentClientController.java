@@ -109,8 +109,8 @@ public class SegmentClientController {
         } else {
             segmentClient.setIdentifierFromFileIdentifier(segmentClient.getFileIdentifier());
         }
-        Long byteFrom = segmentClient.getByteFrom();
-        Long byteTo = segmentClient.getByteTo();
+        Long byteFrom = 0L;
+        Long byteTo = segmentClient.getSize();
         if (params.containsKey("byteFrom")) {
             byteFrom = Long.parseLong(params.get("byteFrom"));
             segmentClient.setByteFrom(byteFrom);

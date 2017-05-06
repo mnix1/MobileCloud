@@ -27,20 +27,21 @@ public class CommunicationUtils {
         return boundary + "Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + filename + "\"\r\nContent-Type: " + contentType + "\r\n\r\n";
     }
 
-    public static Boolean  uploadSegment(SegmentClient segmentClient, String ipAddress, String url) {
+    public static Boolean uploadSegment(SegmentClient segmentClient, String ipAddress, String url) {
         SocketAddress socketAddress = new InetSocketAddress(ipAddress, ClientWebServer.PORT);
         String boundary = "------" + segmentClient.getIdentifier();
         String boundaryWithLine = boundary + "\r\n";
         String qquuid = segmentClient.getIdentifier();
         String qqfilename = segmentClient.getFileIdentifier();
         byte[] data = segmentClient.getData();
-        Integer qqtotalfilesize = data.length;
+        Integer qqchunksize = data.length;
         String contentDispositionQquuid = createContentDisposition(boundaryWithLine, "qquuid", qquuid);
         String contentDispositionQqfilename = createContentDisposition(boundaryWithLine, "qqfilename", qqfilename);
-        String contentDispositionQqtotalfilesize = createContentDisposition(boundaryWithLine, "qqtotalfilesize", "" + qqtotalfilesize);
+        String contentDispositionQqpartbyteoffset = createContentDisposition(boundaryWithLine, "qqpartbyteoffset", "" + segmentClient.getByteFrom());
+        String contentDispositionQqchunksize = createContentDisposition(boundaryWithLine, "qqchunksize", "" + qqchunksize);
         String contentDispositionQqfile = createContentDispositionContentType(boundaryWithLine, "qqfile", qqfilename, "text/plain");
         String footer = "\r\n" + boundary + "--\r\n";
-        String payload = contentDispositionQquuid + contentDispositionQqfilename + contentDispositionQqtotalfilesize + contentDispositionQqfile;
+        String payload = contentDispositionQquuid + contentDispositionQqfilename + contentDispositionQqpartbyteoffset +  contentDispositionQqchunksize + contentDispositionQqfile;
         ByteBuf bbuf = Unpooled.copiedBuffer(payload, Charset.defaultCharset());
         bbuf.writeBytes(data);
         bbuf.writeCharSequence(footer, Charset.defaultCharset());
