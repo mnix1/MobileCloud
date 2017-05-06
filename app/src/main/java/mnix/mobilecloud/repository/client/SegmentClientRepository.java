@@ -18,12 +18,6 @@ import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.dto.SegmentClientDTO;
 
 public class SegmentClientRepository {
-    public static void save(Map<String, String> params,
-                            FileItemStream item) {
-        SegmentClient segmentClient = new SegmentClient(params, item);
-        segmentClient.save();
-    }
-
     public static List<SegmentClientDTO> list() {
         List<SegmentClientDTO> dtos = new ArrayList<>();
         Iterator<SegmentClient> segmentClientIterator = SegmentClient.findAsIterator(SegmentClient.class, "1=1");

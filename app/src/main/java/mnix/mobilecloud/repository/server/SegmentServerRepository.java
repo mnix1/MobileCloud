@@ -4,11 +4,12 @@ package mnix.mobilecloud.repository.server;
 import android.text.TextUtils;
 
 import java.util.List;
-import java.util.Map;
 
-import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.SegmentServer;
-import mnix.mobilecloud.util.Util;
+import mnix.mobilecloud.web.WebServer;
+import mnix.mobilecloud.web.server.ServerWebServer;
+import mnix.mobilecloud.web.socket.Action;
+import mnix.mobilecloud.web.socket.ServerWebSocket;
 
 public class SegmentServerRepository {
     public static SegmentServer findByIdentifier(String identifier) {
@@ -58,5 +59,19 @@ public class SegmentServerRepository {
 
     public static List<SegmentServer> list() {
         return SegmentServer.listAll(SegmentServer.class);
+    }
+
+    public static boolean updateSegment(String segmentIdentifier, String machineIdentifier, WebServer webServer) {
+        String[] splitIdentifier = segmentIdentifier.split("_");
+        SegmentServer originalSegment = SegmentServerRepository.findByIdentifier(splitIdentifier[0] + "_0_" + splitIdentifier[2]);
+        if (originalSegment == null) {
+            return false;
+        }
+        SegmentServer newSegment = new SegmentServer(originalSegment);
+        newSegment.setIdentifier(segmentIdentifier);
+        newSegment.setMachineIdentifier(machineIdentifier);
+        newSegment.save();
+        webServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+        return true;
     }
 }

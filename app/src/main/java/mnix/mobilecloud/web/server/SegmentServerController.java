@@ -9,13 +9,17 @@ import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.protocols.http.response.StreamingResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
 import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
@@ -38,6 +42,17 @@ public class SegmentServerController {
         if (!uri.contains("/segment/")) {
             return null;
         }
+        if (uri.startsWith("/segment/update")) {
+            try {
+                session.parseBody(new HashMap<String, String>());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NanoHTTPD.ResponseException e) {
+                e.printStackTrace();
+            }
+            Map<String, String> params = session.getParms();
+            return processSegmentUpdate(params);
+        }
         if (uri.startsWith("/segment/list")) {
             return newFixedLengthResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, new Gson().toJson(SegmentServerRepository.list()));
         }
@@ -49,13 +64,22 @@ public class SegmentServerController {
             String segmentIdentifier = session.getParms().get("identifier");
             SegmentServer segmentServer = SegmentServerRepository.findByIdentifier(segmentIdentifier);
             if (segmentServer != null) {
-                segmentServer.delete();
-                serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
-                return getSuccessResponse();
+                ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+                if (segmentCommunication.deleteSegment(segmentServer, MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier()).getIpAddress())) {
+                    segmentServer.delete();
+                    serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+                    return getSuccessResponse();
+                }
             }
             return getFailedResponse();
         }
         return null;
+    }
+
+    private Response processSegmentUpdate(Map<String, String> params) {
+        String segmentIdentifier = params.get("segmentIdentifier");
+        String machineIdentifier = params.get("machineIdentifier");
+        return SegmentServerRepository.updateSegment(segmentIdentifier, machineIdentifier, serverWebServer) ? getSuccessResponse() : getFailedResponse();
     }
 
     private Response processSegmentDownload(String uri, String segmentIdentifier) {

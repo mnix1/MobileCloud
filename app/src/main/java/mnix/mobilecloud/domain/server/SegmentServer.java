@@ -26,6 +26,14 @@ public class SegmentServer extends SugarRecord {
         this.setByteTo((long) fromByte + size);
     }
 
+    public SegmentServer(SegmentServer segmentServer) {
+        this.identifier = segmentServer.getIdentifier();
+        this.fileIdentifier = segmentServer.getFileIdentifier();
+        this.machineIdentifier = segmentServer.getMachineIdentifier();
+        this.byteFrom = segmentServer.getByteFrom();
+        this.byteTo = segmentServer.getByteTo();
+    }
+
     public String getIdentifier() {
         return identifier;
     }

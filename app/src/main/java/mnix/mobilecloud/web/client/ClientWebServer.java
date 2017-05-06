@@ -8,12 +8,19 @@ import org.nanohttpd.protocols.http.response.Response;
 
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.WebServer;
+import mnix.mobilecloud.web.server.ServerWebServer;
+import mnix.mobilecloud.web.socket.Action;
+import mnix.mobilecloud.web.socket.ServerWebSocket;
 
 public class ClientWebServer extends WebServer {
     public static final int PORT = 8090;
 
     public ClientWebServer(Context context) {
         super(PORT, context);
+    }
+
+    public ClientWebServer(Context context, ServerWebSocket serverWebSocket) {
+        super(PORT, context, serverWebSocket);
     }
 
     @Override

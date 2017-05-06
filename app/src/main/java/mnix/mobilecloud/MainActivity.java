@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         MachineServerRepository.update(machineServer);
         serverWebSocket = new ServerWebSocket();
         serverWebServer = new ServerWebServer(getApplicationContext(), serverWebSocket);
-        clientWebServer = new ClientWebServer(getApplicationContext());
+        clientWebServer = new ClientWebServer(getApplicationContext(), serverWebSocket);
     }
 
     private void initSlave() {

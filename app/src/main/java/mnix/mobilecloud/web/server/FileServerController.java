@@ -84,11 +84,11 @@ public class FileServerController {
 
     private Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Map<String, String> params = new HashMap<String, String>();
-        FileItemStream item = serverWebServer.serverMultipart(session, params);
+        byte[] data = serverWebServer.serverMultipart(session, params);
         SegmentServer segmentServer = new SegmentServer(params);
         MachineServer machineServer = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
         segmentServer.setMachineIdentifier(machineServer.getIdentifier());
-        SegmentClient segmentClient = new SegmentClient(segmentServer, item);
+        SegmentClient segmentClient = new SegmentClient(segmentServer, data);
         Boolean success = processUploadSegment(segmentClient, machineServer);
         if (!success) {
             return getFailedResponse();

@@ -9,6 +9,8 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -25,6 +27,8 @@ import java.util.Map;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.util.Util;
+import mnix.mobilecloud.web.socket.Action;
+import mnix.mobilecloud.web.socket.ServerWebSocket;
 
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
@@ -43,6 +47,7 @@ public class WebServer extends NanoHTTPD {
     protected static final String MIME_XML = "text/xml";
     protected Context context;
 
+    private final ServerWebSocket serverWebSocket;
     public final NanoFileUpload uploader;
 
     public WebServer(int port, Context context) {
@@ -55,6 +60,20 @@ public class WebServer extends NanoHTTPD {
             e.printStackTrace();
         }
         Util.log(this.getClass(), "initWebServer");
+        this.serverWebSocket = null;
+    }
+
+    public WebServer(int port, Context context, ServerWebSocket serverWebSocket) {
+        super(port);
+        uploader = new NanoFileUpload(new DiskFileItemFactory());
+        this.context = context;
+        try {
+            start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Util.log(this.getClass(), "initWebServer");
+        this.serverWebSocket = serverWebSocket;
     }
 
     public Response checkAssets(String uri) {
@@ -112,7 +131,7 @@ public class WebServer extends NanoHTTPD {
         return context;
     }
 
-    public FileItemStream serverMultipart(IHTTPSession session, Map<String, String> params) throws IOException, FileUploadException {
+    public byte[] serverMultipart(IHTTPSession session, Map<String, String> params) throws IOException, FileUploadException {
         FileItemIterator iter = uploader.getItemIterator(session);
         FileItemStream item = null;
         while (iter.hasNext()) {
@@ -121,8 +140,26 @@ public class WebServer extends NanoHTTPD {
             if (fileName == null) {
                 String line = new BufferedReader(new InputStreamReader(item.openStream())).readLine();
                 params.put(item.getFieldName(), line);
+                continue;
             }
+            Integer size = Integer.parseInt((params.containsKey("qqchunksize") ? params.get("qqchunksize") : params.get("qqtotalfilesize")));
+            ByteArrayOutputStream dataStream = new ByteArrayOutputStream(size);
+            try {
+                Streams.copy(item.openStream(), dataStream, true);
+//            item.openStream().read(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return dataStream.toByteArray();
         }
-        return item;
+        return null;
+    }
+
+    public void sendWebSocketMessage(Action action, String payload) {
+        serverWebSocket.send(action, payload);
+    }
+
+    public void sendWebSocketMessage(Action action) {
+        sendWebSocketMessage(action, null);
     }
 }

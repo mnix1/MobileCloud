@@ -13,11 +13,8 @@ import mnix.mobilecloud.web.socket.ServerWebSocket;
 public class ServerWebServer extends WebServer {
     public static final int PORT = 8080;
 
-    private final ServerWebSocket serverWebSocket;
-
     public ServerWebServer(Context context, ServerWebSocket serverWebSocket) {
-        super(PORT, context);
-        this.serverWebSocket = serverWebSocket;
+        super(PORT, context, serverWebSocket);
     }
 
     @Override
@@ -50,13 +47,5 @@ public class ServerWebServer extends WebServer {
         } else {
             return checkAssets(uri);
         }
-    }
-
-    public void sendWebSocketMessage(Action action, String payload) {
-        serverWebSocket.send(action, payload);
-    }
-
-    public void sendWebSocketMessage(Action action) {
-        sendWebSocketMessage(action, null);
     }
 }

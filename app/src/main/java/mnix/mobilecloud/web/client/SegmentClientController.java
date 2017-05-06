@@ -2,13 +2,8 @@
 
 package mnix.mobilecloud.web.client;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
@@ -16,19 +11,16 @@ import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.communication.client.ClientSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
-import mnix.mobilecloud.domain.server.MachineServer;
+import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
-import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.repository.server.SegmentServerRepository;
 import mnix.mobilecloud.util.Util;
 
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
@@ -86,7 +78,19 @@ public class SegmentClientController {
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Util.log(this.getClass(), "serveUpload");
         Map<String, String> params = new HashMap<String, String>();
-        SegmentClientRepository.save(params, clientWebServer.serverMultipart(session, params));
+        SegmentClient segmentClient = new SegmentClient(params, clientWebServer.serverMultipart(session, params));
+        if (session.getParms().containsKey("notifyServer")) {
+            if (MachineClientRepository.isServer()) {
+                if (SegmentServerRepository.updateSegment(segmentClient.getIdentifier(), segmentClient.getMachineIdentifier(), clientWebServer)) {
+                    segmentClient.save();
+                }
+            } else {
+                ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(clientWebServer.getContext());
+                segmentCommunication.updateSegment(segmentClient);
+            }
+        } else {
+            segmentClient.save();
+        }
         return getSuccessResponse();
     }
 
