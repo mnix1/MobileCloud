@@ -32,7 +32,6 @@ public class ReplicaService {
             List<MachineServer> possibleMachines = MachineServerRepository.findByActiveAndNotIdentifier(true, sourceMachine.getIdentifier());
             List<MachineServer> destinationMachines = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getReplicaMachines(segmentServer, possibleMachines);
             for (MachineServer destinationMachine : destinationMachines) {
-                possibleMachines.remove(destinationMachine);
                 if (sourceMachine.isMaster()) {
                     Map<String, String> params = new HashMap<String, String>();
                     params.put("identifier", segmentServer.getIdentifier());
