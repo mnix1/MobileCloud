@@ -32,18 +32,23 @@
         android:layout_margin="4dp"
         android:onClick="init"
         android:text="@string/init" />
-
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:onClick="clearClient"
-        android:text="@string/clearClient" />
+        android:onClick="clear"
+        android:text="@string/clear" />
+    <!--<Button-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="4dp"-->
+        <!--android:onClick="clearClient"-->
+        <!--android:text="@string/clearClient" />-->
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:onClick="clearServer"
-        android:text="@string/clearServer" />
+    <!--<Button-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="4dp"-->
+        <!--android:onClick="clearServer"-->
+        <!--android:text="@string/clearServer" />-->
 </LinearLayout>

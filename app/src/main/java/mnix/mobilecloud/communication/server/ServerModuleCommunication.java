@@ -8,6 +8,7 @@ import java.net.SocketAddress;
 import java.nio.charset.Charset;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
@@ -26,12 +27,16 @@ public class ServerModuleCommunication {
         this.context = context;
     }
 
-    public Observable<Integer> count(String address, String params) {
+    public Observable<Integer> count(final String address, String params) {
         Util.log(this.getClass(), "count", "machineServer: " + address + ", params: " + params);
         SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        ByteBuf bbuf = Unpooled.copiedBuffer(params, Charset.defaultCharset());
         return HttpClient.newClient(socketAddress)
-                .createGet("/module/count" + params)
+                .createPost("/module/count")
+                .addHeader(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
+                .addHeader(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED)
+                .writeContentAndFlushOnEach(Observable.just(bbuf))
                 .flatMap(new Func1<HttpClientResponse<ByteBuf>, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(HttpClientResponse<ByteBuf> resp) {
@@ -41,7 +46,7 @@ public class ServerModuleCommunication {
                                     @Override
                                     public Integer call(ByteBuf bb) {
                                         String res = bb.toString(Charset.defaultCharset());
-                                        Util.log(this.getClass(), "count", "response: " + res);
+                                        Util.log(this.getClass(), "count", "machineServer: " + address + ", response: " + res);
                                         return Integer.parseInt(res);
                                     }
                                 })

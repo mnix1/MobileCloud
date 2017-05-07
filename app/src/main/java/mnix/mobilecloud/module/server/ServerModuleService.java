@@ -17,6 +17,8 @@ import mnix.mobilecloud.util.Util;
 import rx.Observable;
 import rx.functions.Func2;
 
+import static mnix.mobilecloud.network.NetworkUtil.getIpAddress;
+
 public class ServerModuleService {
     public static int count(final List<SegmentServer> segmentServers, byte[] countData, ServerModuleCommunication moduleCommunication) throws ModuleError {
         Map<String, List<String>> machineGroupedSegmentIdentifiers = new HashMap<>();
@@ -31,20 +33,20 @@ public class ServerModuleService {
         }
 
         String byteParam = byteParam(countData);
-        int result = 0;
+        //TODO Possible BUG!!!
         Observable<Integer> observableResult = Observable.just(0);
         for (String machineIdentifier : machineGroupedSegmentIdentifiers.keySet()) {
             MachineServer machineServer = MachineServerRepository.findByIdentifier(machineIdentifier);
             List<String> segmentIdentifiers = machineGroupedSegmentIdentifiers.get(machineIdentifier);
-            if (machineServer.isMaster()) {
-                result += ClientModuleService.count(segmentIdentifiers, countData);
-                continue;
-            }
+//            if (machineServer.isMaster()) {
+//                result += ClientModuleService.count(segmentIdentifiers, countData);
+//                continue;
+//            }
             String identifierParam = TextUtils.join("&identifier=", segmentIdentifiers);
-            Observable<Integer> localObservable = moduleCommunication.count(machineServer.getIpAddress(), "?identifier=" + identifierParam + "&byte=" + byteParam);
+            Observable<Integer> localObservable = moduleCommunication.count(machineServer.isMaster() ? getIpAddress() : machineServer.getIpAddress(), "identifier=" + identifierParam + "&byte=" + byteParam);
             observableResult = observableResult.mergeWith(localObservable);
         }
-        result = observableResult.reduce(result, new Func2<Integer, Integer, Integer>() {
+        int result = observableResult.reduce(0, new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer all, Integer val) {
                 Util.log(this.getClass(), "count", "all: " + all + ", val: " + val);

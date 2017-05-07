@@ -3,6 +3,7 @@
     <string name="ap_enable">Ap Enable</string>
     <string name="wifi_enable">Wifi Enable</string>
     <string name="init">Init</string>
+    <string name="clear">Clear</string>
     <string name="clearClient">Clear Client</string>
     <string name="clearServer">Clear Server</string>
 </resources>

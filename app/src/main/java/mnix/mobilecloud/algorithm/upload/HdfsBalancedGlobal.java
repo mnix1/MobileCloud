@@ -2,7 +2,6 @@ package mnix.mobilecloud.algorithm.upload;
 
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Map;
 
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
@@ -18,12 +17,12 @@ public class HdfsBalancedGlobal extends UploadPolicy {
         List<MachineServer> machineServers = MachineServerRepository.findByActive(true);
         MachineServer a = machineServers.get(random.nextInt(machineServers.size()));
         MachineServer b = machineServers.get(random.nextInt(machineServers.size()));
-        return chooseDataNode(a, b);
+        return chooseMachine(a, b);
     }
 
-    protected MachineServer chooseDataNode(MachineServer a, MachineServer b) {
+    protected MachineServer chooseMachine(MachineServer a, MachineServer b) {
         int balancedPreference = (int) (100 * Option.getInstance().getBalancedPreference());
-        int ret = compareDataNode(a, b);
+        int ret = compareMachine(a, b);
         if (ret == 0) {
             return a;
         } else if (ret < 0) {
@@ -33,8 +32,8 @@ public class HdfsBalancedGlobal extends UploadPolicy {
         }
     }
 
-    protected int compareDataNode(final MachineServer a,
-                                  final MachineServer b) {
+    protected int compareMachine(final MachineServer a,
+                                 final MachineServer b) {
         double aUsedSpace = SegmentServerRepository.getUsedSpace(a.getIdentifier());
         double bUsedSpace = SegmentServerRepository.getUsedSpace(b.getIdentifier());
 

@@ -3,10 +3,13 @@
 package mnix.mobilecloud.web.client;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
+import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,13 @@ public class ModuleClientController {
             return null;
         }
         if (uri.startsWith("/module/count")) {
+            try {
+                session.parseBody(new HashMap<String, String>());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NanoHTTPD.ResponseException e) {
+                e.printStackTrace();
+            }
             List<String> segmentIdentifiers = session.getParameters().get("identifier");
             Map<String, String> params = session.getParms();
             return processCount(segmentIdentifiers, params);

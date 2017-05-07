@@ -152,6 +152,18 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+
+    public void clear(View view) {
+        Util.log(this.getClass(), "clear");
+        MachineServer.deleteAll(MachineServer.class);
+        SegmentServer.deleteAll(SegmentServer.class);
+        FileServer.deleteAll(FileServer.class);
+//        MachineClient.deleteAll(MachineClient.class);
+        SegmentClient.deleteAll(SegmentClient.class);
+        MachineClientRepository.update();
+        MachineServer machineServer = new MachineServer(MachineClientRepository.get());
+        MachineServerRepository.update(machineServer);
+    }
     public void clearClient(View view) {
         Util.log(this.getClass(), "clearClient");
 //        MachineServer.deleteAll(MachineServer.class);

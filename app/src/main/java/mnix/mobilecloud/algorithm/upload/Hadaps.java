@@ -16,6 +16,17 @@ public class Hadaps extends UploadPolicy {
     @Override
     public MachineServer getMachine(SegmentServer segmentServer) {
         List<MachineServer> machineServers = MachineServerRepository.findByActive(true);
+        machineServers = sortMachines(segmentServer, machineServers);
+        return machineServers.get(0);
+    }
+
+
+    @Override
+    public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
+        return sortMachines(segmentServer, possibleMachines);
+    }
+
+    private List<MachineServer> sortMachines(SegmentServer segmentServer, List<MachineServer> machineServers) {
         final Map<String, Double> machineSpeedMap = new HashMap<>();
         double speedFactor = Option.getInstance().getSpeedFactor();
         double avgSpeed = 0;
@@ -36,12 +47,6 @@ public class Hadaps extends UploadPolicy {
                 return machineSpeedMap.get(o1.getIdentifier()).compareTo(machineSpeedMap.get(o2.getIdentifier()));
             }
         });
-        return machineServers.get(0);
-    }
-
-
-    @Override
-    public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
-        return null;
+        return machineServers;
     }
 }

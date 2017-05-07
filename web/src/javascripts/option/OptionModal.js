@@ -102,7 +102,7 @@ class OptionModal extends Component {
                 <label>Number of Replicas:</label>
                 <input onChange={e => {
                     this.setState({replicaSize: e.target.value})
-                }} type="number" step="0.01" value={this.state.replicaSize}/>
+                }} type="number" min="0" step="1" value={this.state.replicaSize}/>
             </div>
             <div className='form-group'>
                 <label>Upload algorithm:</label>

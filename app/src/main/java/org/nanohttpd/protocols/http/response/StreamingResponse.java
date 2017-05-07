@@ -1,22 +1,17 @@
 package org.nanohttpd.protocols.http.response;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Comparator;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
-import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
-import mnix.mobilecloud.util.Util;
 
 public class StreamingResponse extends Response {
     private List<SegmentServer> segmentServers;

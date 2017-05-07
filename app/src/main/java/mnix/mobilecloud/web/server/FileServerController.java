@@ -130,7 +130,7 @@ public class FileServerController {
         List<SegmentServer> segmentServers = SegmentServerRepository.findActiveByFileIdentifierOrderById(fileIdentifier);
         ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
         StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, fileServer.getSize(), segmentServers);
-        response.addHeader("Content-disposition", "attachment; filename=" + fileServer.getName());
+        response.addHeader("Content-disposition", "attachment; filename=" + fileServer.getName().replace(",", ""));
         return response;
     }
 
