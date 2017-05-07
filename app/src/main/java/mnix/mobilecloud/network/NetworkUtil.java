@@ -32,11 +32,9 @@ public class NetworkUtil {
             Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
             while (ifaces.hasMoreElements()) {
                 NetworkInterface iface = ifaces.nextElement();
-
                 if (!deviceNames.contains(iface.getName())) {
                     continue;
                 }
-
                 Enumeration<InetAddress> addrs = iface.getInetAddresses();
                 while (addrs.hasMoreElements()) {
                     InetAddress addr = addrs.nextElement();

@@ -9,6 +9,7 @@ import java.util.List;
 
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
+import mnix.mobilecloud.util.FileUtil;
 
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
@@ -26,6 +27,7 @@ public class FileClientController {
                 return getFailedResponse();
             }
             for (SegmentClient segmentClient : segmentClients) {
+                FileUtil.delete(segmentClient);
                 segmentClient.delete();
             }
             return getSuccessResponse();

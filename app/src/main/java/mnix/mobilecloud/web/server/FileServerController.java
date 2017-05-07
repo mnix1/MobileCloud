@@ -30,6 +30,7 @@ import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
+import mnix.mobilecloud.util.FileUtil;
 import mnix.mobilecloud.web.socket.Action;
 
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
@@ -144,6 +145,7 @@ public class FileServerController {
                 MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
                 if (machineServer.isMaster()) {
                     for (SegmentClient segmentClient : SegmentClientRepository.findByFileIdentifier(fileServer.getIdentifier())) {
+                        FileUtil.delete(segmentClient);
                         segmentClient.delete();
                     }
                 } else {

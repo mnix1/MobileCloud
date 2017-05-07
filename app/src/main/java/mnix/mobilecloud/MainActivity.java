@@ -20,18 +20,21 @@ import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.network.NetworkManager;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
+import mnix.mobilecloud.util.FileUtil;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.client.WebServerClient;
 import mnix.mobilecloud.web.server.WebServerServer;
 import mnix.mobilecloud.web.socket.WebSocketServer;
 import rx.Observer;
+import rx.Subscription;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_WRITE_SETTINGS = 1;
-    private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 2;
+    private static final int REQUESTS = 2;
 
     private NetworkManager networkManager;
+    private Subscription networkManagerSubscription;
     private WebServerServer webServerServer;
     private WebServerClient webServerClient;
     private WebSocketServer webSocketServer;
@@ -41,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        init();
-        networkManager = new NetworkManager(this);
+        FileUtil.setDir();
+        if (networkManager == null) {
+            networkManager = new NetworkManager(this);
+        }
         MachineClientRepository.update();
         initMaster();
     }
@@ -50,13 +56,14 @@ public class MainActivity extends AppCompatActivity {
     boolean checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 || !Settings.System.canWrite(this))) {
             Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
             intent.setData(Uri.parse("package:" + getPackageName()));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivityForResult(intent, REQUEST_WRITE_SETTINGS);
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    REQUEST_CODE_ACCESS_COARSE_LOCATION);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUESTS);
             return false;
         }
         return true;
@@ -66,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_WRITE_SETTINGS:
-            case REQUEST_CODE_ACCESS_COARSE_LOCATION:
+            case REQUESTS:
                 init();
                 break;
         }
@@ -77,8 +84,14 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         MachineClientRepository.update();
-        networkManager = new NetworkManager(this);
-        networkManager.connectOrCreateAp().subscribe(new Observer<MachineRole>() {
+        if (networkManager == null) {
+            networkManager = new NetworkManager(this);
+        }
+        if (networkManagerSubscription != null) {
+            networkManagerSubscription.unsubscribe();
+            networkManagerSubscription = null;
+        }
+        networkManagerSubscription = networkManager.connectOrCreateAp().subscribe(new Observer<MachineRole>() {
             @Override
             public void onCompleted() {
                 Util.log(this.getClass(), "update onComplete");
@@ -158,11 +171,13 @@ public class MainActivity extends AppCompatActivity {
         SegmentServer.deleteAll(SegmentServer.class);
         FileServer.deleteAll(FileServer.class);
 //        MachineClient.deleteAll(MachineClient.class);
+        FileUtil.clear();
         SegmentClient.deleteAll(SegmentClient.class);
         MachineClientRepository.update();
         MachineServer machineServer = new MachineServer(MachineClientRepository.get());
         MachineServerRepository.update(machineServer);
     }
+
     public void clearClient(View view) {
         Util.log(this.getClass(), "clearClient");
 //        MachineServer.deleteAll(MachineServer.class);

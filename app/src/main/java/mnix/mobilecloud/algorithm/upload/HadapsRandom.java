@@ -28,8 +28,11 @@ public class HadapsRandom extends UploadPolicy {
         avgSpeed /= machineServers.size();
         for (MachineServer machineServer : machineServers) {
             int segments = SegmentServerRepository.findByMachineIdentifierAndFileIdentifier(machineServer.getIdentifier(), segmentServer.getFileIdentifier()).size();
-            double speed = machineServer.getSpeed() > avgSpeed ? machineServer.getSpeed() - (machineServer.getSpeed() - avgSpeed) / speedFactor
-                    : machineServer.getSpeed() + (avgSpeed - machineServer.getSpeed()) / speedFactor;
+            double speed = speedFactor == 0
+                    ? machineServer.getSpeed()
+                    : (machineServer.getSpeed() > avgSpeed
+                    ? machineServer.getSpeed() - (machineServer.getSpeed() - avgSpeed) / speedFactor
+                    : machineServer.getSpeed() + (avgSpeed - machineServer.getSpeed()) / speedFactor);
             speed *= (1 + segments);
             factor += 1d / speed;
             machineSpeedMap.put(machineServer.getIdentifier(), speed);

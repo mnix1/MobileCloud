@@ -4,9 +4,9 @@ import java.util.Map;
 
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
+import mnix.mobilecloud.util.FileUtil;
 
 public class SegmentClient extends SegmentServer {
-    private byte[] data;
 
     public SegmentClient() {
     }
@@ -35,11 +35,11 @@ public class SegmentClient extends SegmentServer {
 
 
     public byte[] getData() {
-        return data;
+        return FileUtil.getData(this);
     }
 
     public void setData(byte[] data) {
-        this.data = data;
+        FileUtil.setData(this, data);
     }
 
     public String toParams() {

@@ -24,6 +24,7 @@ import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
+import mnix.mobilecloud.util.FileUtil;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.socket.Action;
 
@@ -70,6 +71,7 @@ public class SegmentClientController {
             if (segmentClient == null) {
                 return getFailedResponse();
             }
+            FileUtil.delete(segmentClient);
             segmentClient.delete();
             return getSuccessResponse();
         }

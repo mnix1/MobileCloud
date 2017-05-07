@@ -27,10 +27,11 @@ public class NetworkManager {
     public static final String PASSWORD = "mobilecloud1";
     private WifiControl wifiControl;
     private Context context;
+    private Subscription subscription;
 
     public NetworkManager(final MainActivity activity) {
         context = activity.getApplicationContext();
-        Observable.interval(1000, TimeUnit.MILLISECONDS)
+        subscription = Observable.interval(5000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Long>() {
@@ -40,6 +41,13 @@ public class NetworkManager {
                     }
                 });
         wifiControl = WifiControl.getInstance(context);
+    }
+
+    public void dispose() {
+        if (subscription != null) {
+            subscription.unsubscribe();
+            subscription = null;
+        }
     }
 
     public void enableAp() {

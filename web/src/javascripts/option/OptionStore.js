@@ -19,7 +19,7 @@ const fetchOptions = function (store) {
 class OptionStore {
     constructor() {
         this.update = this.update.bind(this);
-        this.segmentSizes = [1024 * 128, 1024 * 256, 1024 * 512, 1024 * 1024];
+        this.segmentSizes = [1024 * 128, 1024 * 256, 1024 * 512, 1024 * 1024, 1024 * 1024 * 2, 1024 * 1024 * 4, 1024 * 1024 * 8];
         this.uploadAlgorithms = ['HDFS_DEFAULT', 'HDFS_BALANCED_FILE', 'HDFS_BALANCED_GLOBAL', 'HADAPS', 'HADAPS_RANDOM'];
         this.update();
         this.initUploader();

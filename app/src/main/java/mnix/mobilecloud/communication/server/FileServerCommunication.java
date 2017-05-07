@@ -23,7 +23,7 @@ public class FileServerCommunication {
         SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         HttpClient.newClient(socketAddress)
                 .createGet("/file/delete?identifier=" + fileServer.getIdentifier())
-                .subscribe();
+                .take(1);
     }
 
 //    public Boolean deleteFileSegments(FileServer fileServer, MachineServer machineServer) {

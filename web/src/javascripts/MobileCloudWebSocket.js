@@ -1,8 +1,25 @@
 function findUri() {
     return 'ws://' + location.hostname + ':9080/';
 }
+class Queue {
+    constructor(interval, callback) {
+        this.interval = interval;
+        this.callback = callback;
+    }
+
+    call(callback) {
+        this.lastCall = new Date();
+        setTimeout(() => {
+            if (new Date().getTime() - this.lastCall.getTime() >= this.interval) {
+                callback && callback();
+                this.callback && this.callback();
+            }
+        }, this.interval);
+    }
+}
 class MobileCloudWebSocket {
     constructor(store) {
+        const segmentQueue = new Queue(1500);
         const uri = findUri();
         this.webSocket = new WebSocket(uri);
         this.webSocket.onopen = evt => {
@@ -29,7 +46,7 @@ class MobileCloudWebSocket {
                 return store.machine.update();
             }
             if (msg.indexOf('SEGMENT_UPLOADED') != -1 || msg.indexOf('SEGMENT_DELETED') != -1) {
-                return store.segment.update();
+                return segmentQueue.call(store.segment.update);
             }
         };
         this.webSocket.onerror = function (evt) {

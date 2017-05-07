@@ -10,7 +10,7 @@ public class Option {
     private Long segmentSize = 1024L * 1024;
     private Integer replicaSize = 0;
     private Algorithm uploadAlgorithm = Algorithm.HDFS_DEFAULT;
-    private Double speedFactor = 3d;
+    private Double speedFactor = 0d;
     private Double balancedPreference = 0.5;
 
     private Option() {
