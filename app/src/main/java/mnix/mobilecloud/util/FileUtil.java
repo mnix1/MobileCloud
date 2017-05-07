@@ -29,7 +29,6 @@ public class FileUtil {
             inputStream = new FileInputStream(getRootDir() + "/" + segmentClient.getIdentifier());
             byte[] data = new byte[segmentClient.getSize().intValue()];
             inputStream.read(data);
-
             return data;
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,6 +36,7 @@ public class FileUtil {
             try {
                 if (inputStream != null) {
                     inputStream.close();
+                    inputStream = null;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -57,8 +57,8 @@ public class FileUtil {
             try {
                 if (outputStream != null) {
                     outputStream.close();
+                    outputStream = null;
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -71,7 +71,8 @@ public class FileUtil {
     }
 
     public static void clear() {
-        rootDir.delete();
-        setDir();
+        for (File file : rootDir.listFiles()) {
+            file.delete();
+        }
     }
 }

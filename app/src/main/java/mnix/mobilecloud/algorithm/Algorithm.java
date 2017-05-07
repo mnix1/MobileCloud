@@ -1,7 +1,6 @@
 package mnix.mobilecloud.algorithm;
 
 import mnix.mobilecloud.algorithm.upload.Hadaps;
-import mnix.mobilecloud.algorithm.upload.HadapsRandom;
 import mnix.mobilecloud.algorithm.upload.HdfsBalancedFile;
 import mnix.mobilecloud.algorithm.upload.HdfsBalancedGlobal;
 import mnix.mobilecloud.algorithm.upload.HdfsDefault;
@@ -11,8 +10,7 @@ public enum Algorithm {
     HDFS_DEFAULT,
     HDFS_BALANCED_FILE,
     HDFS_BALANCED_GLOBAL,
-    HADAPS,
-    HADAPS_RANDOM;
+    HADAPS;
 
 
     public static UploadPolicy findUploadPolicy(Algorithm algorithm) {
@@ -28,14 +26,6 @@ public enum Algorithm {
         if (algorithm == Algorithm.HADAPS) {
             return new Hadaps();
         }
-        if (algorithm == Algorithm.HADAPS_RANDOM) {
-            return new HadapsRandom();
-        }
         return new HdfsDefault();
-    }
-
-    public static UploadPolicy findUploadPolicy(String algorithmString) {
-        Algorithm algorithm = algorithmString == null ? Algorithm.HDFS_DEFAULT : Algorithm.valueOf(algorithmString);
-        return findUploadPolicy(algorithm);
     }
 }

@@ -1,6 +1,7 @@
 package mnix.mobilecloud.algorithm.upload;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 
 import mnix.mobilecloud.domain.server.MachineServer;
@@ -37,11 +38,9 @@ public class HdfsBalancedGlobal extends UploadPolicy {
         double aUsedSpace = SegmentServerRepository.getUsedSpace(a.getIdentifier());
         double bUsedSpace = SegmentServerRepository.getUsedSpace(b.getIdentifier());
 
-
         double aUsedSpacePercent = aUsedSpace * 100d / (aUsedSpace + a.getSpace());
         double bUsedSpacePercent = bUsedSpace * 100d / (bUsedSpace + b.getSpace());
-        if (a.equals(b)
-                || Math.abs(aUsedSpacePercent - bUsedSpacePercent) < 5) {
+        if (a.equals(b) || Math.abs(aUsedSpacePercent - bUsedSpacePercent) < 5) {
             return 0;
         }
         return aUsedSpacePercent < bUsedSpacePercent ? -1 : 1;
@@ -49,6 +48,15 @@ public class HdfsBalancedGlobal extends UploadPolicy {
 
     @Override
     public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
-        return null;
+        int replicaSize = getMaxReplicaSize(possibleMachines.size());
+        List<MachineServer> result = new ArrayList<>(replicaSize);
+        for (int i = 0; i < replicaSize; i++) {
+            MachineServer a = possibleMachines.get(random.nextInt(possibleMachines.size()));
+            MachineServer b = possibleMachines.get(random.nextInt(possibleMachines.size()));
+            MachineServer machine = chooseMachine(a, b);
+            result.add(machine);
+            possibleMachines.remove(machine);
+        }
+        return result;
     }
 }
