@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mnix.mobilecloud.algorithm.Algorithm;
+import mnix.mobilecloud.algorithm.upload.UploadAlgorithm;
 import mnix.mobilecloud.communication.server.FileServerCommunication;
 import mnix.mobilecloud.communication.server.SegmentServerCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
@@ -83,7 +83,7 @@ public class FileServerController {
         Map<String, String> params = new HashMap<String, String>();
         byte[] data = webServerServer.serverMultipart(session, params);
         SegmentServer segmentServer = new SegmentServer(params);
-        MachineServer machineServer = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
+        MachineServer machineServer = UploadAlgorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
         segmentServer.setMachineIdentifier(machineServer.getIdentifier());
         SegmentClient segmentClient = new SegmentClient(segmentServer, data);
         Boolean success = processUploadSegment(segmentClient, machineServer);

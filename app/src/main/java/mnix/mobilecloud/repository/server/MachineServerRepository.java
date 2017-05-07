@@ -1,6 +1,8 @@
 package mnix.mobilecloud.repository.server;
 
 
+import android.text.TextUtils;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +64,10 @@ public class MachineServerRepository {
 
     public static List<MachineServer> findByActiveAndNotIdentifier(Boolean active, String identifier) {
         return MachineServer.find(MachineServer.class, "active = " + (active ? 1 : 0) + " AND identifier <> ?", identifier);
+    }
+
+    public static List<MachineServer> findByActiveAndNotIdentifiers(Boolean active, List<String> identifiers) {
+        return MachineServer.find(MachineServer.class, "active = " + (active ? 1 : 0) + " AND identifier NOT IN ('" + TextUtils.join("','", identifiers) + "')");
     }
 
     public static List<MachineServer> list() {

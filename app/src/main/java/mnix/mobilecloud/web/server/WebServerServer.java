@@ -41,6 +41,10 @@ public class WebServerServer extends WebServer {
         if (response != null) {
             return response;
         }
+        response = new BalanceServerController(this).serve(session);
+        if (response != null) {
+            return response;
+        }
         if (uri.equals("/") || uri.equals("/machine") || uri.equals("/segment")) {
             return checkAssets("/index.html");
         } else {

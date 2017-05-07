@@ -24,7 +24,10 @@ hr {
     margin: 10px 0px !important;
 }
 .optionPanel {
-    margin-bottom: 10px;
+    float: left;
+}
+.balanceButton {
+    float: right;
 }
 .uploadPanel {
     min-width: 600px;

@@ -104,8 +104,9 @@ public class SegmentClientController {
     public static Boolean processSend(Map<String, String> params, Context context) {
         String segmentIdentifier = params.get("identifier");
         SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(segmentIdentifier);
+        byte[] segmentClientData = segmentClient.getData();
         if (params.containsKey("newIdentifier")) {
-            segmentClient.setIdentifier("newIdentifier");
+            segmentClient.setIdentifier(params.get("newIdentifier"));
         } else {
             segmentClient.setIdentifierFromFileIdentifier(segmentClient.getFileIdentifier());
         }
@@ -119,7 +120,7 @@ public class SegmentClientController {
             byteTo = Long.parseLong(params.get("byteTo"));
             segmentClient.setByteTo(byteTo);
         }
-        byte[] data = Arrays.copyOfRange(segmentClient.getData(), byteFrom.intValue(), byteTo.intValue());
+        byte[] data = Arrays.copyOfRange(segmentClientData, byteFrom.intValue(), byteTo.intValue());
         segmentClient.setData(data);
         String destinationAddress = params.get("address");
         SegmentClientCommunication segmentCommunication = new SegmentClientCommunication(context);

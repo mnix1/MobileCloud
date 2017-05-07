@@ -29,4 +29,9 @@ public class HdfsDefault extends UploadPolicy {
         }
         return result;
     }
+
+    @Override
+    public MachineServer getReplicaMachine(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
+        return possibleMachines.get(random.nextInt(possibleMachines.size()));
+    }
 }

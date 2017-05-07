@@ -17,6 +17,7 @@ class OptionModal extends Component {
             segmentSize: props.store.segmentSize,
             replicaSize: props.store.replicaSize,
             uploadAlgorithm: props.store.uploadAlgorithm,
+            balanceAlgorithm: props.store.balanceAlgorithm,
             speedFactor: props.store.speedFactor,
             balancedPreference: props.store.balancedPreference,
         };
@@ -28,6 +29,7 @@ class OptionModal extends Component {
             segmentSize: this.props.store.segmentSize,
             replicaSize: this.props.store.replicaSize,
             uploadAlgorithm: this.props.store.uploadAlgorithm,
+            balanceAlgorithm: this.props.store.balanceAlgorithm,
             speedFactor: this.props.store.speedFactor,
             balancedPreference: this.props.store.balancedPreference,
         });
@@ -46,6 +48,7 @@ class OptionModal extends Component {
                 segmentSize: this.state.segmentSize,
                 replicaSize: this.state.replicaSize,
                 uploadAlgorithm: this.state.uploadAlgorithm,
+                balanceAlgorithm: this.state.balanceAlgorithm,
                 speedFactor: this.state.speedFactor,
                 balancedPreference: this.state.balancedPreference,
             },
@@ -99,29 +102,38 @@ class OptionModal extends Component {
                 </DropdownButton>
             </div>
             <div className='form-group'>
-                <label>Number of Replicas:</label>
+                <label>Number of Replica:</label>
                 <input onChange={e => {
                     this.setState({replicaSize: e.target.value})
                 }} type="number" min="0" step="1" value={this.state.replicaSize}/>
             </div>
             <div className='form-group'>
-                <label>Upload algorithm:</label>
+                <label>Upload Algorithm:</label>
                 <DropdownButton bsStyle='default' title={this.state.uploadAlgorithm}
                                 id="uploadAlgorithmDropdown">
                     {this.renderUploadAlgorithmItems()}
                 </DropdownButton>
             </div>
+            <hr/>
             <div className='form-group'>
-                <label>Speed Factor:</label>
-                <input onChange={e => {
-                    this.setState({speedFactor: e.target.value})
-                }} type="number" step="0.01" value={this.state.speedFactor}/>
+                <label>Balance Algorithm:</label>
+                <DropdownButton bsStyle='default' title={this.state.balanceAlgorithm}
+                                id="balanceAlgorithmDropdown">
+                    {this.renderBalanceAlgorithmItems()}
+                </DropdownButton>
             </div>
+            <hr/>
             <div className='form-group'>
-                <label>Balance Preference:</label>
+                <label>HDFS Balance Preference:</label>
                 <input onChange={e => {
                     this.setState({balancedPreference: e.target.value})
                 }} type="number" step="0.01" value={this.state.balancedPreference}/>
+            </div>
+            <div className='form-group'>
+                <label>Hadaps Speed Factor:</label>
+                <input onChange={e => {
+                    this.setState({speedFactor: e.target.value})
+                }} type="number" step="0.01" value={this.state.speedFactor}/>
             </div>
         </ModalBody>
     }
@@ -137,6 +149,13 @@ class OptionModal extends Component {
         return this.props.store.uploadAlgorithms.map((e, i) => {
             return <MenuItem onClick={ menuItem => this.setState({uploadAlgorithm: e})} eventKey={e} key={i}
                              active={e == this.state.uploadAlgorithm}>{e}</MenuItem>
+        })
+    }
+
+    renderBalanceAlgorithmItems() {
+        return this.props.store.balanceAlgorithms.map((e, i) => {
+            return <MenuItem onClick={ menuItem => this.setState({balanceAlgorithm: e})} eventKey={e} key={i}
+                             active={e == this.state.balanceAlgorithm}>{e}</MenuItem>
         })
     }
 }

@@ -11,7 +11,9 @@ public abstract class UploadPolicy {
 
     public abstract List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines);
 
-    protected int getMaxReplicaSize(int max) {
+    public abstract MachineServer getReplicaMachine(SegmentServer segmentServer, List<MachineServer> possibleMachines);
+
+    public static int getMaxReplicaSize(int max) {
         return Math.min(max, Option.getInstance().getReplicaSize());
     }
 }

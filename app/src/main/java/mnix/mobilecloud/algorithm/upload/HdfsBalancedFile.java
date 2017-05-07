@@ -22,6 +22,29 @@ public class HdfsBalancedFile extends UploadPolicy {
         return chooseMachine(a, b, segmentServer.getFileIdentifier());
     }
 
+    @Override
+    public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
+        int replicaSize = getMaxReplicaSize(possibleMachines.size());
+        List<MachineServer> result = new ArrayList<>(replicaSize);
+        for (int i = 0; i < replicaSize; i++) {
+            MachineServer a = possibleMachines.get(random.nextInt(possibleMachines.size()));
+            MachineServer b = possibleMachines.get(random.nextInt(possibleMachines.size()));
+            MachineServer machine = chooseMachine(a, b, segmentServer.getFileIdentifier());
+            result.add(machine);
+            possibleMachines.remove(machine);
+        }
+        return result;
+    }
+
+
+    @Override
+    public MachineServer getReplicaMachine(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
+        MachineServer a = possibleMachines.get(random.nextInt(possibleMachines.size()));
+        MachineServer b = possibleMachines.get(random.nextInt(possibleMachines.size()));
+        return chooseMachine(a, b, segmentServer.getFileIdentifier());
+    }
+
+
     protected MachineServer chooseMachine(MachineServer a, MachineServer b, String fileIdentifier) {
         int balancedPreference = (int) (100 * Option.getInstance().getBalancedPreference());
         int ret = compareMachine(a, b, fileIdentifier);
@@ -45,19 +68,5 @@ public class HdfsBalancedFile extends UploadPolicy {
             return 0;
         }
         return aUsedSpacePercent < bUsedSpacePercent ? -1 : 1;
-    }
-
-    @Override
-    public List<MachineServer> getReplicaMachines(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
-        int replicaSize = getMaxReplicaSize(possibleMachines.size());
-        List<MachineServer> result = new ArrayList<>(replicaSize);
-        for (int i = 0; i < replicaSize; i++) {
-            MachineServer a = possibleMachines.get(random.nextInt(possibleMachines.size()));
-            MachineServer b = possibleMachines.get(random.nextInt(possibleMachines.size()));
-            MachineServer machine = chooseMachine(a, b, segmentServer.getFileIdentifier());
-            result.add(machine);
-            possibleMachines.remove(machine);
-        }
-        return result;
     }
 }

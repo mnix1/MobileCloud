@@ -2,14 +2,16 @@ package mnix.mobilecloud.option;
 
 import java.util.Map;
 
-import mnix.mobilecloud.algorithm.Algorithm;
+import mnix.mobilecloud.algorithm.balance.BalanceAlgorithm;
+import mnix.mobilecloud.algorithm.upload.UploadAlgorithm;
 
 public class Option {
     private static Option instance;
 
     private Long segmentSize = 1024L * 1024;
     private Integer replicaSize = 0;
-    private Algorithm uploadAlgorithm = Algorithm.HDFS_DEFAULT;
+    private UploadAlgorithm uploadAlgorithm = UploadAlgorithm.HDFS_DEFAULT;
+    private BalanceAlgorithm balanceAlgorithm = BalanceAlgorithm.HDFS_BALANCER;
     private Double speedFactor = 0d;
     private Double balancedPreference = 0.5;
 
@@ -26,7 +28,8 @@ public class Option {
     public static void fromParams(Map<String, String> params) {
         instance.setSegmentSize(Long.parseLong(params.get("segmentSize")));
         instance.setReplicaSize(Integer.parseInt(params.get("replicaSize")));
-        instance.setUploadAlgorithm(Algorithm.valueOf(params.get("uploadAlgorithm")));
+        instance.setUploadAlgorithm(UploadAlgorithm.valueOf(params.get("uploadAlgorithm")));
+        instance.setBalanceAlgorithm(BalanceAlgorithm.valueOf(params.get("balanceAlgorithm")));
         instance.setSpeedFactor(Double.parseDouble(params.get("speedFactor")));
         instance.setBalancedPreference(Double.parseDouble(params.get("balancedPreference")));
     }
@@ -47,12 +50,20 @@ public class Option {
         this.replicaSize = replicaSize;
     }
 
-    public Algorithm getUploadAlgorithm() {
+    public UploadAlgorithm getUploadAlgorithm() {
         return uploadAlgorithm;
     }
 
-    public void setUploadAlgorithm(Algorithm uploadAlgorithm) {
+    public void setUploadAlgorithm(UploadAlgorithm uploadAlgorithm) {
         this.uploadAlgorithm = uploadAlgorithm;
+    }
+
+    public BalanceAlgorithm getBalanceAlgorithm() {
+        return balanceAlgorithm;
+    }
+
+    public void setBalanceAlgorithm(BalanceAlgorithm balanceAlgorithm) {
+        this.balanceAlgorithm = balanceAlgorithm;
     }
 
     public Double getSpeedFactor() {
