@@ -33,15 +33,10 @@ public class ServerModuleService {
         }
 
         String byteParam = byteParam(countData);
-        //TODO Possible BUG!!!
         Observable<Integer> observableResult = Observable.just(0);
         for (String machineIdentifier : machineGroupedSegmentIdentifiers.keySet()) {
             MachineServer machineServer = MachineServerRepository.findByIdentifier(machineIdentifier);
             List<String> segmentIdentifiers = machineGroupedSegmentIdentifiers.get(machineIdentifier);
-//            if (machineServer.isMaster()) {
-//                result += ClientModuleService.count(segmentIdentifiers, countData);
-//                continue;
-//            }
             String identifierParam = TextUtils.join("&identifier=", segmentIdentifiers);
             Observable<Integer> localObservable = moduleCommunication.count(machineServer.isMaster() ? getIpAddress() : machineServer.getIpAddress(), "identifier=" + identifierParam + "&byte=" + byteParam);
             observableResult = observableResult.mergeWith(localObservable);
