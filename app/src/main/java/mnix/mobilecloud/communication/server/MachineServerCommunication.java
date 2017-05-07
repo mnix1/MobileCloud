@@ -14,20 +14,20 @@ import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
+import mnix.mobilecloud.web.client.WebServerClient;
 import rx.Observable;
 import rx.functions.Func1;
 
-public class ServerMachineCommunication {
+public class MachineServerCommunication {
     private final Context context;
 
-    public ServerMachineCommunication(Context context) {
+    public MachineServerCommunication(Context context) {
         this.context = context;
     }
 
     public MachineClient getMachine(String address) {
         Util.log(this.getClass(), "getMachine", "address: " + address);
-        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         String response = HttpClient.newClient(socketAddress)
 //                .enableWireLogging("hello-client", LogLevel.ERROR)
                 .createGet("/machine/get")

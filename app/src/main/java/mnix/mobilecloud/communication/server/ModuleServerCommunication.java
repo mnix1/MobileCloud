@@ -13,23 +13,21 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
-import mnix.mobilecloud.domain.server.MachineServer;
-import mnix.mobilecloud.module.ModuleError;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
+import mnix.mobilecloud.web.client.WebServerClient;
 import rx.Observable;
 import rx.functions.Func1;
 
-public class ServerModuleCommunication {
+public class ModuleServerCommunication {
     private final Context context;
 
-    public ServerModuleCommunication(Context context) {
+    public ModuleServerCommunication(Context context) {
         this.context = context;
     }
 
     public Observable<Integer> count(final String address, String params) {
         Util.log(this.getClass(), "count", "machineServer: " + address + ", params: " + params);
-        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         ByteBuf bbuf = Unpooled.copiedBuffer(params, Charset.defaultCharset());
         return HttpClient.newClient(socketAddress)
                 .createPost("/module/count")

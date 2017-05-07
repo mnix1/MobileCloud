@@ -6,7 +6,7 @@ import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
 import mnix.mobilecloud.util.BinarySearcher;
 
-public class ClientModuleService {
+public class ModuleClientService {
     public static List<Integer> index(String identifier, byte[] countData) {
         SegmentClient segmentClient = SegmentClientRepository.findByIdentifier(identifier);
         BinarySearcher bs = new BinarySearcher();

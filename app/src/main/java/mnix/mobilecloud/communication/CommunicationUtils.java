@@ -12,8 +12,7 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.domain.client.SegmentClient;
-import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
+import mnix.mobilecloud.web.client.WebServerClient;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -28,7 +27,7 @@ public class CommunicationUtils {
     }
 
     public static Boolean uploadSegment(SegmentClient segmentClient, String ipAddress, String url) {
-        SocketAddress socketAddress = new InetSocketAddress(ipAddress, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(ipAddress, WebServerClient.PORT);
         String boundary = "------" + segmentClient.getIdentifier();
         String boundaryWithLine = boundary + "\r\n";
         String qquuid = segmentClient.getIdentifier();

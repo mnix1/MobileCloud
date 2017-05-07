@@ -9,27 +9,17 @@ import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import mnix.mobilecloud.communication.server.ServerModuleCommunication;
-import mnix.mobilecloud.domain.server.SegmentServer;
-import mnix.mobilecloud.module.ModuleError;
-import mnix.mobilecloud.module.server.ServerModuleService;
 import mnix.mobilecloud.option.Option;
-import mnix.mobilecloud.repository.server.SegmentServerRepository;
 
-import static mnix.mobilecloud.module.ModuleUtil.getDataArg;
-import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 
 public class OptionServerController {
-    private final ServerWebServer serverWebServer;
+    private final WebServerServer webServerServer;
 
-    public OptionServerController(ServerWebServer serverWebServer) {
-        this.serverWebServer = serverWebServer;
+    public OptionServerController(WebServerServer webServerServer) {
+        this.webServerServer = webServerServer;
     }
 
     public Response serve(IHTTPSession session) {

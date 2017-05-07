@@ -15,12 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
-import mnix.mobilecloud.domain.server.FileServer;
+import mnix.mobilecloud.communication.server.SegmentServerCommunication;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
-import mnix.mobilecloud.repository.client.MachineClientRepository;
-import mnix.mobilecloud.repository.server.FileServerRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
 import mnix.mobilecloud.web.socket.Action;
@@ -32,10 +29,10 @@ import static org.nanohttpd.protocols.http.NanoHTTPD.getMimeTypeForFile;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
 public class SegmentServerController {
-    private final ServerWebServer serverWebServer;
+    private final WebServerServer webServerServer;
 
-    public SegmentServerController(ServerWebServer serverWebServer) {
-        this.serverWebServer = serverWebServer;
+    public SegmentServerController(WebServerServer webServerServer) {
+        this.webServerServer = webServerServer;
     }
 
     public Response serve(IHTTPSession session) {
@@ -63,11 +60,11 @@ public class SegmentServerController {
             String segmentIdentifier = session.getParms().get("identifier");
             SegmentServer segmentServer = SegmentServerRepository.findByIdentifier(segmentIdentifier);
             if (segmentServer != null) {
-                ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+                SegmentServerCommunication segmentCommunication = new SegmentServerCommunication(webServerServer.getContext());
                 MachineServer machineServer = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
                 if (segmentCommunication.deleteSegment(segmentServer, machineServer.isMaster() ? getIpAddress() : machineServer.getIpAddress())) {
                     segmentServer.delete();
-                    serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+                    webServerServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
                     return getSuccessResponse();
                 }
             }
@@ -84,7 +81,7 @@ public class SegmentServerController {
         segmentServer.setByteFrom(Long.parseLong(params.get("byteFrom")));
         segmentServer.setByteTo(Long.parseLong(params.get("byteTo")));
         segmentServer.save();
-        serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+        webServerServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
         return getSuccessResponse();
     }
 
@@ -95,7 +92,7 @@ public class SegmentServerController {
         }
         List<SegmentServer> segmentServers = new ArrayList<>();
         segmentServers.add(segmentServer);
-        ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+        SegmentServerCommunication segmentCommunication = new SegmentServerCommunication(webServerServer.getContext());
         StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, segmentServer.getSize(), segmentServers);
         response.addHeader("Content-disposition", "attachment; filename=" + segmentServer.getIdentifier());
         return response;

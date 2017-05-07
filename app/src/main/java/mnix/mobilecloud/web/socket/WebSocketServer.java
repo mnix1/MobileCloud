@@ -6,11 +6,11 @@ import org.nanohttpd.protocols.websockets.WebSocket;
 
 import java.io.IOException;
 
-public class ServerWebSocket extends NanoWSD {
+public class WebSocketServer extends NanoWSD {
     public static final int PORT = 9080;
     private MobileCloudWebSocket webSocket;
 
-    public ServerWebSocket() {
+    public WebSocketServer() {
         super(PORT);
         try {
             start();

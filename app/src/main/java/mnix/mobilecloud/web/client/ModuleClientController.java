@@ -11,15 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mnix.mobilecloud.module.client.ClientModuleService;
+import mnix.mobilecloud.module.client.ModuleClientService;
 
 import static mnix.mobilecloud.module.ModuleUtil.getDataArg;
 
 public class ModuleClientController {
-    private final ClientWebServer clientWebServer;
+    private final WebServerClient webServerClient;
 
-    public ModuleClientController(ClientWebServer clientWebServer) {
-        this.clientWebServer = clientWebServer;
+    public ModuleClientController(WebServerClient webServerClient) {
+        this.webServerClient = webServerClient;
     }
 
     public Response serve(IHTTPSession session) {
@@ -48,12 +48,12 @@ public class ModuleClientController {
 
     public Response processCount(List<String> segmentIdentifiers, Map<String, String> params) {
         byte[] countData = getDataArg(params);
-        return Response.newFixedLengthResponse(ClientModuleService.count(segmentIdentifiers, countData) + "");
+        return Response.newFixedLengthResponse(ModuleClientService.count(segmentIdentifiers, countData) + "");
     }
 
     public Response processIndex(Map<String, String> params) {
         byte[] countData = getDataArg(params);
-        return Response.newFixedLengthResponse(ClientModuleService.index(params.get("identifier"), countData) + "");
+        return Response.newFixedLengthResponse(ModuleClientService.index(params.get("identifier"), countData) + "");
     }
 
 

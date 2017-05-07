@@ -19,14 +19,14 @@ import mnix.mobilecloud.communication.CommunicationUtils;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.network.NetworkUtil;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.server.ServerWebServer;
+import mnix.mobilecloud.web.server.WebServerServer;
 import rx.Observable;
 import rx.functions.Action1;
 
-public class ClientSegmentCommunication {
+public class SegmentClientCommunication {
     private final Context context;
 
-    public ClientSegmentCommunication(Context context) {
+    public SegmentClientCommunication(Context context) {
         this.context = context;
     }
 
@@ -40,7 +40,7 @@ public class ClientSegmentCommunication {
         Util.log(this.getClass(), "updateSegment");
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         InetAddress inetAddress = NetworkUtil.getGatewayAddress(wifiManager);
-        SocketAddress socketAddress = new InetSocketAddress(inetAddress, ServerWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(inetAddress, WebServerServer.PORT);
         String params = segmentClient.toParams();
         ByteBuf bbuf = Unpooled.copiedBuffer(params, Charset.defaultCharset());
         HttpClient.newClient(socketAddress)

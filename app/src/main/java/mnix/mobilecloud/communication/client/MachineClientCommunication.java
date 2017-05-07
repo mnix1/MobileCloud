@@ -19,15 +19,15 @@ import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.network.NetworkUtil;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.server.ServerWebServer;
+import mnix.mobilecloud.web.server.WebServerServer;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class ClientMachineCommunication {
+public class MachineClientCommunication {
     private final Context context;
 
-    public ClientMachineCommunication(Context context) {
+    public MachineClientCommunication(Context context) {
         this.context = context;
     }
 
@@ -35,7 +35,7 @@ public class ClientMachineCommunication {
         Util.log(this.getClass(), "updateMachine");
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         InetAddress inetAddress = NetworkUtil.getGatewayAddress(wifiManager);
-        SocketAddress socketAddress = new InetSocketAddress(inetAddress, ServerWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(inetAddress, WebServerServer.PORT);
         MachineClient machineClient = MachineClientRepository.get();
         String params = machineClient.toParams();
         ByteBuf bbuf = Unpooled.copiedBuffer(params, Charset.defaultCharset());

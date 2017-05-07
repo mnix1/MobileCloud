@@ -1,7 +1,6 @@
 package mnix.mobilecloud.web;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -24,11 +23,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import mnix.mobilecloud.repository.client.SegmentClientRepository;
-import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.socket.Action;
-import mnix.mobilecloud.web.socket.ServerWebSocket;
+import mnix.mobilecloud.web.socket.WebSocketServer;
 
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
@@ -47,7 +44,7 @@ public class WebServer extends NanoHTTPD {
     protected static final String MIME_XML = "text/xml";
     protected Context context;
 
-    private final ServerWebSocket serverWebSocket;
+    private final WebSocketServer webSocketServer;
     public final NanoFileUpload uploader;
 
     public WebServer(int port, Context context) {
@@ -60,10 +57,10 @@ public class WebServer extends NanoHTTPD {
             e.printStackTrace();
         }
         Util.log(this.getClass(), "initWebServer");
-        this.serverWebSocket = null;
+        this.webSocketServer = null;
     }
 
-    public WebServer(int port, Context context, ServerWebSocket serverWebSocket) {
+    public WebServer(int port, Context context, WebSocketServer webSocketServer) {
         super(port);
         uploader = new NanoFileUpload(new DiskFileItemFactory());
         this.context = context;
@@ -73,7 +70,7 @@ public class WebServer extends NanoHTTPD {
             e.printStackTrace();
         }
         Util.log(this.getClass(), "initWebServer");
-        this.serverWebSocket = serverWebSocket;
+        this.webSocketServer = webSocketServer;
     }
 
     public Response checkAssets(String uri) {
@@ -156,7 +153,7 @@ public class WebServer extends NanoHTTPD {
     }
 
     public void sendWebSocketMessage(Action action, String payload) {
-        serverWebSocket.send(action, payload);
+        webSocketServer.send(action, payload);
     }
 
     public void sendWebSocketMessage(Action action) {

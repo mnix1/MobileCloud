@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import mnix.mobilecloud.communication.server.ServerModuleCommunication;
+import mnix.mobilecloud.communication.server.ModuleServerCommunication;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.module.ModuleError;
-import mnix.mobilecloud.module.server.ServerModuleService;
+import mnix.mobilecloud.module.server.ModuleServerService;
 import mnix.mobilecloud.repository.server.SegmentServerRepository;
 
 import static mnix.mobilecloud.module.ModuleUtil.getDataArg;
 import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 
 public class ModuleServerController {
-    private final ServerWebServer serverWebServer;
+    private final WebServerServer webServerServer;
 
-    public ModuleServerController(ServerWebServer serverWebServer) {
-        this.serverWebServer = serverWebServer;
+    public ModuleServerController(WebServerServer webServerServer) {
+        this.webServerServer = webServerServer;
     }
 
     public Response serve(IHTTPSession session) {
@@ -39,9 +39,9 @@ public class ModuleServerController {
 
     public Response processCount(List<SegmentServer> segmentIdentifiers, Map<String, String> params) {
         byte[] countData = getDataArg(params);
-        ServerModuleCommunication moduleCommunication = new ServerModuleCommunication(serverWebServer.getContext());
+        ModuleServerCommunication moduleCommunication = new ModuleServerCommunication(webServerServer.getContext());
         try {
-            return Response.newFixedLengthResponse(ServerModuleService.count(segmentIdentifiers, countData, moduleCommunication) + "");
+            return Response.newFixedLengthResponse(ModuleServerService.count(segmentIdentifiers, countData, moduleCommunication) + "");
         } catch (ModuleError moduleError) {
             return getFailedResponse();
         }

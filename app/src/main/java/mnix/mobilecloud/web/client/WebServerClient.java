@@ -1,26 +1,23 @@
 package mnix.mobilecloud.web.client;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.response.Response;
 
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.WebServer;
-import mnix.mobilecloud.web.server.ServerWebServer;
-import mnix.mobilecloud.web.socket.Action;
-import mnix.mobilecloud.web.socket.ServerWebSocket;
+import mnix.mobilecloud.web.socket.WebSocketServer;
 
-public class ClientWebServer extends WebServer {
+public class WebServerClient extends WebServer {
     public static final int PORT = 8090;
 
-    public ClientWebServer(Context context) {
+    public WebServerClient(Context context) {
         super(PORT, context);
     }
 
-    public ClientWebServer(Context context, ServerWebSocket serverWebSocket) {
-        super(PORT, context, serverWebSocket);
+    public WebServerClient(Context context, WebSocketServer webSocketServer) {
+        super(PORT, context, webSocketServer);
     }
 
     @Override

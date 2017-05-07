@@ -18,14 +18,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import mnix.mobilecloud.communication.client.ClientSegmentCommunication;
+import mnix.mobilecloud.communication.client.SegmentClientCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.client.SegmentClientRepository;
-import mnix.mobilecloud.repository.server.SegmentServerRepository;
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.socket.Action;
 
@@ -35,10 +33,10 @@ import static org.nanohttpd.protocols.http.NanoHTTPD.getMimeTypeForFile;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
 public class SegmentClientController {
-    private final ClientWebServer clientWebServer;
+    private final WebServerClient webServerClient;
 
-    public SegmentClientController(ClientWebServer clientWebServer) {
-        this.clientWebServer = clientWebServer;
+    public SegmentClientController(WebServerClient webServerClient) {
+        this.webServerClient = webServerClient;
     }
 
     public Response serve(IHTTPSession session) {
@@ -76,7 +74,7 @@ public class SegmentClientController {
             return getSuccessResponse();
         }
         if (uri.startsWith("/segment/send")) {
-            return processSend(session.getParms(), clientWebServer.getContext()) ? getSuccessResponse() : getFailedResponse();
+            return processSend(session.getParms(), webServerClient.getContext()) ? getSuccessResponse() : getFailedResponse();
         }
         return null;
     }
@@ -84,15 +82,15 @@ public class SegmentClientController {
     public Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Util.log(this.getClass(), "serveUpload");
         Map<String, String> params = new HashMap<String, String>();
-        SegmentClient segmentClient = new SegmentClient(params, clientWebServer.serverMultipart(session, params));
+        SegmentClient segmentClient = new SegmentClient(params, webServerClient.serverMultipart(session, params));
         if (session.getParms().containsKey("notifyServer")) {
             if (MachineClientRepository.isServer()) {
                 SegmentServer segmentServer = new SegmentServer(segmentClient);
                 segmentServer.save();
-                clientWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+                webServerClient.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
                 segmentClient.save();
             } else {
-                ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(clientWebServer.getContext());
+                SegmentClientCommunication segmentCommunication = new SegmentClientCommunication(webServerClient.getContext());
                 segmentCommunication.updateSegment(segmentClient);
             }
         } else {
@@ -122,7 +120,7 @@ public class SegmentClientController {
         byte[] data = Arrays.copyOfRange(segmentClient.getData(), byteFrom.intValue(), byteTo.intValue());
         segmentClient.setData(data);
         String destinationAddress = params.get("address");
-        ClientSegmentCommunication segmentCommunication = new ClientSegmentCommunication(context);
+        SegmentClientCommunication segmentCommunication = new SegmentClientCommunication(context);
         return segmentCommunication.uploadSegment(segmentClient, destinationAddress);
 
     }

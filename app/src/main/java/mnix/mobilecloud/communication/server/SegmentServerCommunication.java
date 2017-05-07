@@ -18,14 +18,14 @@ import mnix.mobilecloud.communication.CommunicationUtils;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
+import mnix.mobilecloud.web.client.WebServerClient;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class ServerSegmentCommunication {
+public class SegmentServerCommunication {
     private final Context context;
 
-    public ServerSegmentCommunication(Context context) {
+    public SegmentServerCommunication(Context context) {
         this.context = context;
     }
 
@@ -37,7 +37,7 @@ public class ServerSegmentCommunication {
 
     public void downloadSegment(final SegmentServer segmentServer, String address, final StreamingResponse.StreamingResponseWrapper wrapper) {
         Util.log(this.getClass(), "downloadSegment", "segmentServer: " + segmentServer + ", address: " + address);
-        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         HttpClient.newClient(socketAddress)
                 .createGet("/segment/download?identifier=" + segmentServer.getIdentifier())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
@@ -63,7 +63,7 @@ public class ServerSegmentCommunication {
 
     public Boolean deleteSegment(SegmentServer segmentServer, String address) {
         Util.log(this.getClass(), "deleteSegment", "segmentServer: " + segmentServer + ", address: " + address);
-        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         return HttpClient.newClient(socketAddress)
                 .createGet("/segment/delete?identifier=" + segmentServer.getIdentifier())
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
@@ -79,7 +79,7 @@ public class ServerSegmentCommunication {
 
     public Boolean sendSegment(SegmentServer segmentServer, String address, String destinationAddress) {
         Util.log(this.getClass(), "sendSegment", "segmentServer: " + segmentServer + ", address: " + address);
-        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         return HttpClient.newClient(socketAddress)
                 .createGet("/segment/send?identifier=" + segmentServer.getIdentifier() + "&address=" + destinationAddress)
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)

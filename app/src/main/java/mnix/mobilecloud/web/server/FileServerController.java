@@ -3,8 +3,6 @@ package mnix.mobilecloud.web.server;
 
 import com.google.gson.Gson;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
@@ -13,18 +11,15 @@ import org.nanohttpd.protocols.http.response.StreamingResponse;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.algorithm.Algorithm;
-import mnix.mobilecloud.communication.server.ServerFileCommunication;
-import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
+import mnix.mobilecloud.communication.server.FileServerCommunication;
+import mnix.mobilecloud.communication.server.SegmentServerCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
@@ -43,10 +38,10 @@ import static org.nanohttpd.protocols.http.NanoHTTPD.getMimeTypeForFile;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
 public class FileServerController {
-    private final ServerWebServer serverWebServer;
+    private final WebServerServer webServerServer;
 
-    public FileServerController(ServerWebServer serverWebServer) {
-        this.serverWebServer = serverWebServer;
+    public FileServerController(WebServerServer webServerServer) {
+        this.webServerServer = webServerServer;
     }
 
     public Response serve(IHTTPSession session) {
@@ -85,7 +80,7 @@ public class FileServerController {
 
     private Response serveUpload(IHTTPSession session) throws IOException, FileUploadException {
         Map<String, String> params = new HashMap<String, String>();
-        byte[] data = serverWebServer.serverMultipart(session, params);
+        byte[] data = webServerServer.serverMultipart(session, params);
         SegmentServer segmentServer = new SegmentServer(params);
         MachineServer machineServer = Algorithm.findUploadPolicy(Option.getInstance().getUploadAlgorithm()).getMachine(segmentServer);
         segmentServer.setMachineIdentifier(machineServer.getIdentifier());
@@ -95,7 +90,7 @@ public class FileServerController {
             return getFailedResponse();
         }
         segmentServer.save();
-        serverWebServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
+        webServerServer.sendWebSocketMessage(Action.SEGMENT_UPLOADED);
         if (!params.containsKey("qqtotalparts")) {
             serveUploadSuccess(params);
         }
@@ -107,16 +102,16 @@ public class FileServerController {
             segmentClient.save();
             return true;
         }
-        ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+        SegmentServerCommunication segmentCommunication = new SegmentServerCommunication(webServerServer.getContext());
         return segmentCommunication.uploadSegment(segmentClient, machineServer.getIpAddress());
     }
 
     private Response serveUploadSuccess(Map<String, String> params) {
         FileServer fileServer = new FileServer(params);
         fileServer.save();
-        serverWebServer.sendWebSocketMessage(Action.FILE_UPLOADED);
+        webServerServer.sendWebSocketMessage(Action.FILE_UPLOADED);
         if (Option.getInstance().getReplicaSize() > 0) {
-            ReplicaService replicaService = new ReplicaService(serverWebServer.getContext());
+            ReplicaService replicaService = new ReplicaService(webServerServer.getContext());
             replicaService.processFile(fileServer);
         }
         return getSuccessResponse();
@@ -128,7 +123,7 @@ public class FileServerController {
             return getFailedResponse();
         }
         List<SegmentServer> segmentServers = SegmentServerRepository.findActiveByFileIdentifierOrderById(fileIdentifier);
-        ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(serverWebServer.getContext());
+        SegmentServerCommunication segmentCommunication = new SegmentServerCommunication(webServerServer.getContext());
         StreamingResponse response = new StreamingResponse(Status.OK, getMimeTypeForFile(uri), segmentCommunication, fileServer.getSize(), segmentServers);
         response.addHeader("Content-disposition", "attachment; filename=" + fileServer.getName().replace(",", ""));
         return response;
@@ -139,7 +134,7 @@ public class FileServerController {
         if (fileServer == null) {
             return getFailedResponse();
         }
-        ServerFileCommunication fileCommunication = new ServerFileCommunication(serverWebServer.getContext());
+        FileServerCommunication fileCommunication = new FileServerCommunication(webServerServer.getContext());
         List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileIdentifier);
         List<String> deletedFromMachine = new ArrayList<>();
         for (SegmentServer segmentServer : segmentServers) {
@@ -159,8 +154,8 @@ public class FileServerController {
             }
         }
         fileServer.delete();
-        serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
-        serverWebServer.sendWebSocketMessage(Action.FILE_DELETED);
+        webServerServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+        webServerServer.sendWebSocketMessage(Action.FILE_DELETED);
         return getSuccessResponse();
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
+import mnix.mobilecloud.communication.server.SegmentServerCommunication;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
@@ -15,9 +15,9 @@ import mnix.mobilecloud.repository.server.MachineServerRepository;
 
 public class StreamingResponse extends Response {
     private List<SegmentServer> segmentServers;
-    private ServerSegmentCommunication segmentCommunication;
+    private SegmentServerCommunication segmentCommunication;
 
-    public StreamingResponse(IStatus status, String mimeType, ServerSegmentCommunication segmentCommunication, long size, List<SegmentServer> segmentServers) {
+    public StreamingResponse(IStatus status, String mimeType, SegmentServerCommunication segmentCommunication, long size, List<SegmentServer> segmentServers) {
         super(status, mimeType, null, 0);
         this.contentLength = size;
         this.segmentCommunication = segmentCommunication;

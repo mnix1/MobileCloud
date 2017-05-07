@@ -7,14 +7,13 @@ import org.nanohttpd.protocols.http.response.Response;
 
 import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.WebServer;
-import mnix.mobilecloud.web.socket.Action;
-import mnix.mobilecloud.web.socket.ServerWebSocket;
+import mnix.mobilecloud.web.socket.WebSocketServer;
 
-public class ServerWebServer extends WebServer {
+public class WebServerServer extends WebServer {
     public static final int PORT = 8080;
 
-    public ServerWebServer(Context context, ServerWebSocket serverWebSocket) {
-        super(PORT, context, serverWebSocket);
+    public WebServerServer(Context context, WebSocketServer webSocketServer) {
+        super(PORT, context, webSocketServer);
     }
 
     @Override

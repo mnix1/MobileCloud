@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.MachineRole;
-import mnix.mobilecloud.communication.server.ServerMachineCommunication;
+import mnix.mobilecloud.communication.server.MachineServerCommunication;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
@@ -29,10 +29,10 @@ import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
 import static org.nanohttpd.protocols.http.response.Response.newFixedLengthResponse;
 
 public class MachineServerController {
-    private final ServerWebServer serverWebServer;
+    private final WebServerServer webServerServer;
 
-    public MachineServerController(ServerWebServer serverWebServer) {
-        this.serverWebServer = serverWebServer;
+    public MachineServerController(WebServerServer webServerServer) {
+        this.webServerServer = webServerServer;
     }
 
     public Response serve(IHTTPSession session) {
@@ -50,7 +50,7 @@ public class MachineServerController {
             }
             MachineServer machineServer = getMachineServer(session);
             MachineServerRepository.update(machineServer);
-            serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATED, null);
+            webServerServer.sendWebSocketMessage(Action.MACHINE_UPDATED, null);
             return getSuccessResponse();
         }
         if (uri.startsWith("/machine/list")) {
@@ -65,10 +65,10 @@ public class MachineServerController {
                     segmentServer.delete();
                 }
                 if (segmentServers.size() > 0) {
-                    serverWebServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
+                    webServerServer.sendWebSocketMessage(Action.SEGMENT_DELETED);
                 }
                 machineServer.delete();
-                serverWebServer.sendWebSocketMessage(Action.MACHINE_DELETED);
+                webServerServer.sendWebSocketMessage(Action.MACHINE_DELETED);
                 return getSuccessResponse();
             }
             return getFailedResponse();
@@ -92,9 +92,9 @@ public class MachineServerController {
             machineServer.setActive(active);
             machineServer.save();
             if (active) {
-                serverWebServer.sendWebSocketMessage(Action.MACHINE_CONNECTED);
+                webServerServer.sendWebSocketMessage(Action.MACHINE_CONNECTED);
             } else {
-                serverWebServer.sendWebSocketMessage(Action.MACHINE_DISCONNECTED);
+                webServerServer.sendWebSocketMessage(Action.MACHINE_DISCONNECTED);
             }
             return getSuccessResponse();
         }
@@ -110,14 +110,14 @@ public class MachineServerController {
                 MachineClientRepository.update();
                 machineClient = MachineClientRepository.get();
             } else {
-                ServerMachineCommunication machineCommunication = new ServerMachineCommunication(serverWebServer.getContext());
+                MachineServerCommunication machineCommunication = new MachineServerCommunication(webServerServer.getContext());
                 machineClient = machineCommunication.getMachine(machineServer.getIpAddress());
                 machineServer.setLastContact(new Date());
             }
             machineServer.setSpeed(machineClient.getSpeed());
             machineServer.setSpace(machineClient.getSpace());
             machineServer.save();
-            serverWebServer.sendWebSocketMessage(Action.MACHINE_UPDATED);
+            webServerServer.sendWebSocketMessage(Action.MACHINE_UPDATED);
             return getSuccessResponse();
         }
         return getFailedResponse();

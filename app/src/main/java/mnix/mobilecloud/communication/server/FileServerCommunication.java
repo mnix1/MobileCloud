@@ -8,20 +8,19 @@ import java.net.SocketAddress;
 
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import mnix.mobilecloud.domain.server.FileServer;
-import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
+import mnix.mobilecloud.web.client.WebServerClient;
 
-public class ServerFileCommunication {
+public class FileServerCommunication {
     private final Context context;
 
-    public ServerFileCommunication(Context context) {
+    public FileServerCommunication(Context context) {
         this.context = context;
     }
 
     public void deleteFileSegments(FileServer fileServer, String address) {
         Util.log(this.getClass(), "deleteSegment", "fileServer: " + fileServer + ", address: " + address);
-        SocketAddress socketAddress = new InetSocketAddress(address, ClientWebServer.PORT);
+        SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         HttpClient.newClient(socketAddress)
                 .createGet("/file/delete?identifier=" + fileServer.getIdentifier())
                 .subscribe();
@@ -29,7 +28,7 @@ public class ServerFileCommunication {
 
 //    public Boolean deleteFileSegments(FileServer fileServer, MachineServer machineServer) {
 //        Util.log(this.getClass(), "deleteSegment", "fileServer: " + fileServer + ", machineServer: " + machineServer);
-//        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), ClientWebServer.PORT);
+//        SocketAddress socketAddress = new InetSocketAddress(machineServer.getIpAddress(), WebServerClient.PORT);
 //        return HttpClient.newClient(socketAddress)
 //                .createGet("/file/delete?identifier=" + fileServer.getIdentifier())
 //                .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)

@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import mnix.mobilecloud.communication.client.ClientMachineCommunication;
+import mnix.mobilecloud.communication.client.MachineClientCommunication;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.domain.client.SegmentClient;
 import mnix.mobilecloud.domain.server.FileServer;
@@ -21,9 +21,9 @@ import mnix.mobilecloud.network.NetworkManager;
 import mnix.mobilecloud.repository.client.MachineClientRepository;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
 import mnix.mobilecloud.util.Util;
-import mnix.mobilecloud.web.client.ClientWebServer;
-import mnix.mobilecloud.web.server.ServerWebServer;
-import mnix.mobilecloud.web.socket.ServerWebSocket;
+import mnix.mobilecloud.web.client.WebServerClient;
+import mnix.mobilecloud.web.server.WebServerServer;
+import mnix.mobilecloud.web.socket.WebSocketServer;
 import rx.Observer;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_ACCESS_COARSE_LOCATION = 2;
 
     private NetworkManager networkManager;
-    private ServerWebServer serverWebServer;
-    private ClientWebServer clientWebServer;
-    private ServerWebSocket serverWebSocket;
+    private WebServerServer webServerServer;
+    private WebServerClient webServerClient;
+    private WebSocketServer webSocketServer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,31 +105,31 @@ public class MainActivity extends AppCompatActivity {
         MachineClientRepository.updateRole(MachineRole.MASTER);
         MachineServer machineServer = new MachineServer(MachineClientRepository.get());
         MachineServerRepository.update(machineServer);
-        serverWebSocket = new ServerWebSocket();
-        serverWebServer = new ServerWebServer(getApplicationContext(), serverWebSocket);
-        clientWebServer = new ClientWebServer(getApplicationContext(), serverWebSocket);
+        webSocketServer = new WebSocketServer();
+        webServerServer = new WebServerServer(getApplicationContext(), webSocketServer);
+        webServerClient = new WebServerClient(getApplicationContext(), webSocketServer);
     }
 
     private void initSlave() {
         dispose();
         MachineClientRepository.updateRole(MachineRole.SLAVE);
-        clientWebServer = new ClientWebServer(getApplicationContext());
-        ClientMachineCommunication machineCommunication = new ClientMachineCommunication(getApplicationContext());
+        webServerClient = new WebServerClient(getApplicationContext());
+        MachineClientCommunication machineCommunication = new MachineClientCommunication(getApplicationContext());
         machineCommunication.updateMachine();
     }
 
     private void dispose() {
-        if (serverWebServer != null) {
-            serverWebServer.stop();
-            serverWebServer = null;
+        if (webServerServer != null) {
+            webServerServer.stop();
+            webServerServer = null;
         }
-        if (clientWebServer != null) {
-            clientWebServer.stop();
-            clientWebServer = null;
+        if (webServerClient != null) {
+            webServerClient.stop();
+            webServerClient = null;
         }
-        if (serverWebSocket != null) {
-            serverWebSocket.stop();
-            serverWebSocket = null;
+        if (webSocketServer != null) {
+            webSocketServer.stop();
+            webSocketServer = null;
         }
 
     }

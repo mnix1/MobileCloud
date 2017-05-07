@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.algorithm.Algorithm;
-import mnix.mobilecloud.communication.server.ServerSegmentCommunication;
+import mnix.mobilecloud.communication.server.SegmentServerCommunication;
 import mnix.mobilecloud.domain.server.FileServer;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
@@ -26,7 +26,7 @@ public class ReplicaService {
 
     public void processFile(FileServer fileServer) {
         List<SegmentServer> segmentServers = SegmentServerRepository.findByFileIdentifier(fileServer.getIdentifier());
-        ServerSegmentCommunication segmentCommunication = new ServerSegmentCommunication(context);
+        SegmentServerCommunication segmentCommunication = new SegmentServerCommunication(context);
         for (SegmentServer segmentServer : segmentServers) {
             MachineServer sourceMachine = MachineServerRepository.findByIdentifier(segmentServer.getMachineIdentifier());
             List<MachineServer> possibleMachines = MachineServerRepository.findByActiveAndNotIdentifier(true, sourceMachine.getIdentifier());
