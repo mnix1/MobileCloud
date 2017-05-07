@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import io.reactivex.observers.DisposableMaybeObserver;
 import mnix.mobilecloud.communication.client.ClientMachineCommunication;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.domain.client.SegmentClient;
@@ -25,6 +24,7 @@ import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.client.ClientWebServer;
 import mnix.mobilecloud.web.server.ServerWebServer;
 import mnix.mobilecloud.web.socket.ServerWebSocket;
+import rx.Observer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -78,15 +78,10 @@ public class MainActivity extends AppCompatActivity {
         }
         MachineClientRepository.update();
         networkManager = new NetworkManager(this);
-        networkManager.connectOrCreateAp().subscribe(new DisposableMaybeObserver<MachineRole>() {
+        networkManager.connectOrCreateAp().subscribe(new Observer<MachineRole>() {
             @Override
-            public void onSuccess(MachineRole machineRole) {
-                Util.log(this.getClass(), "update onSuccess", machineRole.toString());
-                if (machineRole == MachineRole.MASTER) {
-                    initMaster();
-                } else if (machineRole == MachineRole.SLAVE) {
-                    initSlave();
-                }
+            public void onCompleted() {
+                Util.log(this.getClass(), "update onComplete");
             }
 
             @Override
@@ -94,9 +89,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete() {
-                Util.log(this.getClass(), "update onComplete");
-                this.dispose();
+            public void onNext(MachineRole machineRole) {
+                Util.log(this.getClass(), "update onSuccess", machineRole.toString());
+                if (machineRole == MachineRole.MASTER) {
+                    initMaster();
+                } else if (machineRole == MachineRole.SLAVE) {
+                    initSlave();
+                }
             }
         });
     }

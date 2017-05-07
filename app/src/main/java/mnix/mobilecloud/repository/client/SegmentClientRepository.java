@@ -3,18 +3,11 @@ package mnix.mobilecloud.repository.client;
 
 import android.text.TextUtils;
 
-import org.apache.commons.fileupload.FileItemStream;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import mnix.mobilecloud.domain.client.SegmentClient;
-import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.dto.SegmentClientDTO;
 
 public class SegmentClientRepository {

@@ -7,20 +7,13 @@ import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.response.Response;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 import mnix.mobilecloud.module.client.ClientModuleService;
-import mnix.mobilecloud.repository.client.SegmentClientRepository;
 
 import static mnix.mobilecloud.module.ModuleUtil.getDataArg;
-import static mnix.mobilecloud.web.WebServer.getFailedResponse;
 
 public class ModuleClientController {
     private final ClientWebServer clientWebServer;

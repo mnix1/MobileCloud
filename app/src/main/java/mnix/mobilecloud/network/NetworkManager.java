@@ -3,19 +3,9 @@ package mnix.mobilecloud.network;
 import android.content.Context;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.MainActivity;
 import mnix.mobilecloud.network.wifi.WifiControl;
@@ -24,6 +14,13 @@ import mnix.mobilecloud.network.wifi.WifiState;
 import mnix.mobilecloud.network.wifi.accesspoint.WifiApControl;
 import mnix.mobilecloud.network.wifi.observable.ObservableWifi;
 import mnix.mobilecloud.util.Util;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class NetworkManager {
     public static final String SSID = "MobileCloud";
@@ -36,9 +33,9 @@ public class NetworkManager {
         Observable.interval(1000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Long>() {
+                .subscribe(new Action1<Long>() {
                     @Override
-                    public void accept(@NonNull Long aLong) throws Exception {
+                    public void call(Long aLong) {
                         activity.updateWifiInfo(wifiControl.log());
                     }
                 });
@@ -57,12 +54,12 @@ public class NetworkManager {
         wifiControl.enableWifi();
     }
 
-    public Maybe<MachineRole> connectOrCreateAp() {
+    public Observable<MachineRole> connectOrCreateAp() {
         final PublishSubject<MachineRole> subject = PublishSubject.create();
-        final Disposable wifiStateChange = ObservableWifi.observeWifiStateChange(context)
-                .subscribe(new Consumer<WifiState>() {
+        final Subscription wifiStateChange = ObservableWifi.observeWifiStateChange(context)
+                .subscribe(new Action1<WifiState>() {
                     @Override
-                    public void accept(@NonNull WifiState wifiState) throws Exception {
+                    public void call(WifiState wifiState) {
                         if (wifiState != WifiState.WIFI_ENABLED && wifiState != WifiState.WIFI_ENABLING
                                 && wifiState != WifiState.WIFI_AP_DISABLING && wifiState != WifiState.WIFI_AP_ENABLED && wifiState != WifiState.WIFI_AP_ENABLING) {
                             NetworkManager.this.enableWifi();
@@ -70,16 +67,16 @@ public class NetworkManager {
                     }
                 });
 
-        final Disposable wifiNetworkChange = ObservableWifi.observeWifiNetworkChange(context)
-                .subscribe(new Consumer<WifiNetwork>() {
+        final Subscription wifiNetworkChange = ObservableWifi.observeWifiNetworkChange(context)
+                .subscribe(new Action1<WifiNetwork>() {
                     @Override
-                    public void accept(@NonNull WifiNetwork wifiNetwork) throws Exception {
+                    public void call(WifiNetwork wifiNetwork) {
                         NetworkInfo networkInfo = wifiNetwork.networkInfo;
                         String ssid = networkInfo.getExtraInfo();
                         if (ssid.contains(SSID)) {
                             if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) {
                                 subject.onNext(MachineRole.SLAVE);
-                                subject.onComplete();
+                                subject.onCompleted();
                             }
                         } else {
                             if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED) || networkInfo.getState().equals(NetworkInfo.State.CONNECTING)) {
@@ -89,22 +86,22 @@ public class NetworkManager {
                     }
                 });
 
-        final Disposable wifiApScan = ObservableWifi.observeWifiAp(context, SSID)
-                .subscribe(new Consumer<ScanResult>() {
+        final Subscription wifiApScan = ObservableWifi.observeWifiAp(context, SSID)
+                .subscribe(new Action1<ScanResult>() {
                     @Override
-                    public void accept(@NonNull ScanResult scanResult) throws Exception {
+                    public void call(ScanResult scanResult) {
                         Util.log("Scan Results: MobileCloud available");
-                        wifiStateChange.dispose();
-                        wifiNetworkChange.dispose();
+                        wifiStateChange.unsubscribe();
+                        wifiNetworkChange.unsubscribe();
                         wifiControl.connectWifi();
                         subject.onNext(MachineRole.SLAVE);
-                        subject.onComplete();
+                        subject.onCompleted();
                     }
-                }, new Consumer<Throwable>() {
+                }, new Action1<Throwable>() {
                     @Override
-                    public void accept(@NonNull Throwable exc) throws Exception {
-                        wifiStateChange.dispose();
-                        wifiNetworkChange.dispose();
+                    public void call(Throwable throwable) {
+                        wifiStateChange.unsubscribe();
+                        wifiNetworkChange.unsubscribe();
                         if (!WifiApControl.isSupported()) {
                             wifiControl.connectWifi();
                             return;
@@ -112,17 +109,17 @@ public class NetworkManager {
                         Util.log("Scan Results: MobileCloud not available");
                         NetworkManager.this.enableAp();
                         subject.onNext(MachineRole.MASTER);
-                        subject.onComplete();
+                        subject.onCompleted();
                     }
                 });
-        Action done = new Action() {
+        Action0 done = new Action0() {
             @Override
-            public void run() throws Exception {
-                wifiStateChange.dispose();
-                wifiNetworkChange.dispose();
-                wifiApScan.dispose();
+            public void call() {
+                wifiStateChange.unsubscribe();
+                wifiNetworkChange.unsubscribe();
+                wifiApScan.unsubscribe();
             }
         };
-        return subject.doOnDispose(done).doOnComplete(done).firstElement();
+        return subject.doOnUnsubscribe(done).doOnCompleted(done).first();
     }
 }
