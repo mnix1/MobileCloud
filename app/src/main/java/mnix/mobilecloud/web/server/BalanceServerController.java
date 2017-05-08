@@ -8,8 +8,6 @@ import org.nanohttpd.protocols.http.response.Response;
 import mnix.mobilecloud.algorithm.balance.BalanceAlgorithm;
 import mnix.mobilecloud.option.Option;
 
-import static mnix.mobilecloud.web.WebServer.getSuccessResponse;
-
 public class BalanceServerController {
     private final WebServerServer webServerServer;
 
@@ -19,11 +17,11 @@ public class BalanceServerController {
 
     public Response serve(IHTTPSession session) {
         String uri = session.getUri();
-        if (!uri.contains("/option")) {
+        if (!uri.contains("/balance")) {
             return null;
         }
-        if (uri.startsWith("/option/start")) {
-            int steps = BalanceAlgorithm.findBalancePolicy(Option.getInstance().getBalanceAlgorithm()).start();
+        if (uri.startsWith("/balance/start")) {
+            int steps = BalanceAlgorithm.findBalancePolicy(Option.getInstance().getBalanceAlgorithm()).start(webServerServer.getContext());
             return Response.newFixedLengthResponse(steps + "");
         }
         return null;

@@ -6,7 +6,6 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,11 +29,10 @@ public class Util {
         BinarySearcher binarySearcher = new BinarySearcher();
         binarySearcher.searchBytes(data, countData).size();
         Date endDate = new Date();
-        long time = endDate.getTime() - startDate.getTime();
-        return time;
+        return endDate.getTime() - startDate.getTime();
     }
 
-    public static long getSpace() {
+    public static long getFreeSpace() {
         return Environment.getExternalStorageDirectory().getFreeSpace();
     }
 

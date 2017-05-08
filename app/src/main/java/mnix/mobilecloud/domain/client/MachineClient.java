@@ -11,7 +11,7 @@ public class MachineClient extends SugarRecord {
     protected String system;
     protected String name;
     protected Long speed;
-    protected Long space;
+    protected Long freeSpace;
 
     public MachineClient() {
     }
@@ -64,15 +64,15 @@ public class MachineClient extends SugarRecord {
         this.speed = speed;
     }
 
-    public Long getSpace() {
-        return space;
+    public Long getFreeSpace() {
+        return freeSpace;
     }
 
-    public void setSpace(Long space) {
-        this.space = space;
+    public void setFreeSpace(Long freeSpace) {
+        this.freeSpace = freeSpace;
     }
 
     public String toParams() {
-        return "identifier=" + identifier + "&role=" + role.toString() + "&device=" + device + "&system=" + system + "&name=" + name + "&speed=" + speed + "&space=" + space;
+        return "identifier=" + identifier + "&role=" + role.toString() + "&device=" + device + "&system=" + system + "&name=" + name + "&speed=" + speed + "&freeSpace=" + freeSpace;
     }
 }

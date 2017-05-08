@@ -3,11 +3,14 @@ package mnix.mobilecloud.repository.server;
 
 import android.text.TextUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import mnix.mobilecloud.MachineRole;
+import mnix.mobilecloud.domain.server.SegmentServer;
+import mnix.mobilecloud.dto.MachineInformationDTO;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.util.Util;
 
@@ -26,8 +29,8 @@ public class MachineServerRepository {
             currentMachineServer.setName(machineServer.getName());
             currentMachineServer.setDevice(machineServer.getDevice());
             currentMachineServer.setSystem(machineServer.getSystem());
-            currentMachineServer.setSpace(machineServer.getSpeed());
-            currentMachineServer.setSpace(machineServer.getSpace());
+            currentMachineServer.setSpeed(machineServer.getSpeed());
+            currentMachineServer.setFreeSpace(machineServer.getFreeSpace());
             currentMachineServer.save();
         }
     }
@@ -72,5 +75,34 @@ public class MachineServerRepository {
 
     public static List<MachineServer> list() {
         return MachineServer.listAll(MachineServer.class);
+    }
+
+    public static List<MachineInformationDTO> prepareInformation(List<MachineServer> machineServers) {
+        List<MachineInformationDTO> machineInformationList = new ArrayList<>(machineServers.size());
+        for (MachineServer machineServer : machineServers) {
+            MachineInformationDTO machineInformation = new MachineInformationDTO();
+            machineInformation.setMachineServer(machineServer);
+            List<SegmentServer> segmentServers = SegmentServerRepository.findByMachineIdentifier(machineServer.getIdentifier());
+            machineInformation.setSegmentServers(segmentServers);
+            machineInformation.setUsedSpace(SegmentServerRepository.getUsedSpace(segmentServers));
+            machineInformationList.add(machineInformation);
+        }
+        return machineInformationList;
+    }
+
+    public static long calculateTotalFreeSpace(List<MachineServer> machineServers) {
+        long freeSpace = 0;
+        for (MachineServer machineServer : machineServers) {
+            freeSpace += machineServer.getFreeSpace();
+        }
+        return freeSpace;
+    }
+
+    public static long calculateTotalUsedSpace(List<MachineInformationDTO> machineInformationList) {
+        long usedSpace = 0;
+        for (MachineInformationDTO machineInformationDTO : machineInformationList) {
+            usedSpace += machineInformationDTO.getUsedSpace();
+        }
+        return usedSpace;
     }
 }

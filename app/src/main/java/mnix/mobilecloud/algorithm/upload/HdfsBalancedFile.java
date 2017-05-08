@@ -3,7 +3,6 @@ package mnix.mobilecloud.algorithm.upload;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
@@ -62,8 +61,8 @@ public class HdfsBalancedFile extends UploadPolicy {
         double aUsedSpace = SegmentServerRepository.getUsedSpace(a.getIdentifier(), fileIdentifier);
         double bUsedSpace = SegmentServerRepository.getUsedSpace(b.getIdentifier(), fileIdentifier);
 
-        double aUsedSpacePercent = aUsedSpace * 100d / (aUsedSpace + a.getSpace());
-        double bUsedSpacePercent = bUsedSpace * 100d / (bUsedSpace + b.getSpace());
+        double aUsedSpacePercent = aUsedSpace * 100d / (aUsedSpace + a.getFreeSpace());
+        double bUsedSpacePercent = bUsedSpace * 100d / (bUsedSpace + b.getFreeSpace());
         if (a.equals(b) || Math.abs(aUsedSpacePercent - bUsedSpacePercent) < 5) {
             return 0;
         }

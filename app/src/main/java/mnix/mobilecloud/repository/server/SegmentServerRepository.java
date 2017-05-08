@@ -54,17 +54,14 @@ public class SegmentServerRepository {
     }
 
     public static long getUsedSpace(String machineIdentifier) {
-        List<SegmentServer> segmentServers = findByMachineIdentifier(machineIdentifier);
-        long usedSpace = 0;
-        for (SegmentServer segmentServer : segmentServers) {
-            usedSpace += segmentServer.getSize();
-        }
-        return usedSpace;
+        return getUsedSpace(findByMachineIdentifier(machineIdentifier));
     }
 
-
     public static long getUsedSpace(String machineIdentifier, String fileIdentifier) {
-        List<SegmentServer> segmentServers = findByMachineIdentifierAndFileIdentifier(machineIdentifier, fileIdentifier);
+        return getUsedSpace(findByMachineIdentifierAndFileIdentifier(machineIdentifier, fileIdentifier));
+    }
+
+    public static long getUsedSpace(List<SegmentServer> segmentServers) {
         long usedSpace = 0;
         for (SegmentServer segmentServer : segmentServers) {
             usedSpace += segmentServer.getSize();

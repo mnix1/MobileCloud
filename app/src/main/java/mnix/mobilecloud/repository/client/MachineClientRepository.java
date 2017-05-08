@@ -28,7 +28,7 @@ public class MachineClientRepository {
             machineClient.setName(Util.getName());
         }
         machineClient.setSpeed(Util.calculateSpeed());
-        machineClient.setSpace(Util.getSpace());
+        machineClient.setFreeSpace(Util.getFreeSpace());
         machineClient.save();
     }
 
