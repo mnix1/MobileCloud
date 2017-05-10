@@ -17,13 +17,9 @@ class Header extends Component {
 
 @observer
 class SegmentTable extends Component {
-    constructor() {
-        super();
-    }
-
     render() {
         const options = {
-            sizePerPage: 30  // Showing 30 for the size per page as default
+            sizePerPage: 10
         };
         const actionFormatter = new ActionFormatter();
         console.log('SegmentTable', this.props);

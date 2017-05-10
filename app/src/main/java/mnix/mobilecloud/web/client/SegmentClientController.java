@@ -125,6 +125,5 @@ public class SegmentClientController {
         String destinationAddress = params.get("address");
         SegmentClientCommunication segmentCommunication = new SegmentClientCommunication(context);
         return segmentCommunication.uploadSegment(segmentClient, destinationAddress);
-
     }
 }

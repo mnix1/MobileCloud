@@ -14,6 +14,7 @@ public class Option {
     private BalanceAlgorithm balanceAlgorithm = BalanceAlgorithm.HDFS_BALANCER;
     private Double speedFactor = 0d;
     private Double balancedPreference = 0.5;
+    private Double utilizationThreshold = 0.1;
 
     private Option() {
     }
@@ -32,6 +33,7 @@ public class Option {
         instance.setBalanceAlgorithm(BalanceAlgorithm.valueOf(params.get("balanceAlgorithm")));
         instance.setSpeedFactor(Double.parseDouble(params.get("speedFactor")));
         instance.setBalancedPreference(Double.parseDouble(params.get("balancedPreference")));
+        instance.setUtilizationThreshold(Double.parseDouble(params.get("utilizationThreshold")));
     }
 
     public Long getSegmentSize() {
@@ -80,5 +82,13 @@ public class Option {
 
     public void setBalancedPreference(Double balancedPreference) {
         this.balancedPreference = balancedPreference;
+    }
+
+    public Double getUtilizationThreshold() {
+        return utilizationThreshold;
+    }
+
+    public void setUtilizationThreshold(Double utilizationThreshold) {
+        this.utilizationThreshold = utilizationThreshold;
     }
 }

@@ -13,6 +13,7 @@ const fetchOptions = function (store) {
             store.balanceAlgorithm = data.balanceAlgorithm;
             store.speedFactor = data.speedFactor;
             store.balancedPreference = data.balancedPreference;
+            store.utilizationThreshold = data.utilizationThreshold;
             store.initUploader();
         }
     })

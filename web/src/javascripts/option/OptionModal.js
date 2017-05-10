@@ -20,6 +20,7 @@ class OptionModal extends Component {
             balanceAlgorithm: props.store.balanceAlgorithm,
             speedFactor: props.store.speedFactor,
             balancedPreference: props.store.balancedPreference,
+            utilizationThreshold: props.store.utilizationThreshold,
         };
     }
 
@@ -32,6 +33,7 @@ class OptionModal extends Component {
             balanceAlgorithm: this.props.store.balanceAlgorithm,
             speedFactor: this.props.store.speedFactor,
             balancedPreference: this.props.store.balancedPreference,
+            utilizationThreshold: this.props.store.utilizationThreshold,
         });
     }
 
@@ -51,6 +53,7 @@ class OptionModal extends Component {
                 balanceAlgorithm: this.state.balanceAlgorithm,
                 speedFactor: this.state.speedFactor,
                 balancedPreference: this.state.balancedPreference,
+                utilizationThreshold: this.state.utilizationThreshold,
             },
             type: 'POST',
             success: () => {
@@ -127,13 +130,19 @@ class OptionModal extends Component {
                 <label>HDFS Balance Preference:</label>
                 <input onChange={e => {
                     this.setState({balancedPreference: e.target.value})
-                }} type="number" step="0.01" value={this.state.balancedPreference}/>
+                }} type="number" step="0.01" min="0" max="1" value={this.state.balancedPreference}/>
             </div>
             <div className='form-group'>
                 <label>Hadaps Speed Factor:</label>
                 <input onChange={e => {
                     this.setState({speedFactor: e.target.value})
-                }} type="number" step="0.01" value={this.state.speedFactor}/>
+                }} type="number" step="0.01" min="0" value={this.state.speedFactor}/>
+            </div>
+            <div className='form-group'>
+                <label>Utilization Threshold:</label>
+                <input onChange={e => {
+                    this.setState({utilizationThreshold: e.target.value})
+                }} type="number" step="0.01" min="0" value={this.state.utilizationThreshold}/>
             </div>
         </ModalBody>
     }
