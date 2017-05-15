@@ -21,6 +21,7 @@ class OptionModal extends Component {
             speedFactor: props.store.speedFactor,
             balancedPreference: props.store.balancedPreference,
             utilizationThreshold: props.store.utilizationThreshold,
+            dhtModulo: props.store.dhtModulo,
         };
     }
 
@@ -34,6 +35,7 @@ class OptionModal extends Component {
             speedFactor: this.props.store.speedFactor,
             balancedPreference: this.props.store.balancedPreference,
             utilizationThreshold: this.props.store.utilizationThreshold,
+            dhtModulo: this.props.store.dhtModulo,
         });
     }
 
@@ -54,6 +56,7 @@ class OptionModal extends Component {
                 speedFactor: this.state.speedFactor,
                 balancedPreference: this.state.balancedPreference,
                 utilizationThreshold: this.state.utilizationThreshold,
+                dhtModulo: this.state.dhtModulo,
             },
             type: 'POST',
             success: () => {
@@ -143,6 +146,12 @@ class OptionModal extends Component {
                 <input onChange={e => {
                     this.setState({utilizationThreshold: e.target.value})
                 }} type="number" step="0.01" min="0" value={this.state.utilizationThreshold}/>
+            </div>
+            <div className='form-group'>
+                <label>DHT Modulo:</label>
+                <input onChange={e => {
+                    this.setState({dhtModulo: e.target.value})
+                }} type="number" step="1" min="0" value={this.state.dhtModulo}/>
             </div>
         </ModalBody>
     }

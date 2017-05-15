@@ -4,7 +4,8 @@ public enum UploadAlgorithm {
     HDFS_DEFAULT,
     HDFS_BALANCED_FILE,
     HDFS_BALANCED_GLOBAL,
-    HADAPS;
+    HADAPS,
+    DISTRIBUTED_HASH_TABLE;
 
 
     public static UploadPolicy findUploadPolicy(UploadAlgorithm uploadAlgorithm) {
@@ -19,6 +20,9 @@ public enum UploadAlgorithm {
         }
         if (uploadAlgorithm == UploadAlgorithm.HADAPS) {
             return new Hadaps();
+        }
+        if (uploadAlgorithm == UploadAlgorithm.DISTRIBUTED_HASH_TABLE) {
+            return new DistributedHashTable();
         }
         return new HdfsDefault();
     }

@@ -15,6 +15,7 @@ public class Option {
     private Double speedFactor = 0d;
     private Double balancedPreference = 0.5;
     private Double utilizationThreshold = 0.1;
+    private Integer dhtModulo = 256;
 
     private Option() {
     }
@@ -34,6 +35,7 @@ public class Option {
         instance.setSpeedFactor(Double.parseDouble(params.get("speedFactor")));
         instance.setBalancedPreference(Double.parseDouble(params.get("balancedPreference")));
         instance.setUtilizationThreshold(Double.parseDouble(params.get("utilizationThreshold")));
+        instance.setDhtModulo(Integer.parseInt(params.get("dhtModulo")));
     }
 
     public Long getSegmentSize() {
@@ -90,5 +92,13 @@ public class Option {
 
     public void setUtilizationThreshold(Double utilizationThreshold) {
         this.utilizationThreshold = utilizationThreshold;
+    }
+
+    public Integer getDhtModulo() {
+        return dhtModulo;
+    }
+
+    public void setDhtModulo(Integer dhtModulo) {
+        this.dhtModulo = dhtModulo;
     }
 }
