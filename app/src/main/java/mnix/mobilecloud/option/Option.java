@@ -15,7 +15,7 @@ public class Option {
     private Double speedFactor = 0d;
     private Double balancedPreference = 0.5;
     private Double utilizationThreshold = 0.1;
-    private Integer dhtModulo = 256;
+    private Integer dhtModulo = 4096;
 
     private Option() {
     }

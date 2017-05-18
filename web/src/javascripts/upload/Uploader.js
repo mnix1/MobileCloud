@@ -8,7 +8,7 @@ export default class Uploader {
                     enabled: true,
                     success: {endpoint: '/file/uploadSuccess'},
                     concurrent: {
-                        enabled: store.uploadAlgorithm === 'HDFS_DEFAULT'
+                        enabled: store.uploadAlgorithm === 'HDFS_DEFAULT' || store.uploadAlgorithm === 'DISTRIBUTED_HASH_TABLE'
                     },
                     partSize: store.segmentSize || 1024 * 1024
                 },
