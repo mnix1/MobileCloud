@@ -22,13 +22,8 @@ public class BalanceServerController {
             return null;
         }
         if (uri.startsWith("/balance/start")) {
-            int steps = BalanceAlgorithm.findBalancePolicy(Option.getInstance().getBalanceAlgorithm()).start(webServerServer.getContext());
-            int totalSteps = steps;
-            while (steps > 0) {
-                steps = BalanceAlgorithm.findBalancePolicy(Option.getInstance().getBalanceAlgorithm()).start(webServerServer.getContext());
-                totalSteps += steps;
-                webServerServer.sendWebSocketMessage(Action.BALANCE_SEGMENTS_MOVED, "steps: " + steps);
-            }
+            int totalSteps = BalanceAlgorithm.findBalancePolicy(Option.getInstance().getBalanceAlgorithm()).start(webServerServer.getContext());
+            webServerServer.sendWebSocketMessage(Action.BALANCE_SEGMENTS_MOVED, "steps: " + totalSteps);
             return Response.newFixedLengthResponse(totalSteps + "");
         }
         return null;

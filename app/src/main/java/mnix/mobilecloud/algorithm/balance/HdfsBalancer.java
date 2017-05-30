@@ -11,15 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import mnix.mobilecloud.communication.server.SegmentServerCommunication;
 import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.dto.MachineInformationDTO;
 import mnix.mobilecloud.dto.SegmentMove;
-import mnix.mobilecloud.network.NetworkUtil;
 import mnix.mobilecloud.option.Option;
 import mnix.mobilecloud.repository.server.MachineServerRepository;
-import mnix.mobilecloud.web.client.SegmentClientController;
 
 public class HdfsBalancer extends BalancePolicy {
     private final List<MachineInformationDTO> overUtilized = new ArrayList<>();
@@ -32,6 +29,16 @@ public class HdfsBalancer extends BalancePolicy {
     private final Map<MachineInformationDTO, MachineInformationDTO> pairAboveAverageUnderUtilized = new HashMap<>();
 
     public int start(Context context) {
+        int steps = iteration(context);
+        int totalSteps = steps;
+        while (steps > 0) {
+            steps = iteration(context);
+            totalSteps += steps;
+        }
+        return totalSteps;
+    }
+
+    public int iteration(Context context) {
         List<MachineServer> machineServers = MachineServerRepository.findByActive(true);
         List<MachineInformationDTO> machineInformationList = MachineServerRepository.prepareInformation(machineServers);
         classify(machineServers, machineInformationList);
@@ -151,23 +158,4 @@ public class HdfsBalancer extends BalancePolicy {
         return null;
     }
 
-    private void moveSegments(Context context, List<SegmentMove> segmentMoves) {
-        SegmentServerCommunication segmentCommunication = new SegmentServerCommunication(context);
-        for (SegmentMove segmentMove : segmentMoves) {
-            MachineServer sourceMachine = segmentMove.getSource();
-            MachineServer destinationMachine = segmentMove.getTarget();
-            SegmentServer segmentServer = segmentMove.getSegmentServer();
-            if (sourceMachine.isMaster()) {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("identifier", segmentServer.getIdentifier());
-                params.put("address", destinationMachine.getIpAddress());
-                SegmentClientController.processSend(params, context);
-            } else {
-                segmentCommunication.sendSegment(segmentServer, sourceMachine.getIpAddress(),
-                        destinationMachine.isMaster() ? NetworkUtil.getIpAddress() : destinationMachine.getIpAddress());
-            }
-            segmentCommunication.deleteSegment(segmentServer, sourceMachine.isMaster() ? NetworkUtil.getIpAddress() : sourceMachine.getIpAddress());
-            segmentServer.delete();
-        }
-    }
 }

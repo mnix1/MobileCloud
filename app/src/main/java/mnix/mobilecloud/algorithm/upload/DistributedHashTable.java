@@ -3,6 +3,9 @@ package mnix.mobilecloud.algorithm.upload;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,21 +18,26 @@ import mnix.mobilecloud.repository.server.MachineServerRepository;
 public class DistributedHashTable extends UploadPolicy {
     @Override
     public MachineServer getMachine(SegmentServer segmentServer) {
+        return getMachine(segmentServer, MachineServerRepository.findByActive(true));
+    }
+
+    public MachineServer getMachine(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
         int modulo = Option.getInstance().getDhtModulo();
-        List<MachineServer> machineServers = MachineServerRepository.findByActive(true);
         int segmentKey = cutBytes(toSHA1(segmentServer.getIdentifier()), modulo);
-//        Map<String, Integer> machineKeyMap = new HashMap<>();
-        MachineServer targetMachine = null;
-        int targetMachineKey = -1;
-        for (MachineServer machineServer : machineServers) {
+        List<Integer> machineKeys = new ArrayList<>();
+        Map<Integer, MachineServer> machineMap = new HashMap<>();
+        for (MachineServer machineServer : possibleMachines) {
             int machineKey = cutBytes(toSHA1(machineServer.getIdentifier()), modulo);
-//            machineKeyMap.put(machineServer.getIdentifier(), machineKey);
-            if (targetMachineKey == -1 || (segmentKey <= machineKey && targetMachineKey > machineKey)) {
-                targetMachineKey = machineKey;
-                targetMachine = machineServer;
+            machineKeys.add(machineKey);
+            machineMap.put(machineKey, machineServer);
+        }
+        Collections.sort(machineKeys);
+        for (Integer machineKey : machineKeys) {
+            if (segmentKey <= machineKey) {
+                return machineMap.get(machineKey);
             }
         }
-        return targetMachine;
+        return machineMap.get(machineKeys.get(0));
     }
 
     @Override
@@ -39,7 +47,7 @@ public class DistributedHashTable extends UploadPolicy {
 
     @Override
     public MachineServer getReplicaMachine(SegmentServer segmentServer, List<MachineServer> possibleMachines) {
-        return null;
+        return getMachine(segmentServer, possibleMachines);
     }
 
     public static byte[] toSHA1(byte[] bytes) {

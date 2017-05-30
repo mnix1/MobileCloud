@@ -4,10 +4,13 @@ package mnix.mobilecloud.repository.server;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.web.WebServer;
 import mnix.mobilecloud.web.socket.Action;
@@ -27,6 +30,10 @@ public class SegmentServerRepository {
         return SegmentServer.find(SegmentServer.class, "file_identifier = ?", new String[]{identifier}, null, "byte_from, id", null);
     }
 
+    public static List<SegmentServer> findByFileIdentifierAndByteFrom(String identifier, Long byteFrom) {
+        return SegmentServer.find(SegmentServer.class, "file_identifier = ? AND byte_from = ?", new String[]{identifier, byteFrom.toString()}, null, "id", null);
+    }
+
     public static List<SegmentServer> findActiveByFileIdentifierOrderById(String identifier) {
         Set<String> activeMachineIdentifiers = MachineServerRepository.findByActiveIdentifierSet(true);
         List<SegmentServer> result = new ArrayList<>();
@@ -41,8 +48,31 @@ public class SegmentServerRepository {
         return result;
     }
 
+    public static List<SegmentServer> findByFileIdentifierAndByteFromOrderById(Set<String> activeMachineIdentifiers, String fileIdentifier, Long byteFrom) {
+        List<SegmentServer> result = new ArrayList<>();
+        List<SegmentServer> segmentServers = findByFileIdentifierAndByteFrom(fileIdentifier, byteFrom);
+        for (SegmentServer segmentServer : segmentServers) {
+            if (activeMachineIdentifiers.contains(segmentServer.getMachineIdentifier())) {
+                result.add(segmentServer);
+            }
+        }
+        return result;
+    }
+
     public static List<SegmentServer> findByMachineIdentifier(String identifier) {
         return SegmentServer.find(SegmentServer.class, "machine_identifier = ?", identifier);
+    }
+
+    public static List<SegmentServer> findByMachineIdentifiers(Collection<String> machineIdentifiers) {
+        return SegmentServer.find(SegmentServer.class, "machine_identifier IN ('" + TextUtils.join("','", machineIdentifiers) + "')");
+    }
+
+    public static List<SegmentServer> findByMachineServers(List<MachineServer> machineServers) {
+        List<String> machineIdentifiers = new ArrayList<>(machineServers.size());
+        for (MachineServer machineServer : machineServers) {
+            machineIdentifiers.add(machineServer.getIdentifier());
+        }
+        return findByMachineIdentifiers(machineIdentifiers);
     }
 
     public static List<SegmentServer> findByMachineIdentifierAndFileIdentifier(String machineIdentifier, String fileIdentifier) {

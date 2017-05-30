@@ -77,11 +77,15 @@ public class SegmentServerCommunication {
                 .first();
     }
 
-    public Boolean sendSegment(SegmentServer segmentServer, String address, String destinationAddress) {
+    public Boolean sendSegment(SegmentServer segmentServer, String address, String destinationAddress, String newIdentifier) {
         Util.log(this.getClass(), "sendSegment", "segmentServer: " + segmentServer + ", address: " + address);
         SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
+        String url = "/segment/send?identifier=" + segmentServer.getIdentifier() + "&address=" + destinationAddress;
+        if (newIdentifier != null) {
+            url += "&newIdentifier=" + newIdentifier;
+        }
         return HttpClient.newClient(socketAddress)
-                .createGet("/segment/send?identifier=" + segmentServer.getIdentifier() + "&address=" + destinationAddress)
+                .createGet(url)
                 .addHeader(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
                 .map(new Func1<HttpClientResponse<ByteBuf>, Boolean>() {
                     @Override
@@ -91,6 +95,10 @@ public class SegmentServerCommunication {
                 })
                 .toBlocking()
                 .first();
+    }
+
+    public Boolean sendSegment(SegmentServer segmentServer, String address, String destinationAddress) {
+        return sendSegment(segmentServer, address, destinationAddress, null);
     }
 
 }

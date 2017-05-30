@@ -10,6 +10,9 @@ public enum BalanceAlgorithm {
         if (balanceAlgorithm == BalanceAlgorithm.HDFS_BALANCER) {
             return new HdfsBalancer();
         }
+        if (balanceAlgorithm == BalanceAlgorithm.DISTRIBUTED_HASH_TABLE) {
+            return new DistributedHashTableBalancer();
+        }
         return new HdfsBalancer();
     }
 }
