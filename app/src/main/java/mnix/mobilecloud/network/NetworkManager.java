@@ -81,7 +81,7 @@ public class NetworkManager {
                     public void call(WifiNetwork wifiNetwork) {
                         NetworkInfo networkInfo = wifiNetwork.networkInfo;
                         String ssid = networkInfo.getExtraInfo();
-                        if (ssid.contains(SSID)) {
+                        if (ssid == null || ssid.contains(SSID)) {
                             if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) {
                                 subject.onNext(MachineRole.SLAVE);
                                 subject.onCompleted();

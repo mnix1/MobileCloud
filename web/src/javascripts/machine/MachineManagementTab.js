@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import MachineTable from './MachineTable';
 @observer
-class MachineManagementTab extends Component {
+export default class MachineManagementTab extends Component {
     constructor() {
         super();
     }
@@ -16,4 +16,3 @@ class MachineManagementTab extends Component {
         );
     }
 }
-export default MachineManagementTab;
