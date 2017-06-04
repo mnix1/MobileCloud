@@ -61,7 +61,7 @@ public class HdfsBalancedGlobal extends UploadPolicy {
 
         double aUsedSpacePercent = aUsedSpace * 100d / (aUsedSpace + a.getFreeSpace());
         double bUsedSpacePercent = bUsedSpace * 100d / (bUsedSpace + b.getFreeSpace());
-        if (a.equals(b) || Math.abs(aUsedSpacePercent - bUsedSpacePercent) < 5) {
+        if (a.equals(b)) {
             return 0;
         }
         return aUsedSpacePercent < bUsedSpacePercent ? -1 : 1;
