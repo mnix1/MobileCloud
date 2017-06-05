@@ -15,6 +15,10 @@ import mnix.mobilecloud.domain.server.MachineServer;
 import mnix.mobilecloud.util.Util;
 
 public class MachineServerRepository {
+    public static void clear(){
+        MachineServer.deleteAll(MachineServer.class);
+    }
+
     public static void update(MachineServer machineServer) {
         Util.log(MachineServerRepository.class, "update", machineServer.toString());
         MachineServer currentMachineServer = findByIdentifier(machineServer.getIdentifier());

@@ -16,6 +16,10 @@ import mnix.mobilecloud.web.WebServer;
 import mnix.mobilecloud.web.socket.Action;
 
 public class SegmentServerRepository {
+    public static void clear(){
+        SegmentServer.deleteAll(SegmentServer.class);
+    }
+
     public static SegmentServer findByIdentifier(String identifier) {
         List<SegmentServer> segmentServers = SegmentServer.find(SegmentServer.class, "identifier = ?", identifier);
         if (segmentServers.size() > 1) {

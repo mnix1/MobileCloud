@@ -5,9 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import mnix.mobilecloud.domain.server.FileServer;
+import mnix.mobilecloud.domain.server.SegmentServer;
 import mnix.mobilecloud.util.Util;
 
 public class FileServerRepository {
+    public static void clear(){
+        FileServer.deleteAll(FileServer.class);
+    }
+
     public static List<FileServer> list() {
         return FileServer.listAll(FileServer.class);
     }
