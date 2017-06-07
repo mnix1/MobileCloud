@@ -11,7 +11,7 @@ class FileTable extends Component {
 
     render() {
         const actionFormatter = new ActionFormatter();
-        console.log('FileTable', this.props);
+        // console.log('FileTable', this.props);
         return (
             <div className="panel panel-primary fileTable">
                 <div className="panel-heading">

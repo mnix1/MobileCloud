@@ -70,7 +70,9 @@ public class SegmentServerCommunication {
                 .map(new Func1<HttpClientResponse<ByteBuf>, Boolean>() {
                     @Override
                     public Boolean call(HttpClientResponse<ByteBuf> response) {
-                        return response.getStatus().code() == 200;
+                        boolean isSuccess = response.getStatus().code() == 200;
+                        response.discardContent().subscribe().unsubscribe();
+                        return isSuccess;
                     }
                 })
                 .toBlocking()
@@ -90,7 +92,9 @@ public class SegmentServerCommunication {
                 .map(new Func1<HttpClientResponse<ByteBuf>, Boolean>() {
                     @Override
                     public Boolean call(HttpClientResponse<ByteBuf> response) {
-                        return response.getStatus().code() == 200;
+                        boolean isSuccess = response.getStatus().code() == 200;
+                        response.discardContent().subscribe().unsubscribe();
+                        return isSuccess;
                     }
                 })
                 .toBlocking()

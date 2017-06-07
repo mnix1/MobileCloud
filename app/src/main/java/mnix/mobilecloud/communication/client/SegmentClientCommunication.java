@@ -57,6 +57,7 @@ public class SegmentClientCommunication {
                             Util.log(this.getClass(), "updateSegment", "segmentClient save");
                             segmentClient.save();
                         }
+                        byteBufHttpClientResponse.discardContent().subscribe().unsubscribe();
                     }
                 });
 

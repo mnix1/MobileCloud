@@ -37,7 +37,7 @@ class MobileCloudWebSocket {
             if (msg.indexOf('PING') != -1) {
                 return;
             }
-            console.log('onmessage', evt);
+            // console.log('onmessage', evt);
             if (msg.indexOf('FILE_UPLOADED') != -1 || msg.indexOf('FILE_DELETED') != -1) {
                 return store.file.update();
             }

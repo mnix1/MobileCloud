@@ -8,9 +8,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.logging.LogLevel;
+import io.reactivex.netty.protocol.http.client.HttpClient;
+import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import mnix.mobilecloud.communication.client.MachineClientCommunication;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.domain.client.SegmentClient;
@@ -25,8 +35,10 @@ import mnix.mobilecloud.util.Util;
 import mnix.mobilecloud.web.client.WebServerClient;
 import mnix.mobilecloud.web.server.WebServerServer;
 import mnix.mobilecloud.web.socket.WebSocketServer;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -170,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         MachineServer.deleteAll(MachineServer.class);
         SegmentServer.deleteAll(SegmentServer.class);
         FileServer.deleteAll(FileServer.class);
-//        MachineClient.deleteAll(MachineClient.class);
+        MachineClient.deleteAll(MachineClient.class);
         FileUtil.clear();
         SegmentClient.deleteAll(SegmentClient.class);
         MachineClientRepository.update();

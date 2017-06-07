@@ -6,7 +6,10 @@ import java.net.SocketAddress;
 import java.nio.charset.Charset;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledHeapByteBuf;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.reactivex.netty.protocol.http.client.HttpClient;
@@ -54,7 +57,9 @@ public class CommunicationUtils {
                 .map(new Func1<HttpClientResponse<ByteBuf>, Boolean>() {
                     @Override
                     public Boolean call(HttpClientResponse<ByteBuf> response) {
-                        return response.getStatus().code() == 200;
+                        boolean isSuccess = response.getStatus().code() == 200;
+                        response.discardContent().subscribe().unsubscribe();
+                        return isSuccess;
                     }
                 })
                 .toBlocking()

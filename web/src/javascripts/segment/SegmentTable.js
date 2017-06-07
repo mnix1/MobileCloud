@@ -22,7 +22,7 @@ class SegmentTable extends Component {
             sizePerPage: 10
         };
         const actionFormatter = new ActionFormatter();
-        console.log('SegmentTable', this.props);
+        // console.log('SegmentTable', this.props);
         return (
             <div className="panel panel-primary segmentTable">
                 <div className="panel-heading">

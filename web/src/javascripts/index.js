@@ -9,8 +9,10 @@ import FileManagementTab from './file/FileManagementTab';
 import MachineManagementTab from './machine/MachineManagementTab';
 import SegmentManagementTab from './segment/SegmentManagementTab';
 import GlobalStore from './GlobalStore';
+import Test from './test/Test';
 const store = new GlobalStore();
-console.log(store);
+window.store = store;
+window.Test = Test;
 render((
     <Router>
         <div>
@@ -25,6 +27,7 @@ render((
             <Route exact path="/" render={() => <FileManagementTab store={store}/>}/>
             <Route path="/machine" render={() => <MachineManagementTab store={store}/>}/>
             <Route path="/segment" render={() => <SegmentManagementTab store={store}/>}/>
+            <input type="file" multiple/>
         </div>
     </Router>
 ), document.getElementById('root'));

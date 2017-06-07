@@ -61,20 +61,26 @@ public class StateServerController {
     }
 
     void handleRestore(StateDTO state) {
-        FileServerRepository.clear();
         List<FileServer> file = state.getFile();
-        for (int i = 0; i < file.size(); i++) {
-            file.get(i).save();
+        if (file != null) {
+            FileServerRepository.clear();
+            for (int i = 0; i < file.size(); i++) {
+                file.get(i).save();
+            }
         }
-        MachineServerRepository.clear();
         List<MachineServer> machine = state.getMachine();
-        for (int i = 0; i < machine.size(); i++) {
-            machine.get(i).save();
+        if (machine != null) {
+            MachineServerRepository.clear();
+            for (int i = 0; i < machine.size(); i++) {
+                machine.get(i).save();
+            }
         }
-        SegmentServerRepository.clear();
         List<SegmentServer> segment = state.getSegment();
-        for (int i = 0; i < segment.size(); i++) {
-            segment.get(i).save();
+        if (segment != null) {
+            SegmentServerRepository.clear();
+            for (int i = 0; i < segment.size(); i++) {
+                segment.get(i).save();
+            }
         }
     }
 }

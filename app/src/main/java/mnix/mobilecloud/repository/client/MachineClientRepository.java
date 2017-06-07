@@ -1,8 +1,6 @@
 package mnix.mobilecloud.repository.client;
 
 
-import java.util.UUID;
-
 import mnix.mobilecloud.MachineRole;
 import mnix.mobilecloud.domain.client.MachineClient;
 import mnix.mobilecloud.util.Util;
@@ -19,10 +17,10 @@ public class MachineClientRepository {
         if (identifier == null) {
 //            identifier = UUID.randomUUID().toString();
 //            identifier = Util.cutUuid(identifier);
-            identifier = Util.cutUuid(Util.getId() + UUID.randomUUID());
-            Util.log(MachineClientRepository.class, "update", "identifier: " + identifier);
+//            identifier = Util.cutUuid(Util.getId() + UUID.randomUUID());
+//            Util.log(MachineClientRepository.class, "update", "identifier: " + identifier);
             machineClient = new MachineClient();
-            machineClient.setIdentifier(identifier);
+            machineClient.setIdentifier(Util.getDeviceName());
             machineClient.setDevice(Util.getDeviceName());
             machineClient.setSystem(Util.getSystem());
             machineClient.setName(Util.getName());
