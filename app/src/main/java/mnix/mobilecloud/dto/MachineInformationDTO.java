@@ -36,11 +36,11 @@ public class MachineInformationDTO {
     }
 
     public double getUsedSpacePercent() {
-        return getUsedSpacePercent(machineServer.getFreeSpace(), usedSpace);
+        return getUsedSpacePercent(machineServer.getCapacity(), usedSpace);
     }
 
-    public static double getUsedSpacePercent(long freeSpace, long usedSpace) {
-        return usedSpace * 100d / (usedSpace + freeSpace);
+    public static double getUsedSpacePercent(long capacity, long usedSpace) {
+        return usedSpace * 100d /  capacity;
     }
 
 }

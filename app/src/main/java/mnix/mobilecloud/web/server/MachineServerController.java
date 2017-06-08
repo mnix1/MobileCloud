@@ -115,7 +115,7 @@ public class MachineServerController {
                 machineServer.setLastContact(new Date());
             }
             machineServer.setSpeed(machineClient.getSpeed());
-            machineServer.setFreeSpace(machineClient.getFreeSpace());
+            machineServer.setCapacity(machineClient.getCapacity());
             machineServer.save();
             webServerServer.sendWebSocketMessage(Action.MACHINE_UPDATED);
             return getSuccessResponse();
@@ -134,7 +134,7 @@ public class MachineServerController {
         machineServer.setDevice(params.get("device"));
         machineServer.setSystem(params.get("system"));
         machineServer.setSpeed(Long.parseLong(params.get("speed")));
-        machineServer.setFreeSpace(Long.parseLong(params.get("freeSpace")));
+        machineServer.setCapacity(Long.parseLong(params.get("capacity")));
         return machineServer;
     }
 }

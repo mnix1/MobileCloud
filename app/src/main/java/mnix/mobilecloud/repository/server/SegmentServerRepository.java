@@ -16,7 +16,7 @@ import mnix.mobilecloud.web.WebServer;
 import mnix.mobilecloud.web.socket.Action;
 
 public class SegmentServerRepository {
-    public static void clear(){
+    public static void clear() {
         SegmentServer.deleteAll(SegmentServer.class);
     }
 
@@ -81,6 +81,10 @@ public class SegmentServerRepository {
 
     public static List<SegmentServer> findByMachineIdentifierAndFileIdentifier(String machineIdentifier, String fileIdentifier) {
         return SegmentServer.find(SegmentServer.class, "machine_identifier = ? AND file_identifier = ?", machineIdentifier, fileIdentifier);
+    }
+
+    public static long countByMachineIdentifierAndFileIdentifier(String machineIdentifier, String fileIdentifier) {
+        return SegmentServer.count(SegmentServer.class, "machine_identifier = ? AND file_identifier = ?", new String[]{machineIdentifier, fileIdentifier});
     }
 
     public static List<SegmentServer> findByIdentifiers(List<String> identifiers) {

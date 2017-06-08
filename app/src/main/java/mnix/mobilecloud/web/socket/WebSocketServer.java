@@ -26,18 +26,18 @@ public class WebSocketServer extends NanoWSD {
     }
 
     public void send(Action action, String payload) {
-        for (MobileCloudWebSocket mobileCloudWebSocket : MobileCloudWebSocket.ACTIVE) {
-            try {
-                if (mobileCloudWebSocket.isOpen()) {
-                    mobileCloudWebSocket.send(action.toString());
-                    if (payload != null) {
-                        mobileCloudWebSocket.send(payload);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        for (MobileCloudWebSocket mobileCloudWebSocket : MobileCloudWebSocket.ACTIVE) {
+//            try {
+//                if (mobileCloudWebSocket.isOpen()) {
+//                    mobileCloudWebSocket.send(action.toString());
+//                    if (payload != null) {
+//                        mobileCloudWebSocket.send(payload);
+//                    }
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
 }

@@ -32,10 +32,21 @@ public class HdfsBalancer extends BalancePolicy {
         int steps = iteration(context);
         int totalSteps = steps;
         while (steps > 0) {
+            clear();
             steps = iteration(context);
             totalSteps += steps;
         }
         return totalSteps;
+    }
+
+    public void clear(){
+        overUtilized.clear();
+        aboveAverage.clear();
+        belowAverage.clear();
+        underUtilized.clear();
+        pairOverUtilizedUnderUtilized.clear();
+        pairOverUtilizedBelowAverage.clear();
+        pairAboveAverageUnderUtilized.clear();
     }
 
     public int iteration(Context context) {
@@ -52,7 +63,7 @@ public class HdfsBalancer extends BalancePolicy {
     }
 
     private void classify(List<MachineServer> machineServers, List<MachineInformationDTO> machineInformationList) {
-        double totalUsedSpacePercent = MachineInformationDTO.getUsedSpacePercent(MachineServerRepository.calculateTotalFreeSpace(machineServers),
+        double totalUsedSpacePercent = MachineInformationDTO.getUsedSpacePercent(MachineServerRepository.calculateTotalCapacity(machineServers),
                 MachineServerRepository.calculateTotalUsedSpace(machineInformationList));
         double avgUsedSpacePercent = totalUsedSpacePercent / machineInformationList.size();
         double thresholdPercent = Option.getInstance().getUtilizationThreshold() * 100;

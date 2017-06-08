@@ -35,7 +35,7 @@ class MachineTable extends Component {
                         <TableHeaderColumn dataField="lastContact" dataSort={true} dataAlign="right">Last
                             Contact</TableHeaderColumn>
                         <TableHeaderColumn dataField="speed" dataSort={true} dataAlign="right">Speed</TableHeaderColumn>
-                        <TableHeaderColumn dataField="freeSpace" dataSort={true} dataAlign="right">Free Space</TableHeaderColumn>
+                        <TableHeaderColumn dataField="capacity" dataSort={true} dataAlign="right">Capacity</TableHeaderColumn>
                         <TableHeaderColumn dataFormat={ actionFormatter } hiddenOnInsert>Action</TableHeaderColumn>
                     </BootstrapTable>
                 </div>

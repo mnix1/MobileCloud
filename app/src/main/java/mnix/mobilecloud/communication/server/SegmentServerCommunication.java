@@ -80,7 +80,7 @@ public class SegmentServerCommunication {
     }
 
     public Boolean sendSegment(SegmentServer segmentServer, String address, String destinationAddress, String newIdentifier) {
-        Util.log(this.getClass(), "sendSegment", "segmentServer: " + segmentServer + ", address: " + address);
+        Util.log(this.getClass(), "sendSegment", "segmentServer: " + segmentServer + ", address: " + address + ", destinationAddress: " + destinationAddress);
         SocketAddress socketAddress = new InetSocketAddress(address, WebServerClient.PORT);
         String url = "/segment/send?identifier=" + segmentServer.getIdentifier() + "&address=" + destinationAddress;
         if (newIdentifier != null) {

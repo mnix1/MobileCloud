@@ -34,7 +34,7 @@ public class MachineServerRepository {
             currentMachineServer.setDevice(machineServer.getDevice());
             currentMachineServer.setSystem(machineServer.getSystem());
             currentMachineServer.setSpeed(machineServer.getSpeed());
-            currentMachineServer.setFreeSpace(machineServer.getFreeSpace());
+            currentMachineServer.setCapacity(machineServer.getCapacity());
             currentMachineServer.save();
         }
     }
@@ -94,12 +94,12 @@ public class MachineServerRepository {
         return machineInformationList;
     }
 
-    public static long calculateTotalFreeSpace(List<MachineServer> machineServers) {
-        long freeSpace = 0;
+    public static long calculateTotalCapacity(List<MachineServer> machineServers) {
+        long capacity = 0;
         for (MachineServer machineServer : machineServers) {
-            freeSpace += machineServer.getFreeSpace();
+            capacity += machineServer.getCapacity();
         }
-        return freeSpace;
+        return capacity;
     }
 
     public static long calculateTotalUsedSpace(List<MachineInformationDTO> machineInformationList) {

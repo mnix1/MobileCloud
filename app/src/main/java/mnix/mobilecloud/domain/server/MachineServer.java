@@ -20,7 +20,7 @@ public class MachineServer extends MachineClient {
         this.system = machineClient.getSystem();
         this.name = machineClient.getName();
         this.speed = machineClient.getSpeed();
-        this.freeSpace = machineClient.getFreeSpace();
+        this.capacity = machineClient.getCapacity();
     }
 
     public String getIpAddress() {
@@ -63,7 +63,7 @@ public class MachineServer extends MachineClient {
                 ", system=" + system +
                 ", active=" + active +
                 ", speed=" + speed +
-                ", freeSpace=" + freeSpace +
+                ", capacity=" + capacity +
                 '}';
     }
 }

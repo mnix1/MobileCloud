@@ -4,7 +4,8 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:padding="8dp"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:keepScreenOn="true">
 
     <TextView
         android:id="@+id/wifiInfo"

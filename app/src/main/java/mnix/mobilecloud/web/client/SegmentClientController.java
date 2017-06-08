@@ -85,6 +85,7 @@ public class SegmentClientController {
         Util.log(this.getClass(), "serveUpload");
         Map<String, String> params = new HashMap<String, String>();
         SegmentClient segmentClient = new SegmentClient(params, webServerClient.serverMultipart(session, params));
+        Util.log(this.getClass(), "serveUpload", "segmentClient: " + segmentClient);
         if (session.getParms().containsKey("notifyServer")) {
             if (MachineClientRepository.isServer()) {
                 SegmentServer segmentServer = new SegmentServer(segmentClient);

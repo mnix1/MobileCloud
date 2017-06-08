@@ -56,14 +56,14 @@ public class HdfsBalancedGlobal extends UploadPolicy {
 
     protected int compareMachine(final MachineServer a,
                                  final MachineServer b) {
-        double aUsedSpace = SegmentServerRepository.getUsedSpace(a.getIdentifier());
-        double bUsedSpace = SegmentServerRepository.getUsedSpace(b.getIdentifier());
-
-        double aUsedSpacePercent = aUsedSpace * 100d / (aUsedSpace + a.getFreeSpace());
-        double bUsedSpacePercent = bUsedSpace * 100d / (bUsedSpace + b.getFreeSpace());
         if (a.equals(b)) {
             return 0;
         }
+        double aUsedSpace = SegmentServerRepository.getUsedSpace(a.getIdentifier());
+        double bUsedSpace = SegmentServerRepository.getUsedSpace(b.getIdentifier());
+
+        double aUsedSpacePercent = aUsedSpace * 100d /  a.getCapacity();
+        double bUsedSpacePercent = bUsedSpace * 100d /  b.getCapacity();
         return aUsedSpacePercent < bUsedSpacePercent ? -1 : 1;
     }
 }

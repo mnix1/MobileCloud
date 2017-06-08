@@ -31,6 +31,9 @@ public class Hadaps extends UploadPolicy {
     }
 
     private List<MachineServer> sortMachines(SegmentServer segmentServer, List<MachineServer> machineServers) {
+        if(machineServers.size()==1){
+            return machineServers;
+        }
         final Map<String, Double> machineSpeedMap = new HashMap<>();
         double speedFactor = Option.getInstance().getSpeedFactor();
         double avgSpeed = 0;
@@ -39,7 +42,7 @@ public class Hadaps extends UploadPolicy {
         }
         avgSpeed /= machineServers.size();
         for (MachineServer machineServer : machineServers) {
-            int segments = SegmentServerRepository.findByMachineIdentifierAndFileIdentifier(machineServer.getIdentifier(), segmentServer.getFileIdentifier()).size();
+            long segments = SegmentServerRepository.countByMachineIdentifierAndFileIdentifier(machineServer.getIdentifier(), segmentServer.getFileIdentifier());
             double speed = speedFactor == 0
                     ? machineServer.getSpeed()
                     : (machineServer.getSpeed() > avgSpeed
