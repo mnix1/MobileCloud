@@ -50,6 +50,24 @@ class OptionStore {
         fetchOptions(this);
     }
 
+    save(callback){
+        $.ajax({
+            url: '/option/set',
+            data: {
+                segmentSize: this.segmentSize,
+                replicaSize: this.replicaSize,
+                uploadAlgorithm: this.uploadAlgorithm,
+                balanceAlgorithm: this.balanceAlgorithm,
+                speedFactor: this.speedFactor,
+                balancedPreference: this.balancedPreference,
+                utilizationThreshold: this.utilizationThreshold,
+                dhtModulo: this.dhtModulo,
+            },
+            type: 'POST',
+            success: callback
+        });
+    }
+
     @observable gallery;
     @observable uploader;
     @observable segmentSize;
