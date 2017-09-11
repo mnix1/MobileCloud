@@ -63,9 +63,8 @@ public class HdfsBalancer extends BalancePolicy {
     }
 
     private void classify(List<MachineServer> machineServers, List<MachineInformationDTO> machineInformationList) {
-        double totalUsedSpacePercent = MachineInformationDTO.getUsedSpacePercent(MachineServerRepository.calculateTotalCapacity(machineServers),
+        double avgUsedSpacePercent = MachineInformationDTO.getUsedSpacePercent(MachineServerRepository.calculateTotalCapacity(machineServers),
                 MachineServerRepository.calculateTotalUsedSpace(machineInformationList));
-        double avgUsedSpacePercent = totalUsedSpacePercent / machineInformationList.size();
         double thresholdPercent = Option.getInstance().getUtilizationThreshold() * 100;
         for (MachineInformationDTO machineInformationDTO : machineInformationList) {
             double machineUsedSpacePercent = machineInformationDTO.getUsedSpacePercent();

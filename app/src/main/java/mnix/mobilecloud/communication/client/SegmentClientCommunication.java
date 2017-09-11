@@ -32,7 +32,7 @@ public class SegmentClientCommunication {
 
     public Boolean uploadSegment(SegmentClient segmentClient, String address) {
         Util.log(this.getClass(), "uploadSegment", "segmentClient: " + segmentClient + "address: " + address);
-        return CommunicationUtils.uploadSegment(segmentClient, address, "/segment/upload?notifyServer=1");
+        return CommunicationUtils.uploadSegment(segmentClient, address, "/segment/uploadWithNotifyServer");
     }
 
 
